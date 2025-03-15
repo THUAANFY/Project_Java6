@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head th:replace="~{/Layout/Head}">
+        <title>_____</title>
+    </head>
+    <head>
+        <style>
+            body {
+                background-color: #f8f8f8;
+                font-family: Arial, sans-serif;
+            }
+    
+            /* Navbar */
+            .navbar {
+                background-color: #e0f7fa;
+                padding: 10px 20px;
+                border-bottom: 2px solid #000;
+            }
+    
+            /* Sidebar */
+            .sidebar {
+                width: 250px;
+                background-color: #ffe4b5;
+                min-height: calc(100vh - 60px); /* Điều chỉnh chiều cao trừ đi chiều cao navbar */
+                padding: 20px;
+                border-right: 2px solid #000;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                overflow-y: auto; /* Cho phép cuộn nếu danh mục nhiều */
+            }
+    
+            .sidebar h4 {
+                font-size: 1.2rem;
+                color: #333;
+                margin-bottom: 15px;
+            }
+    
+            .category-list {
+                list-style: none;
+                padding: 0;
+            }
+    
+            .category-list li {
+                padding: 10px 0;
+                color: #333;
+                cursor: pointer;
+                transition: color 0.3s ease;
+            }
+    
+            .category-list li:hover {
+                color: #007bff;
+            }
+    
+            /* Main content */
+            .main-content {
+                margin-left: 250px; /* Căn lề để tránh bị che bởi sidebar */
+                padding: 20px;
+                margin-top: 60px; /* Để tránh chồng lên navbar */
+            }
+    
+            /* Product grid */
+            .product-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+    
+            .card {
+                border: 1px solid #000;
+                border-radius: 5px;
+                text-align: center;
+                padding: 10px;
+                background-color: #fff;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                overflow: hidden;
+            }
+    
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+    
+            .card-img-top {
+                height: 150px;
+                object-fit: cover;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+            }
+    
+            .card-title {
+                font-size: 1.1rem;
+                color: #333;
+                margin: 10px 0;
+            }
+    
+            .card-text {
+                font-size: 0.9rem;
+                color: #666;
+                margin-bottom: 10px;
+            }
+    
+            .card-text.text-danger {
+                font-size: 1rem;
+                font-weight: 700;
+                color: #dc3545;
+            }
+    
+            .btn-success {
+                background-color: #28a745;
+                border: none;
+                border-radius: 5px;
+                padding: 5px 10px;
+                color: #fff;
+                transition: background-color 0.3s ease;
+            }
+    
+            .btn-success:hover {
+                background-color: #218838;
+            }
+    
+            .btn-success i {
+                margin-right: 5px;
+            }
+        </style>
+    </head>
+<body>
+    <div th:replace="~{/Layout/Navbar}"></div>
+
+    <div class="container mt-5 pt-5">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h4>DANH MỤC</h4>
+            <ul class="category-list">
+                <li>Danh mục 1</li>
+                <li>Danh mục 2</li>
+                <li>Danh mục 3</li>
+                <li>Danh mục 4</li>
+                <li>Danh mục 5</li>
+                <li>Danh mục 6</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="product-grid">
+                <div class="card">
+                    <img src="https://via.placeholder.com/250x150" class="card-img-top" alt="Product 1">
+                    <h5 class="card-title">Sản phẩm 1</h5>
+                    <p class="card-text">Mô tả sản phẩm 1</p>
+                    <p class="card-text text-danger">Giá: 500.000 VNĐ</p>
+                    <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                </div>
+                <div class="card">
+                    <img src="https://via.placeholder.com/250x150" class="card-img-top" alt="Product 2">
+                    <h5 class="card-title">Sản phẩm 2</h5>
+                    <p class="card-text">Mô tả sản phẩm 2</p>
+                    <p class="card-text text-danger">Giá: 600.000 VNĐ</p>
+                    <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                </div>
+                <div class="card">
+                    <img src="https://via.placeholder.com/250x150" class="card-img-top" alt="Product 3">
+                    <h5 class="card-title">Sản phẩm 3</h5>
+                    <p class="card-text">Mô tả sản phẩm 3</p>
+                    <p class="card-text text-danger">Giá: 700.000 VNĐ</p>
+                    <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                </div>
+                <div class="card">
+                    <img src="https://via.placeholder.com/250x150" class="card-img-top" alt="Product 4">
+                    <h5 class="card-title">Sản phẩm 4</h5>
+                    <p class="card-text">Mô tả sản phẩm 4</p>
+                    <p class="card-text text-danger">Giá: 800.000 VNĐ</p>
+                    <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                </div>
+                <div class="card">
+                    <img src="https://via.placeholder.com/250x150" class="card-img-top" alt="Product 5">
+                    <h5 class="card-title">Sản phẩm 5</h5>
+                    <p class="card-text">Mô tả sản phẩm 5</p>
+                    <p class="card-text text-danger">Giá: 900.000 VNĐ</p>
+                    <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                </div>
+                <div class="card">
+                    <img src="https://via.placeholder.com/250x150" class="card-img-top" alt="Product 6">
+                    <h5 class="card-title">Sản phẩm 6</h5>
+                    <p class="card-text">Mô tả sản phẩm 6</p>
+                    <p class="card-text text-danger">Giá: 1.000.000 VNĐ</p>
+                    <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                </div>
+                <div class="card">
+                    <img src="https://via.placeholder.com/250x150" class="card-img-top" alt="Product 7">
+                    <h5 class="card-title">Sản phẩm 7</h5>
+                    <p class="card-text">Mô tả sản phẩm 7</p>
+                    <p class="card-text text-danger">Giá: 1.100.000 VNĐ</p>
+                    <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                </div>
+                <div class="card">
+                    <img src="https://via.placeholder.com/250x150" class="card-img-top" alt="Product 8">
+                    <h5 class="card-title">Sản phẩm 8</h5>
+                    <p class="card-text">Mô tả sản phẩm 8</p>
+                    <p class="card-text text-danger">Giá: 1.200.000 VNĐ</p>
+                    <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{/Layout/Footer}"></div>
+</body>
+</html>

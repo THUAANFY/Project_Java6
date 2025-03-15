@@ -102,7 +102,7 @@
 .dropdown-item:hover {
     background: linear-gradient(90deg, #007bff, #00c4ff);
     color: #fff;
-    transform: translateX(5px);
+    transform: translateX(0px);
 }
 
 /* Bỏ hiệu ứng khi click trên dropdown-item */

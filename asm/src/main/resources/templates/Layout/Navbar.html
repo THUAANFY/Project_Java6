@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" th:href="@{/CSS/Navbar.css}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+        <div class="container-fluid">
+            <!-- Navbar brand -->
+            <a class="navbar-brand" href="#">
+                <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="30" alt="Logo" loading="lazy" />
+            </a>
+
+            <!-- Toggle button for mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Collapsible content -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Left links -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/index">Trang Chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Sản Phẩm</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Liên Hệ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Giới Thiệu</a>
+                    </li>
+                </ul>
+
+                <!-- Search form -->
+                <form class="d-flex input-group w-auto me-3">
+                    <input type="search" class="form-control" placeholder="Tìm kiếm..." aria-label="Search" />
+                    <button class="btn" type="button">Tìm</button>
+                </form>
+
+                <!-- Right links -->
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">FULL NAME</a>
+                    </li>
+                    <!-- Cart dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" href="#" >
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </a>
+                    </li>
+                    <!-- User profile dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://mdbootstrap.com/img/Photos/Avatars/img%20(2).jpg" class="rounded-circle img-fluid"
+                                height="25" width="25" alt="User avatar">
+                        </a>
+                        <!-- Dropdown menu -->
+                        <ul class="dropdown-menu dropdown-menu-end p-1" aria-labelledby="navbarDropdownProfile">
+                            <li><a class="dropdown-item" href="/register">Đăng Ký</a></li>
+                            <li><a class="dropdown-item" href="/login">Đăng Nhập</a></li>
+                            <li><a class="dropdown-item" href="#">Quên Mật Khẩu</a></li>
+                            <li><a class="dropdown-item" href="#">Đổi Mật Khẩu</a></li>
+                            <li><a class="dropdown-item" href="#">Thông Tin Cá Nhân</a></li>
+                            <li><a class="dropdown-item" href="#">Đăng Xuất</a></li>
+                            <li><a class="dropdown-item" href="#">Quản Trị</a></li>
+                            <li><a class="dropdown-item" href="#">Đơn Hàng</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>

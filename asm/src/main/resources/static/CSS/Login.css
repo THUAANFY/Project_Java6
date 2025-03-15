@@ -27,7 +27,7 @@ html, body {
 }
 
 .container {
-    max-width: 1000px; /* Giảm chiều rộng tối đa để giao diện nhỏ lại */
+    max-width: 1200px; /* Giảm chiều rộng tối đa để giao diện nhỏ lại */
     padding: 10px;
 }
 

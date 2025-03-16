@@ -52,48 +52,41 @@
                             </div>
                         </div>
                     
-                        <div class="col-12 col-md-8">
+                        <div class="col-12 col-md-8 mt-5">
                             <!-- Dòng 1: Tên sản phẩm và Giá -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">TÊN SẢN PHẨM</label>
+                                    <label class="form-label">TÀI KHOẢN</label>
                                     <input type="text" class="form-control" name="name" value="">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">GIÁ</label>
-                                    <input type="number" class="form-control" name="price" value="">
+                                    <label class="form-label">HỌ VÀ TÊN</label>
+                                    <input type="text" class="form-control" name="price" value="">
                                 </div>
                             </div>
     
                             <!-- Dòng 2: Số lượng và Ngày tạo -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">SỐ LƯỢNG</label>
-                                    <input type="number" class="form-control" name="available" value="">
+                                    <label class="form-label">EMAIL</label>
+                                    <input type="email" class="form-control" name="available" value="">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">NGÀY TẠO</label>
-                                    <input type="date" class="form-control" name="createDate" value="">
+                                    <label class="form-label">MẬT KHẨU</label>
+                                    <input type="password" class="form-control" name="createDate" value="">
                                 </div>
                             </div>
-    
-                            <!-- Danh mục -->
+
                             <div class="mb-3">
-                                <label class="form-label">DANH MỤC</label>
-                                <select class="form-control" name="category">
-                                    <option value="">Chọn danh mục</option>
-                                    <option value="1">Danh mục 1</option>
-                                    <option value="2">Danh mục 2</option>
-                                    <option value="3">Danh mục 3</option>
-                                </select>
+                                <label for="">VAI TRÒ: </label>
+                                <br>
+                                <input class="m-3" type="radio" name="vaiTro" >Admin
+                                <input class="m-3" type="radio" name="vaiTro" checked>Người dùng
                             </div>
+        
                         </div>
     
-                        <!-- Bình luận trải dài ngang -->
-                        <div class="col-12 mb-3">
-                            <label class="form-label">MÔ TẢ</label>
-                            <textarea class="form-control comment-textarea" name="comment" placeholder="Nhập bình luận về sản phẩm..."></textarea>
-                        </div>
+                        
                     
                         <!-- Nút hành động -->
                         <div class="col-12 mt-3 d-flex justify-content-end gap-2">
@@ -113,24 +106,24 @@
                                 <thead class="table-success">
                                     <tr class="text-center">
                                         <th>ID</th>
-                                        <th>Ngày Tạo</th>
                                         <th>Hình Ảnh</th>
-                                        <th>Tên Sản Phẩm</th>
-                                        <th>Giá</th>
-                                        <th>Số Lượng</th>
-                                        <th>Danh Mục</th>
+                                        <th>Họ VVà Tên</th>
+                                        <th>Email</th>
+                                        <th>Trạng Thái</th>
                                         <th>Hành Động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="text-center align-middle">
                                         <td>1</td>
-                                        <td>13-02-2024</td>
-                                        <td><img src="/images/default.jpg" width="50" alt="Ảnh SP"></td>
-                                        <td>Sản phẩm A</td>
-                                        <td>500,000 VND</td>
-                                        <td>15</td>
-                                        <td>Điện tử</td>
+                                        <td><img src="/images/default.jpg" width="50" alt="Ảnh người dùng"></td>
+                                        <td>Nguyễn Văn A</td>
+                                        <td>nva@gmail.com</td>
+                                        <td class="text-center align-middle">
+                                            <a href="#">
+                                                Đã kích hoạt
+                                            </a>
+                                        </td>
                                         <td class="text-center align-middle">
                                             <a href="#" class="btn btn-warning btn-sm">
                                                 <i class="fa-regular fa-pen-to-square"></i>
@@ -155,7 +148,6 @@
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const links = document.querySelectorAll(".sidebar .nav-link");

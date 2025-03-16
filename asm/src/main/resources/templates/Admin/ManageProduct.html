@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head th:replace="~{/Layout/Head}">
+        <title>_____</title>
+    </head>
+    <head>
+        <link rel="stylesheet" th:href="@{/CSS/ManagePr.css}">
+    </head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <!-- <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-store"></i> Admin Panel
+            </div>
+            <div class="nav-title">Menu</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#edit"><i class="fas fa-edit"></i> Quản Lý Sản Phẩm</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#list"><i class="fas fa-list"></i> Danh Sách Sản Phẩm</a>
+                </li>
+            </ul>
+        </div> -->
+        <th:block th:replace="~{/Layout/Sidebar}"></th:block>
+    
+        <!-- Nội dung chính -->
+        <div class="content">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit" type="button" role="tab">Chỉnh sửa</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list" type="button" role="tab">Danh sách</button>
+                </li>
+            </ul>
+    
+            <!-- Tab nội dung -->
+            <div class="tab-content">
+                <!-- Tab Chỉnh Sửa -->
+                <div class="tab-pane fade show active" id="edit" role="tabpanel">
+                    <form action="#" method="post" enctype="multipart/form-data" class="row">
+                        <div class="col-12 col-md-4 mb-3">
+                            <div class="poster-container position-relative">
+                                <img id="posterImage" src="/images/default.jpg" class="poster d-none">
+                                <div class="overlay">
+                                    <span class="text-dark">THÊM ẢNH</span>
+                                </div>
+                                <input type="file" class="poster-input" name="imageFile" accept="image/*" onchange="loadImage(event)">
+                            </div>
+                        </div>
+                    
+                        <div class="col-12 col-md-8">
+                            <!-- Dòng 1: Tên sản phẩm và Giá -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">TÊN SẢN PHẨM</label>
+                                    <input type="text" class="form-control" name="name" value="">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">GIÁ</label>
+                                    <input type="number" class="form-control" name="price" value="">
+                                </div>
+                            </div>
+    
+                            <!-- Dòng 2: Số lượng và Ngày tạo -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">SỐ LƯỢNG</label>
+                                    <input type="number" class="form-control" name="available" value="">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">NGÀY TẠO</label>
+                                    <input type="date" class="form-control" name="createDate" value="">
+                                </div>
+                            </div>
+    
+                            <!-- Danh mục -->
+                            <div class="mb-3">
+                                <label class="form-label">DANH MỤC</label>
+                                <select class="form-control" name="category">
+                                    <option value="">Chọn danh mục</option>
+                                    <option value="1">Danh mục 1</option>
+                                    <option value="2">Danh mục 2</option>
+                                    <option value="3">Danh mục 3</option>
+                                </select>
+                            </div>
+                        </div>
+    
+                        <!-- Bình luận trải dài ngang -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">BÌNH LUẬN</label>
+                            <textarea class="form-control comment-textarea" name="comment" placeholder="Nhập bình luận về sản phẩm..."></textarea>
+                        </div>
+                    
+                        <!-- Nút hành động -->
+                        <div class="col-12 mt-3 d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-success">TẠO MỚI</button>
+                            <button type="submit" class="btn btn-primary">CẬP NHẬT</button>
+                            <a href="#" class="btn btn-danger">DELETE</a>
+                            <button type="reset" class="btn btn-secondary">RESET</button>
+                        </div>
+                    </form>
+                </div>
+    
+                <!-- Tab Danh Sách -->
+                <div class="tab-pane fade" id="list" role="tabpanel">
+                    <div class="container-fluid mt-3">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-success">
+                                    <tr class="text-center">
+                                        <th>ID</th>
+                                        <th>Ngày Tạo</th>
+                                        <th>Hình Ảnh</th>
+                                        <th>Tên Sản Phẩm</th>
+                                        <th>Giá</th>
+                                        <th>Số Lượng</th>
+                                        <th>Danh Mục</th>
+                                        <th>Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center align-middle">
+                                        <td>1</td>
+                                        <td>13-02-2024</td>
+                                        <td><img src="/images/default.jpg" width="50" alt="Ảnh SP"></td>
+                                        <td>Sản phẩm A</td>
+                                        <td>500,000 VND</td>
+                                        <td>15</td>
+                                        <td>Điện tử</td>
+                                        <td class="text-center align-middle">
+                                            <a href="#" class="btn btn-warning btn-sm">
+                                                <i class="fa-regular fa-pen-to-square"></i>
+                                                Chỉnh Sửa
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+    
+                        <!-- PHÂN TRANG (tạm thời bỏ logic động) -->
+                        <div class="d-flex justify-content-center mt-3">
+                            <a href="#" class="btn btn-sm btn-outline-primary mx-1">⏪ Đầu</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary mx-1">⬅️ Trước</a>
+                            <span class="btn btn-sm btn-light mx-1">Trang 1 / 5</span>
+                            <a href="#" class="btn btn-sm btn-outline-primary mx-1">➡️ Tiếp</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary mx-1">⏩ Cuối</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const links = document.querySelectorAll(".sidebar .nav-link");
+            const currentPage = localStorage.getItem("activePage");
+    
+            if (currentPage) {
+                links.forEach(link => {
+                    if (link.getAttribute("href") === currentPage) {
+                        link.classList.add("active");
+                    } else {
+                        link.classList.remove("active");
+                    }
+                });
+            }
+    
+            links.forEach(link => {
+                link.addEventListener("click", function () {
+                    localStorage.setItem("activePage", this.getAttribute("href"));
+                    links.forEach(l => l.classList.remove("active"));
+                    this.classList.add("active");
+                });
+            });
+        });
+    </script>
+    
+    <script>
+        function loadImage(event) {
+            const posterImage = document.getElementById('posterImage');
+            const overlay = posterImage.nextElementSibling;
+            posterImage.src = URL.createObjectURL(event.target.files[0]);
+            posterImage.classList.remove('d-none');
+            overlay.classList.add('d-none');
+        }
+    </script>
+</body>
+</html>

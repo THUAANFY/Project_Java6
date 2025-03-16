@@ -1,11 +1,4 @@
-body {
-    /* background: linear-gradient(135deg, #ffffff, #edf2f7); */
-    font-family: 'Poppins', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    transition: all 0.3s ease;
-    color: #2d3748;
-}
+
 .sidebar {
     width: 300px;
     height: 100vh;
@@ -180,14 +173,27 @@ body {
 .table-responsive {
     max-width: 100%;
     overflow-x: auto;
+    border-radius: 12px;
 }
 .table {
     background: #ffffff;
     color: #2d3748;
+    border-collapse: separate; /* Giữ viền không bị chồng lấn */
+    border-spacing: 0; /* Loại bỏ khoảng cách giữa các ô */
+    width: 100%;
+    margin-bottom: 0; /* Loại bỏ khoảng cách dưới mặc định */
 }
 .table thead {
     background: linear-gradient(90deg, #4fd1c5, #63b3ed);
     color: #ffffff;
+}
+.table thead th {
+    padding: 14px; /* Tăng padding cho thoáng */
+    border: none; /* Loại bỏ viền mặc định */
+    position: relative;
+    background: linear-gradient(135deg, #60a5fa, #93c5fd, #dbeafe); /* Gradient tone công nghệ sáng: xanh sáng đến rất sáng */
+    color: #1e3a8a;
+    transition: background 0.3s ease; /* Hiệu ứng chuyển màu mượt */
 }
 .table-hover tbody tr:hover {
     background: #e6fffb;

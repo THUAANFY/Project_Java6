@@ -12,4 +12,9 @@ public class HomeController {
         return "Home/index";
     }
     
+    @GetMapping("/changepassword")
+    public String changePassword(Model model) {
+        return "Home/changepass";
+    }
+    
 }

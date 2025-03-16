@@ -9,20 +9,6 @@
 <body>
     <div class="d-flex">
         <!-- Sidebar -->
-        <!-- <div class="sidebar">
-            <div class="logo">
-                <i class="fas fa-store"></i> Admin Panel
-            </div>
-            <div class="nav-title">Menu</div>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#edit"><i class="fas fa-edit"></i> Quản Lý Sản Phẩm</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#list"><i class="fas fa-list"></i> Danh Sách Sản Phẩm</a>
-                </li>
-            </ul>
-        </div> -->
         <th:block th:replace="~{/Layout/Sidebar}"></th:block>
     
         <!-- Nội dung chính -->
@@ -131,15 +117,6 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-    
-                        <!-- PHÂN TRANG (tạm thời bỏ logic động) -->
-                        <div class="d-flex justify-content-center mt-3">
-                            <a href="#" class="btn btn-sm btn-outline-primary mx-1">⏪ Đầu</a>
-                            <a href="#" class="btn btn-sm btn-outline-primary mx-1">⬅️ Trước</a>
-                            <span class="btn btn-sm btn-light mx-1">Trang 1 / 5</span>
-                            <a href="#" class="btn btn-sm btn-outline-primary mx-1">➡️ Tiếp</a>
-                            <a href="#" class="btn btn-sm btn-outline-primary mx-1">⏩ Cuối</a>
                         </div>
                     </div>
                 </div>

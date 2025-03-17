@@ -9,6 +9,7 @@ public class ManageUser {
 
     @GetMapping("/manageUser")
     public String manageUser(Model model){
+        model.addAttribute(null, model);
         return "Admin/ManageUser";
     }
 

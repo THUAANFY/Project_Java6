@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ThongtinuserController {
     @GetMapping("/profileuser")
     public String thongtinuser( Model model ) {
+        model.addAttribute("user", model);
         return "Home/thongtinuser";
     }
     

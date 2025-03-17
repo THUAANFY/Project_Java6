@@ -117,14 +117,23 @@
         <div class="sidebar">
             <h4 class="mt-5">DANH MỤC</h4>
             <hr>
-            <ul class="list-unstyled category-list">
+            <th:block th:each="item : ${categories}">
+                <ul class="list-unstyled category-list">
+                    <li>
+                        <a class="collapsed d-flex justify-content-between h5 text-decoration-none" th:href="@{'/products/category/' + ${item.id}}" th:text="${item.name}">
+                            <i class="pull-right fa fa-fw fa-chevron-circle-down mt-1"></i>
+                        </a>
+                    </li>
+                </ul>
+            </th:block>
+            <!-- <ul class="list-unstyled category-list">
                 <li>Danh mục 1</li>
                 <li>Danh mục 2</li>
                 <li>Danh mục 3</li>
                 <li>Danh mục 4</li>
                 <li>Danh mục 5</li>
                 <li>Danh mục 6</li>
-            </ul>
+            </ul> -->
         </div>
 
         <!-- Main Content -->

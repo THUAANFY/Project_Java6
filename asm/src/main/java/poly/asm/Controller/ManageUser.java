@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ManageUser {
 
-    @GetMapping("/manageUser")
+    @GetMapping("/manageuser")
     public String manageUser(Model model){
-        model.addAttribute(null, model);
         return "Admin/ManageUser";
     }
 

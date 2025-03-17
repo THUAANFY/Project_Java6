@@ -64,6 +64,8 @@
         display: none; /* Ẩn text trên mobile */
     }
 }
+
+
 .sidebar {
     width: 300px;
     height: 100vh;
@@ -148,7 +150,7 @@
   /* Media query cho màn hình nhỏ hơn md (768px) */
 @media (max-width: 767.98px) {
     .sidebar {
-        width: 60px; /* Thu gọn sidebar chỉ còn đủ chỗ cho icon */
+      width: 60px; /* Thu gọn sidebar chỉ còn đủ chỗ cho icon */
         padding: 10px;
     }
 
@@ -180,10 +182,115 @@
       margin-left: 60px; /* Điều chỉnh margin-left của nội dung chính */
     }
 }
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.form-container {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 120, 255, 0.1);
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
 }
+.form-container:hover {
+    transform: translateY(-3px); /* Nâng nhẹ khi hover */
+}
+.form-label {
+    font-weight: 600;
+    color: #1e3a8a;
+}
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #d1e0ff;
+    box-shadow: inset 0 2px 5px rgba(0, 120, 255, 0.05);
+    transition: all 0.3s ease;
+}
+.form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+/* Nút */
+.btn {
+    padding: 10px 45px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-success {
+    background: linear-gradient(90deg, #34d399, #10b981);
+    border: none;
+}
+.btn-success:hover {
+    transform: translateY(-3px); /* Nâng nhẹ khi hover */
+    box-shadow: 0 5px 15px rgba(52, 211, 153, 0.3);
+}
+.btn-primary {
+    background: linear-gradient(90deg, #60a5fa, #3b82f6);
+    border: none;
+}
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(96, 165, 250, 0.3);
+}
+.btn-danger {
+    background: linear-gradient(90deg, #f87171, #ef4444);
+    border: none;
+}
+.btn-danger:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(248, 113, 113, 0.3);
+}
+.btn-secondary {
+    background: linear-gradient(90deg, #9ca3af, #6b7280);
+    border: none;
+}
+.btn-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(156, 163, 175, 0.3);
+}
+
+/* Bảng */
+.table-wrapper {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 120, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+.table-wrapper:hover {
+    transform: translateY(-3px); /* Nâng nhẹ khi hover */
+}
+.table {
+    margin-bottom: 0;
+    width: 100%;
+    table-layout: fixed;
+}
+.table thead th {
+    background: linear-gradient(90deg, #60a5fa, #3b82f6);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 15px;
+    text-align: center;
+    border: none;
+}
+.table tbody tr {
+    transition: all 0.3s ease;
+}
+.table tbody tr:hover {
+    background: #eff6ff;
+    transform: translateY(-2px); /* Nâng nhẹ khi hover */
+    box-shadow: 0 5px 15px rgba(0, 120, 255, 0.1);
+}
+.table td {
+    vertical-align: middle;
+    text-align: center;
+    color: #1f2937;
+    font-weight: 500;
+    padding: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Nút nhỏ */
 .btn {
     padding: 10px 45px;
     border-radius: 8px;
@@ -237,137 +344,15 @@
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(160, 174, 192, 0.4);
 }
-.tab-content {
-    margin-top: 20px;
-}
-.nav-tabs .nav-link {
-    color: #4a5568;
-    border: none;
-    border-radius: 8px 8px 0 0;
-    transition: all 0.3s ease;
-    background: #edf2f7;
-}
-.nav-tabs .nav-link.active {
-    background: linear-gradient(90deg, #4fd1c5, #63b3ed);
-    color: #ffffff;
-    box-shadow: 0 -2px 10px rgba(79, 209, 197, 0.3);
-}
-.nav-tabs .nav-link:hover {
-    color: #2dd4bf;
-    background: #e6fffb;
-    transform: scale(1.05);
-}
-.table-responsive {
-    max-width: 100%;
-    overflow-x: auto;
-    border-radius: 12px;
-}
-.table {
-    background: #ffffff;
-    color: #2d3748;
-    border-collapse: separate; /* Giữ viền không bị chồng lấn */
-    border-spacing: 0; /* Loại bỏ khoảng cách giữa các ô */
-    width: 100%;
-    margin-bottom: 0; /* Loại bỏ khoảng cách dưới mặc định */
-}
-.table thead {
-    background: linear-gradient(90deg, #4fd1c5, #63b3ed);
-    color: #ffffff;
-}
-.table thead th {
-    padding: 14px; /* Tăng padding cho thoáng */
-    border: none; /* Loại bỏ viền mặc định */
-    position: relative;
-    background: #93c5fd; /* Gradient tone công nghệ sáng: xanh sáng đến rất sáng */
-    color: #1e3a8a;
-    transition: background 0.3s ease; /* Hiệu ứng chuyển màu mượt */
-}
-.table-hover tbody tr:hover {
-    background: #e6fffb;
-    transition: all 0.3s ease;
-}
-.poster-container {
-    background-color: #edf2f7;
-    border: 2px dashed #a0aec0;
-    overflow: hidden;
-    position: relative;
-    min-height: 312px;
-    width: 97%;
-    aspect-ratio: 1 / 1;
-    transition: all 0.3s ease;
-    border-radius: 10px;
-}
-.poster-container:hover {
-    box-shadow: 0 5px 15px rgba(79, 209, 197, 0.2);
-    transform: scale(1.02);
-}
-.overlay {
-    background-color: #e6fffb;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-.poster-container:hover .overlay {
-    opacity: 0.8;
-}
-.poster-input {
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.poster-input:hover {
-    opacity: 0.1;
-}
-.poster {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.3s ease;
-}
-.poster-container:hover .poster {
-    opacity: 0.9;
-}
-/* CSS cho textarea bình luận */
-.form-control.comment-textarea {
-    resize: vertical;
-    min-height: 100px;
-    height: 150px;
-    border: 2px solid #a0aec0;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    background: #ffffff;
-    color: #2d3748;
-    transition: all 0.3s ease;
-}
-.form-control.comment-textarea:focus {
-    border-color: #4fd1c5;
-    box-shadow: 0 0 10px rgba(79, 209, 197, 0.3);
-    transform: scale(1.01);
-}
-.form-control {
-    border-radius: 8px;
-    border: 2px solid #a0aec0;
-    background: #ffffff;
-    color: #2d3748;
-    transition: all 0.3s ease;
-}
-.form-control:focus {
-    border-color: #4fd1c5;
-    box-shadow: 0 0 10px rgba(79, 209, 197, 0.3);
-    transform: scale(1.01);
-}
-.form-label {
-    color: #4a5568;
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

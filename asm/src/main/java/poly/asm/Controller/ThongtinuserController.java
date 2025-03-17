@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class ThongtinuserController {
-    @GetMapping("/thongtinuser")
+    @GetMapping("/profileuser")
     public String thongtinuser( Model model ) {
-        model.addAttribute(null, model);
         return "Home/thongtinuser";
     }
     

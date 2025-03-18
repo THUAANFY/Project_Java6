@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <head th:replace="~{/Layout/Head}">
-        <title>_____</title>
+        <title>Register</title>
     </head>
-    <head>
-        <link rel="stylesheet" th:href="@{/CSS/Register.css}">
-    </head>
+    <link rel="stylesheet" th:href="@{/CSS/Register.css}">
 </head>
 <body>
     <div class="bg-light py-3 py-md-5">
@@ -21,41 +19,38 @@
                                 </div>
                             </div>
                         </div>
-                        <form action="#!">
+                        <form th:action="@{/register}" th:object="${user}" method="post">
+                            <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+                            <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
                             <div class="row gy-3 gy-md-4 overflow-hidden">
-                                <!-- Dòng 1: Username và Email -->
                                 <div class="col-12 col-md-6">
-                                    <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="username" id="username" placeholder="Your username" required>
+                                    <label for="id" class="form-label">Username <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" th:field="*{id}" id="id" placeholder="Your username" required>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com" required>
+                                    <input type="email" class="form-control" th:field="*{email}" id="email" placeholder="name@example.com" required>
                                 </div>
-                                <!-- Dòng 2: Fullname và Số điện thoại -->
                                 <div class="col-12 col-md-6">
                                     <label for="fullname" class="form-label">Full Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="fullname" id="fullname" placeholder="Your full name" required>
+                                    <input type="text" class="form-control" th:field="*{fullname}" id="fullname" placeholder="Your full name" required>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
-                                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="Your phone number" required>
+                                    <input type="tel" class="form-control" th:field="*{phone}" id="phone" placeholder="Your phone number" required>
                                 </div>
-                                <!-- Dòng 3: Mật khẩu và Xác nhận mật khẩu -->
                                 <div class="col-12 col-md-6">
                                     <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" name="password" id="password" placeholder="Your password" required>
+                                    <input type="password" class="form-control" th:field="*{password}" id="password" placeholder="Your password" required>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label for="confirm_password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Confirm your password" required>
                                 </div>
-                                <!-- Checkbox và Nút đăng ký -->
                                 <div class="col-12">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" name="terms" id="terms" required>
-                                        <label class="form-check-label text-secondary" for="terms"> I agree to the terms and conditions
-                                        </label>
+                                        <label class="form-check-label text-secondary" for="terms">I agree to the terms and conditions</label>
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -73,25 +68,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="row">
-                            <div class="col-12">
-                                <p class="mt-5 mb-4">Or sign up with</p>
-                                    <div class="d-flex gap-3 flex-column flex-md-row">
-                                        <a href="#!" class="btn bsb-btn-xl btn-outline-primary">
-                                            <i class="fa-brands fa-google"></i>
-                                            <span class="ms-2 fs-6">Google</span>
-                                        </a>
-                                        <a href="#!" class="btn bsb-btn-xl btn-outline-primary">
-                                            <i class="fa-brands fa-facebook"></i>
-                                            <span class="ms-2 fs-6">Facebook</span>
-                                        </a>
-                                        <a href="#!" class="btn bsb-btn-xl btn-outline-primary">
-                                            <i class="fa-brands fa-twitter"></i>
-                                            <span class="ms-2 fs-6">Twitter</span>
-                                        </a>
-                                    </div>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
             </div>

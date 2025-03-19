@@ -348,6 +348,9 @@
                 min-height: 250px;
             }
         }
+        .col-md-6{
+            width: 100%;
+        } 
     </style>
 </head>
 <body>
@@ -389,36 +392,19 @@
                         <div class="col-12 col-md-8">
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">HỌ TÊN</label>
+                                    <label class="form-label">User</label>
                                     <input type="text" class="form-control" name="fullName" value="">
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">EMAIL</label>
+                                <div class="col-md-6 ">
+                                    <label class="form-label">Full Name</label>
                                     <input type="email" class="form-control" name="email" value="">
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">SỐ ĐIỆN THOẠI</label>
+                                    <label class="form-label">Email</label>
                                     <input type="tel" class="form-control" name="phone" value="">
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">NGÀY SINH</label>
-                                    <input type="date" class="form-control" name="birthDate" value="">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">GIỚI TÍNH</label>
-                                <select class="form-control" name="gender">
-                                    <option value="">Chọn giới tính</option>
-                                    <option value="male">Nam</option>
-                                    <option value="female">Nữ</option>
-                                    <option value="other">Khác</option>
-                                </select>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">ĐỊA CHỈ</label>
-                                <textarea class="form-control comment-textarea" name="address" placeholder="Nhập địa chỉ của bạn..."></textarea>
                             </div>
                             <div class="col-12 mt-3 d-flex justify-content-end gap-2">
                                 <button type="submit" class="btn btn-primary">CẬP NHẬT</button>
@@ -437,12 +423,9 @@
                             </div>
                             <div class="col-md-8">
                                 <h4>Thông Tin Cá Nhân</h4>
-                                <div class="mb-2"><strong>Họ tên:</strong> <span id="displayFullName">Chưa cập nhật</span></div>
-                                <div class="mb-2"><strong>Email:</strong> <span id="displayEmail">Chưa cập nhật</span></div>
-                                <div class="mb-2"><strong>Số điện thoại:</strong> <span id="displayPhone">Chưa cập nhật</span></div>
-                                <div class="mb-2"><strong>Ngày sinh:</strong> <span id="displayBirthDate">Chưa cập nhật</span></div>
-                                <div class="mb-2"><strong>Giới tính:</strong> <span id="displayGender">Chưa cập nhật</span></div>
-                                <div class="mb-2"><strong>Địa chỉ:</strong> <span id="displayAddress">Chưa cập nhật</span></div>
+                                <div class="mb-2"><strong>User:</strong> <span id="displayFullName">Chưa cập nhật</span></div>
+                                <div class="mb-2"><strong>Full Name:</strong> <span id="displayEmail">Chưa cập nhật</span></div>
+                                <div class="mb-2"><strong>Email:</strong> <span id="displayPhone">Chưa cập nhật</span></div>
                             </div>
                         </div>
                     </div>

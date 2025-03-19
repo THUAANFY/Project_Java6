@@ -16,6 +16,5 @@ public class HomeController {
     @GetMapping("/changepassword")
     public String changePassword(Model model) {
         return "Home/changepass";
-    }
-    
+    } 
 }

@@ -11,7 +11,7 @@
     <div th:replace="~{/Layout/Navbar}"></div>
     
     <!-- START SLIDE -->
-    <div class="carousel-container mt-5 pt-4">
+    <div class="carousel-container mt-5 pt-4" >
         <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
                 <button type="button"  data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -40,6 +40,11 @@
         </div>
     </div>
     <!-- END SLIDE -->
+    <div th:if="${session.success}" class="alert alert-success" th:text="${session.success}"></div>
+    <!-- Xóa thông báo khỏi session sau khi hiển thị -->
+    <th:block th:if="${session.success}">
+        <th:block th:remove="tag" th:utext="${session.removeAttribute('success')}"></th:block>
+    </th:block>
 
     <h2 class="mt-4 ms-4 fw-semibold">TOP MÁY TÍNH</h2>
         <div class="container-fluid mt-3 p-5 pt-0" data-aos="fade-up" data-aos-duration="1000">

@@ -12,20 +12,20 @@
 
         <div class="content">
             <div class="form-container">
-                <form action="/admin/managecategory" th:object="${item}" method="post" class="row g-3">
+                <form action="/Admin/ManageCategory" th:object="${item}" method="post" class="row g-3">
                     <div class="col-12 col-md-6">
                         <label class="form-label">ID LOẠI SẢN PHẨM</label>
-                        <input class="form-control" placeholder="Nhập ID Loại Sản Phẩm" required>
+                        <input th:field="*{id}" class="form-control" placeholder="Nhập ID Loại Sản Phẩm" required>
                     </div>
                     <div class="col-12 col-md-6">
                         <label class="form-label">TÊN LOẠI SẢN PHẨM</label>
-                        <input class="form-control" placeholder="Nhập Tên Loại Sản Phẩm" required>
+                        <input th:field="*{name}" class="form-control" placeholder="Nhập Tên Loại Sản Phẩm" required>
                     </div>
                     <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                        <button type="submit" formaction="/ManageCategory/create" class="btn btn-success">TẠO MỚI</button>
-                        <button type="submit" formaction="/ManageCategory/update" class="btn btn-primary">CẬP NHẬT</button>
-                        <a href="" class="btn btn-danger">DELETE</a>
-                        <a href="/ManageCategory" class="btn btn-secondary">RESET</a>
+                        <button type="submit" formaction="/managecategory/create" class="btn btn-success">TẠO MỚI</button>
+                        <button type="submit" formaction="/managecategory/update" class="btn btn-primary">CẬP NHẬT</button>
+                        <a th:href="@{|/managecategory/delete/${item.id}|}" class="btn btn-danger">DELETE</a>
+                        <a href="/managecategory" class="btn btn-secondary">RESET</a>
                     </div>
                 </form>
             </div>
@@ -42,16 +42,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>2</td>
+                            <tr th:each="item : ${items}">
+                                <td th:text="${item.id}"></td>
+                                <td th:text="${item.name}"></td>
                                 <td>
-                                    <a href="" class="btn btn-warning btn-sm">
+                                    <a th:href="@{|/managecategory/edit/${item.id}|}" class="btn btn-warning btn-sm">
                                         <i class="fa-regular fa-pen-to-square me-1"></i> Chỉnh Sửa
                                     </a>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr th:if="${items.isEmpty()}">
                                 <td colspan="3" class="text-center text-muted py-4">Không có danh mục nào</td>
                             </tr>
                         </tbody>

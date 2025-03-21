@@ -1,5 +1,10 @@
 package poly.asm.Controller;
 
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,53 +12,25 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import poly.asm.Models.User;
+import poly.asm.Services.MailService;
 import poly.asm.DAO.UserDAO;
 import poly.asm.DTO.UserRegisterDTO;
 
 @Controller
 public class RegisterController {
-
-    // @Autowired
-    // private UserRepository userRepository;
-    // @GetMapping("/register")
-    // public String showRegisterForm(Model model) {
-    //     model.addAttribute("user", new User());
-    //     return "register/register";
-    // }
-    // @PostMapping("/register")
-    // public String register(@ModelAttribute("user") User user,
-    //                       @RequestParam("confirm_password") String confirmPassword,
-    //                       Model model) {
-
-    //     if (user.getId() == null || user.getId().trim().isEmpty() ||
-    //         user.getEmail() == null || user.getEmail().trim().isEmpty() ||
-    //         user.getFullname() == null || user.getFullname().trim().isEmpty() ||
-    //         user.getPhone() == null ||
-    //         user.getPassword() == null || user.getPassword().trim().isEmpty() ||
-    //         confirmPassword == null || confirmPassword.trim().isEmpty()) {
-    //         model.addAttribute("error", "All fields are required!");
-    //         return "register/register";
-    //     }
-    //     if (!user.getPassword().equals(confirmPassword)) {
-    //         model.addAttribute("error", "Passwords do not match!");
-    //         return "register/register";
-    //     }
-    //     if (userRepository.existsById(user.getId()) || userRepository.existsByEmail(user.getEmail())) {
-    //         model.addAttribute("error", "Username or email already exists!");
-    //         return "register/register";
-    //     }
-    //     user.setRole(false);
-    //     user.setActivated(true);
-    //     userRepository.save(user);
-    //     model.addAttribute("success", "Registration successful! Please log in.");
-    //     return "redirect:/login";
-    // }
+    @Autowired
+    private UserDAO userDAO;
 
     @Autowired
-    private UserDAO userDAO;  // Thay UserRepository thành UserDAO
+    private MailService mailService;
+
+    // Lưu trữ tạm mã kích hoạt (trong thực tế, nên dùng database)
+    private Map<String, String> activationStorage = new HashMap<>();
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
@@ -62,7 +39,7 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("userRegisterDTO") UserRegisterDTO userDTO,BindingResult bindingResult, Model model) {
+    public String register(@Valid @ModelAttribute("userRegisterDTO") UserRegisterDTO userDTO, BindingResult bindingResult, Model model) {
 
         // Kiểm tra validation từ DTO
         if (bindingResult.hasErrors()) {
@@ -94,10 +71,82 @@ public class RegisterController {
         user.setPhone(userDTO.getPhone());
         user.setPassword(userDTO.getPassword());  // Nên mã hóa password trong thực tế
         user.setRole(false);
-        user.setActivated(true);
+        user.setActivated(false);
 
         // Lưu user và chuyển hướng
         userDAO.save(user);
-        return "redirect:/login?success=Registration successful! Please log in.";
+
+        // Tạo mã kích hoạt
+        // String activationCode = UUID.randomUUID().toString();
+        String activationCode = Base64.getEncoder().encodeToString(user.getId().getBytes());
+        activationStorage.put(activationCode, user.getEmail());
+
+        // Tạo liên kết kích hoạt
+        String activationLink = "http://localhost:8080/activate?code=" + activationCode;
+
+        // Gửi email chứa liên kết kích hoạt
+        try {
+            mailService.send("philtpd10207@gmail.com", userDTO.getEmail(), "Xác nhận đăng ký", 
+                "Chúc mừng bạn đã đăng ký thành công! Vui lòng nhấn vào liên kết sau để kích hoạt tài khoản: " + activationLink);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Không thể gửi email kích hoạt. Vui lòng thử lại sau!");
+            return "register/register";
+        }
+        return "redirect:/register-success";
+    }
+
+    @GetMapping("/register-success")
+    public String showRegisterSuccess(Model model) {
+        model.addAttribute("message", "Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.");
+        model.addAttribute("messageType", "success");
+        return "register/register-success";
+    }
+
+    @GetMapping("/activate")
+    public String activateAccount(@RequestParam("code") String code, Model model) {
+        String email = activationStorage.get(code);
+
+        if (email != null) {
+            User user = userDAO.findByIdOrEmail(email);
+            if (user != null) {
+                if (!user.isActivated()) {
+                    user.setActivated(true);
+                    userDAO.save(user);
+                    activationStorage.remove(code); // Xóa mã kích hoạt sau khi dùng
+                    model.addAttribute("message", "Kích hoạt tài khoản thành công! Vui lòng đăng nhập.");
+                    model.addAttribute("messageType", "success");
+                } else {
+                    model.addAttribute("message", "Tài khoản đã được kích hoạt trước đó!");
+                    model.addAttribute("messageType", "warning");
+                }
+            } else {
+                model.addAttribute("message", "Tài khoản không tồn tại!");
+                model.addAttribute("messageType", "error");
+            }
+        } else {
+            // Thử giải mã code để kiểm tra
+            try {
+                String decodedUsername = new String(Base64.getDecoder().decode(code));
+                User user = userDAO.findByIdOrEmail(decodedUsername);
+                if (user != null && !user.isActivated()) {
+                    user.setActivated(true);
+                    userDAO.save(user);
+                    activationStorage.remove(code);
+                    model.addAttribute("message", "Kích hoạt tài khoản thành công! Vui lòng đăng nhập.");
+                    model.addAttribute("messageType", "success");
+                } else if (user != null) {
+                    model.addAttribute("message", "Tài khoản đã được kích hoạt trước đó!");
+                    model.addAttribute("messageType", "warning");
+                } else {
+                    model.addAttribute("message", "Tài khoản không tồn tại!");
+                    model.addAttribute("messageType", "error");
+                }
+            } catch (IllegalArgumentException e) {
+                model.addAttribute("message", "Liên kết kích hoạt không hợp lệ!");
+                model.addAttribute("messageType", "error");
+            }
+        }
+        return "register/activation-success";
     }
 }

@@ -67,32 +67,35 @@
                             <div class="row gy-3 gy-md-4 overflow-hidden">
                                 <div class="col-12 col-md-6">
                                     <label for="username" class="form-label">Tên tài khoản <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" th:field="*{username}" id="username" placeholder="Nhập tên tài khoản">
+                                    <input type="text" class="form-control" th:field="*{username}" th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"id="username" placeholder="Nhập tên tài khoản">
                                     <div class="text-danger" th:errors="*{username}"></div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" th:field="*{email}" id="email" placeholder="name@example.com">
+                                    <input type="email" class="form-control" th:field="*{email}" 
+                                    th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"id="email" placeholder="name@example.com">
                                     <div class="text-danger" th:errors="*{email}"></div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label for="fullname" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" th:field="*{fullname}" id="fullname" placeholder="Nhập họ và tên">
+                                    <input type="text" class="form-control" th:field="*{fullname}" 
+                                    th:classappend="${#fields.hasErrors('fullname')} ? 'is-invalid'"id="fullname" placeholder="Nhập họ và tên">
                                     <div class="text-danger" th:errors="*{fullname}"></div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                                    <input type="tel" class="form-control" th:field="*{phone}" id="phone" placeholder="Nhập số điện thoại">
+                                    <input type="tel" class="form-control" th:field="*{phone}" 
+                                    th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'"id="phone" placeholder="Nhập số điện thoại">
                                     <div class="text-danger" th:errors="*{phone}"></div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label for="password" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" th:field="*{password}" id="password" placeholder="Nhập mật khẩu">
+                                    <input type="password" class="form-control" th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'" id="password" placeholder="Nhập mật khẩu">
                                     <div class="text-danger" th:errors="*{password}"></div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label for="confirmPassword" class="form-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" th:field="*{confirmPassword}" id="confirmPassword" placeholder="Xác nhận mật khẩu">
+                                    <input type="password" class="form-control" th:field="*{confirmPassword}" th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'" id="confirmPassword" placeholder="Xác nhận mật khẩu">
                                     <div class="text-danger" th:errors="*{confirmPassword}"></div>
                                 </div>
                                 <div class="col-12">

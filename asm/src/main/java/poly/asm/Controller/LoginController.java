@@ -78,7 +78,7 @@ public class LoginController {
     public String logout(HttpSession session, Model model) {
         session.invalidate();
         model.addAttribute("success", "Bạn đã đăng xuất thành công!");
-        return "redirect:/login";
+        return "redirect:/index";
     }
     
 }

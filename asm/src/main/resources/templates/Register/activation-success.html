@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{/Layout/Head}">
+        <title>Register</title>
+    </head>
+    <head>
+        <style>
+            /* Container chính */
+            .container {
+                max-width: 650px;
+                width: 100%;
+                padding: 25px;
+                background: linear-gradient(135deg, #d6eaff 0%, #f0f7ff 100%); /* Tông xanh nhạt sáng */
+                border-radius: 20px;
+                box-shadow: 0 10px 40px rgba(0, 123, 255, 0.2);
+                position: relative;
+                overflow: hidden;
+                transition: all 0.4s ease;
+            }
+
+            /* Hiệu ứng hover cho container */
+            .container:hover {
+                transform: translateY(-8px) scale(1.01);
+                box-shadow: 0 15px 50px rgba(0, 123, 255, 0.3);
+            }
+
+            /* Hiệu ứng ánh sáng phía sau */
+            .container::before {
+                content: '';
+                position: absolute;
+                top: -30%;
+                left: -30%;
+                width: 160%;
+                height: 160%;
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+                animation: pulse 6s infinite ease-in-out;
+                z-index: 0;
+            }
+
+            /* Card bên trong */
+            .bg-white {
+                background: rgba(255, 255, 255, 0.98);
+                border-radius: 15px;
+                padding: 40px;
+                position: relative;
+                z-index: 1;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            /* Hiệu ứng hover cho card */
+            .bg-white:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 123, 255, 0.25);
+            }
+
+            /* Tiêu đề */
+            h3 {
+                color: #007bff; /* Xanh dương sáng */
+                font-size: 2.2rem;
+                font-weight: 700;
+                text-align: center;
+                margin-bottom: 25px;
+                letter-spacing: 1.5px;
+                animation: fadeInDown 0.5s ease-out;
+            }
+
+            /* Thông báo */
+            .text-success {
+                color: #00cc99; /* Xanh lục sáng */
+                font-size: 1.3rem;
+                text-align: center;
+                margin-bottom: 30px;
+                font-weight: 500;
+                animation: fadeInUp 0.6s ease-in;
+            }
+
+            .text-danger {
+                color: #ff4d88; /* Hồng sáng */
+                font-size: 1.3rem;
+                text-align: center;
+                margin-bottom: 30px;
+                font-weight: 500;
+                animation: fadeInUp 0.6s ease-in;
+            }
+
+            /* Nút */
+            .btn-primary {
+                background: linear-gradient(90deg, #007bff, #00ccff); /* Gradient xanh sáng */
+                border: none;
+                border-radius: 30px;
+                padding: 14px 25px;
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #fff;
+                text-transform: uppercase;
+                position: relative;
+                overflow: hidden;
+                transition: all 0.4s ease;
+            }
+
+            .btn-primary:hover {
+                background: linear-gradient(90deg, #0056b3, #00b7eb);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
+            }
+
+            /* Hiệu ứng ánh sáng khi hover nút */
+            .btn-primary::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                transition: all 0.6s ease;
+            }
+
+            .btn-primary:hover::before {
+                left: 100%;
+            }
+
+            /* Hiệu ứng */
+            @keyframes pulse {
+                0% { transform: scale(1); opacity: 0.5; }
+                50% { transform: scale(1.05); opacity: 0.7; }
+                100% { transform: scale(1); opacity: 0.5; }
+            }
+
+            @keyframes fadeInDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .container {
+                    padding: 15px;
+                }
+
+                .bg-white {
+                    padding: 25px;
+                }
+
+                h3 {
+                    font-size: 1.8rem;
+                }
+
+                .text-success, .text-danger {
+                    font-size: 1.1rem;
+                }
+
+                .btn-primary {
+                    padding: 12px 20px;
+                    font-size: 1rem;
+                }
+            }
+        </style>
+    </head>
+<body>
+    <div th:replace="~{/Layout/Navbar}"></div>
+
+    <div class="bg-light py-3 py-md-5 all">
+        <div class="container mt-5 pt-5">
+            <div class="row justify-content-md-center">
+                <div class="col-12">
+                    <div class="bg-white p-4 p-md-5 rounded shadow-sm">
+                        <div class="mb-5">
+                            <h3>KÍCH HOẠT TÀI KHOẢN</h3>
+                            <p th:if="${message}" th:text="${message}" class="text-success"></p>
+                            <p th:if="${error}" th:text="${error}" class="text-danger"></p>
+                        </div>
+                        <div class="d-grid">
+                            <a href="/login" class="btn btn-lg btn-primary">Đi đến trang đăng nhập</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{/Layout/Footer}"></div>
+</body>
+</html>

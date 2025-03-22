@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head th:replace="~{/Layout/Head}">
-        <title>Quản lý sản phẩm</title>
-    </head>
-    <head>
-        <link rel="stylesheet" th:href="@{/CSS/ManagePr.css}">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    </head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/Layout/Head}">
+    <title>Quản lý sản phẩm</title>
+</head>
+<head>
+    <link rel="stylesheet" th:href="@{/CSS/ManagePr.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
 <body>
     <div class="d-flex">
-        <th:block th:replace="~{/Layout/Sidebar}"></th:block>
+        <!-- Nhúng Sidebar -->
+        <th:block th:replace="~{/Layout/Sidebar :: sidebar}"></th:block>
     
         <!-- Nội dung chính -->
         <div class="content">
@@ -33,91 +34,63 @@
             <div class="tab-content">
                 <!-- Tab Chỉnh Sửa -->
                 <div class="tab-pane fade show active" id="edit" role="tabpanel">
-                    <form action="#" method="post" enctype="multipart/form-data" class="row g-4">
+                    <form action="/Admin/ManageProduct" method="post" enctype="multipart/form-data" class="row g-4" th:object="${product}">
                         <div class="col-12 col-md-4">
                             <div class="poster-container">
-                                <img id="posterImage" src="/images/default.jpg" class="poster d-none">
-                                <div class="overlay">
+                                <img id="posterImage" th:src="@{${product.image != null ? product.image : '/images/default.jpg'}}" class="poster" th:classappend="${product.image != null ? '' : 'd-none'}">
+                                <div class="overlay" th:classappend="${product.image != null ? 'd-none' : ''}">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <span>THÊM ẢNH SẢN PHẨM</span>
                                 </div>
                                 <input type="file" class="poster-input" name="imageFile" accept="image/*" onchange="loadImage(event)">
                             </div>
                         </div>
-                    
+                        
                         <div class="col-12 col-md-8">
-                            <!-- Dòng 1: Tên sản phẩm và Giá -->
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">
-                                        <i class="fas fa-tag me-2"></i>TÊN SẢN PHẨM
-                                    </label>
-                                    <input type="text" class="form-control" name="name" placeholder="Nhập tên sản phẩm">
+                                    <label class="form-label"><i class="fas fa-tag me-2"></i>TÊN SẢN PHẨM</label>
+                                    <input type="text" class="form-control" name="name" th:field="*{name}" placeholder="Nhập tên sản phẩm">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">
-                                        <i class="fas fa-dollar-sign me-2"></i>GIÁ
-                                    </label>
+                                    <label class="form-label"><i class="fas fa-dollar-sign me-2"></i>GIÁ</label>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" name="price" placeholder="Nhập giá sản phẩm">
+                                        <input type="number" class="form-control" name="price" th:field="*{price}" placeholder="Nhập giá sản phẩm">
                                         <span class="input-group-text">VND</span>
                                     </div>
                                 </div>
                             </div>
-    
-                            <!-- Dòng 2: Số lượng và Ngày tạo -->
+                
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">
-                                        <i class="fas fa-cubes me-2"></i>SỐ LƯỢNG
-                                    </label>
-                                    <input type="number" class="form-control" name="available" placeholder="Nhập số lượng">
+                                    <label class="form-label"><i class="fas fa-cubes me-2"></i>SỐ LƯỢNG</label>
+                                    <input type="number" class="form-control" name="available" th:field="*{available}" placeholder="Nhập số lượng">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">
-                                        <i class="fas fa-calendar-alt me-2"></i>NGÀY TẠO
-                                    </label>
-                                    <input type="date" class="form-control" name="createDate">
+                                    <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>NGÀY TẠO</label>
+                                    <input type="date" class="form-control" name="createDate" th:field="*{createDate}">
                                 </div>
                             </div>
-    
-                            <!-- Danh mục -->
+                
                             <div class="mb-3">
-                                <label class="form-label">
-                                    <i class="fas fa-folder me-2"></i>DANH MỤC
-                                </label>
-                                <select class="form-select" name="category">
+                                <label class="form-label"><i class="fas fa-folder me-2"></i>DANH MỤC</label>
+                                <select class="form-select" name="category.id" th:field="*{category.id}">
                                     <option value="" selected disabled>Chọn danh mục</option>
-                                    <option value="1">Điện tử</option>
-                                    <option value="2">Thời trang</option>
-                                    <option value="3">Đồ gia dụng</option>
-                                    <option value="4">Sách & Văn phòng phẩm</option>
+                                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
                                 </select>
                             </div>
                         </div>
-    
-                        <!-- Mô tả sản phẩm -->
+                
                         <div class="col-12">
-                            <label class="form-label">
-                                <i class="fas fa-align-left me-2"></i>MÔ TẢ SẢN PHẨM
-                            </label>
-                            <textarea class="form-control comment-textarea" name="comment" placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
+                            <label class="form-label"><i class="fas fa-align-left me-2"></i>MÔ TẢ SẢN PHẨM</label>
+                            <textarea class="form-control comment-textarea" name="description" th:field="*{description}" placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
                         </div>
-                    
-                        <!-- Nút hành động -->
+                
                         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-plus-circle me-2"></i>TẠO MỚI
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-sync-alt me-2"></i>CẬP NHẬT
-                            </button>
-                            <a href="#" class="btn btn-danger">
-                                <i class="fas fa-trash-alt me-2"></i>XÓA
-                            </a>
-                            <button type="reset" class="btn btn-secondary">
-                                <i class="fas fa-undo me-2"></i>RESET
-                            </button>
+                            <button type="submit" formaction="/manageproduct/create" class="btn btn-success"><i class="fas fa-plus-circle me-2"></i>TẠO MỚI</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-sync-alt me-2"></i>CẬP NHẬT</button>
+                            <a th:href="@{|/manageproduct/delete/${product.id}|}" class="btn btn-danger"><i class="fas fa-trash-alt me-2"></i>XÓA</a>
+                            <a href="/manageproduct" class="btn btn-secondary"><i class="fas fa-undo me-2"></i>RESET</a>
                         </div>
                     </form>
                 </div>
@@ -128,15 +101,11 @@
                         <div class="d-flex align-items-center">
                             <div class="input-group">
                                 <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm...">
-                                <button class="btn btn-primary">
-                                    <i class="fas fa-search"></i>
-                                </button>
+                                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
                             </div>
                         </div>
                         <div>
-                            <button class="btn btn-success">
-                                <i class="fas fa-plus-circle me-2"></i>Thêm mới
-                            </button>
+                            <button class="btn btn-success"><i class="fas fa-plus-circle me-2"></i>Thêm mới</button>
                         </div>
                     </div>
                     
@@ -155,81 +124,23 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="text-center align-middle">
-                                    <td>1</td>
-                                    <td>13-02-2024</td>
+                                <tr th:each="item : ${page.content}" class="text-center align-middle">
+                                    <td th:text="${item.id}"></td>
+                                    <td th:text="${#dates.format(item.createDate, 'dd-MM-yyyy')}"></td>
                                     <td>
-                                        <img src="/images/default.jpg" width="60" height="60" alt="Ảnh SP" class="product-image">
+                                        <img th:src="@{${item.image}}" width="60" height="60" alt="Ảnh SP" class="product-image">
                                     </td>
-                                    <td class="product-name" title="Laptop Gaming XYZ">Laptop Gaming XYZ</td>
-                                    <td>25,500,000 VND</td>
-                                    <td>
-                                        <span class="badge bg-success">15</span>
-                                    </td>
-                                    <td>
-                                        <span class="category-badge">Điện tử</span>
-                                    </td>
+                                    <td th:text="${item.name}" class="product-name" th:title="${item.name}"></td>
+                                    <td class="fw-bold text-danger" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+                                    <td><span th:text="${item.available}" class="badge bg-success"></span></td>
+                                    <td><span th:text="${item.category != null ? item.category.name : 'Không có danh mục'}" class="category-badge"></span></td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            
-                                            <a href="#" class="btn btn-warning btn-sm">
+                                            <!-- <a href="#" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a> -->
+                                            <a th:href="@{/manageproduct/edit/{id}(id=${item.id}, p=${page.number})}" class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="#" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="text-center align-middle">
-                                    <td>2</td>
-                                    <td>15-02-2024</td>
-                                    <td>
-                                        <img src="/images/default.jpg" width="60" height="60" alt="Ảnh SP" class="product-image">
-                                    </td>
-                                    <td class="product-name" title="Áo thun thời trang ABC">Áo thun thời trang ABC</td>
-                                    <td>350,000 VND</td>
-                                    <td>
-                                        <span class="badge bg-warning">5</span>
-                                    </td>
-                                    <td>
-                                        <span class="category-badge">Thời trang</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex justify-content-center gap-2">
-                                            
-                                            <a href="#" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="#" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="text-center align-middle">
-                                    <td>3</td>
-                                    <td>18-02-2024</td>
-                                    <td>
-                                        <img src="/images/default.jpg" width="60" height="60" alt="Ảnh SP" class="product-image">
-                                    </td>
-                                    <td class="product-name" title="Điện thoại Samsung Galaxy S21 Ultra 5G 256GB Chính Hãng - Bảo hành 24 tháng">Điện thoại Samsung Galaxy S21 Ultra 5G 256GB Chính Hãng - Bảo hành 24 tháng</td>
-                                    <td>28,990,000 VND</td>
-                                    <td>
-                                        <span class="badge bg-danger">2</span>
-                                    </td>
-                                    <td>
-                                        <span class="category-badge">Điện tử</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex justify-content-center gap-2">
-                                            
-                                            <a href="#" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="#" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
+                                            <a th:href="@{/manageproduct/delete/{id}(id=${item.id})}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -241,16 +152,16 @@
                     <div class="d-flex justify-content-center mt-4">
                         <nav aria-label="Page navigation">
                             <ul class="pagination">
-                                <li class="page-item">
-                                    <a class="page-link" href="#" aria-label="Previous">
+                                <li class="page-item" th:classappend="${page.number == 0} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/manageproduct(p=${page.number - 1})}" aria-label="Previous">
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#" aria-label="Next">
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? 'active'">
+                                    <a class="page-link" th:href="@{/manageproduct(p=${i})}" th:text="${i + 1}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${page.number == page.totalPages - 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/manageproduct(p=${page.number + 1})}" aria-label="Next">
                                         <span aria-hidden="true">&raquo;</span>
                                     </a>
                                 </li>
@@ -262,7 +173,7 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast Notification và Script giữ nguyên -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
         <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header bg-success text-white">
@@ -276,7 +187,8 @@
         </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
+        /* Script giữ nguyên từ tài liệu gốc */
         document.addEventListener("DOMContentLoaded", function () {
             const links = document.querySelectorAll(".sidebar .nav-link");
             const currentPage = localStorage.getItem("activePage") || window.location.pathname;
@@ -293,7 +205,6 @@
                 });
             });
             
-            // Thêm hiệu ứng cho các hàng trong bảng
             const tableRows = document.querySelectorAll("tbody tr");
             tableRows.forEach((row, index) => {
                 row.style.animation = `fadeIn 0.3s ease-out forwards`;
@@ -310,21 +221,17 @@
             overlay.classList.add('d-none');
         }
         
-        // Hiển thị toast
         function showToast(message) {
             const toastBody = document.querySelector('.toast-body');
             toastBody.textContent = message;
-            
             const toast = new bootstrap.Toast(document.getElementById('liveToast'));
             toast.show();
         }
         
-        // Thêm style cho category badge
         document.addEventListener("DOMContentLoaded", function() {
             const categoryBadges = document.querySelectorAll('.category-badge');
             categoryBadges.forEach(badge => {
                 badge.classList.add('badge', 'rounded-pill');
-                
                 const category = badge.textContent.trim();
                 if (category === 'Điện tử') {
                     badge.classList.add('bg-info');
@@ -340,4 +247,3 @@
     </script>
 </body>
 </html>
-

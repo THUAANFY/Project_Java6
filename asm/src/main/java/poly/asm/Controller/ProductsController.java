@@ -14,6 +14,7 @@ import poly.asm.Models.Category;
 
 @Controller
 public class ProductsController {
+
     @Autowired
     CategoryDAO categoryDAO;
 
@@ -23,11 +24,11 @@ public class ProductsController {
         return categoryDAO.findAll();
     }
 
-
     @GetMapping("/products")
     public String products(Model model) {
         List<Category> categories =  categoryDAO.findAll();
         model.addAttribute("categories", categories); 
         return "Home/products";
     }
+
 }

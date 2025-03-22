@@ -7,16 +7,82 @@
     <link rel="stylesheet" th:href="@{/CSS/Index.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
     <style>
-        /* Tùy chỉnh kích thước ảnh sản phẩm */
+        /* Tùy chỉnh kích thước ảnh sản phẩm chính */
         .product-image-container {
             width: 100%;
-            max-width: 500px; /* Tăng kích thước tối đa của ảnh */
+            max-width: 500px;
             margin: 0 auto;
         }
         .product-image-container img {
             width: 100%;
             height: auto;
-            object-fit: contain; /* Đảm bảo ảnh không bị méo */
+            object-fit: contain;
+        }
+        /* Tùy chỉnh danh sách sản phẩm liên quan */
+        .related-products #carousel-related-product {
+            display: flex;
+            flex-direction: row; /* Sắp xếp theo hàng ngang */
+            overflow-x: auto; /* Cho phép cuộn ngang */
+            overflow-y: hidden; /* Ẩn thanh cuộn dọc */
+            white-space: nowrap; /* Ngăn xuống dòng */
+            scroll-behavior: smooth; /* Cuộn mượt mà */
+        }
+        .related-products .p-2 {
+            flex: 0 0 250px; /* Chiều rộng cố định cho mỗi card */
+            margin-right: 15px; /* Khoảng cách giữa các card */
+        }
+        /* Tùy chỉnh giao diện sản phẩm liên quan */
+        .related-products .card {
+            width: 250px; /* Chiều rộng cố định */
+            height: 350px; /* Chiều cao cố định */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Căn chỉnh nội dung */
+            transition: transform 0.3s;
+        }
+        .related-products .card:hover {
+            transform: translateY(-10px);
+        }
+        .related-products .card-img {
+            width: 100%;
+            height: 150px; /* Chiều cao cố định cho ảnh */
+            object-fit: cover; /* Đảm bảo ảnh không bị méo */
+        }
+        .related-products .card-body {
+            flex: 1; /* Chiếm không gian còn lại */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+        }
+        .related-products .card-body .h3 {
+            font-size: 1.1rem; /* Giảm kích thước tiêu đề nếu cần */
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Cắt bớt nếu tên quá dài */
+            white-space: nowrap; /* Ngăn xuống dòng */
+        }
+        .related-products .card-body ul {
+            margin-bottom: 5px;
+        }
+        .related-products .card-body p {
+            margin-bottom: 5px;
+            font-size: 0.9rem; /* Giảm kích thước giá nếu cần */
+        }
+        .related-products .card-body .btn {
+            width: 100%; /* Nút "Xem chi tiết" chiếm toàn bộ chiều rộng */
+            font-size: 0.9rem;
+        }
+        /* Tùy chỉnh thanh cuộn ngang */
+        .related-products #carousel-related-product::-webkit-scrollbar {
+            height: 8px; /* Chiều cao của thanh cuộn ngang */
+        }
+        .related-products #carousel-related-product::-webkit-scrollbar-thumb {
+            background: #888; /* Màu của thanh cuộn */
+            border-radius: 4px;
+        }
+        .related-products #carousel-related-product::-webkit-scrollbar-thumb:hover {
+            background: #555; /* Màu khi hover */
         }
     </style>
 </head>
@@ -51,14 +117,6 @@
 
                 <!-- Quantity and Add to Cart -->
                 <div class="mt-4">
-                    <!-- <label for="quantity" class="form-label">Số lượng:</label>
-                    <div class="input-group w-25 mb-3">
-                        <button class="btn btn-outline-primary" type="button" id="decrease">-</button>
-                        <input type="number" class="form-control text-center" id="quantity" value="1" min="1" 
-                               th:max="${product.available}">
-                        <button class="btn btn-outline-primary" type="button" id="increase">+</button>
-                    </div> -->
-                    
                     <button class="btn btn-success btn-lg" th:disabled="${product.available <= 0}">
                         <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
                     </button>
@@ -77,13 +135,45 @@
             </div>
         </div>
 
-        <!-- Detailed Description -->
-        <div class="mt-5">
-            <h4>Mô tả chi tiết</h4>
-            <div th:utext="${product.description}">
-                <p>Thông tin chi tiết về sản phẩm sẽ được hiển thị ở đây.</p>
+        <!-- Related Products Section -->
+        <section class="py-5 related-products">
+            <div class="container">
+                <div class="row text-left p-2 pb-3">
+                    <h4>Sản phẩm liên quan</h4>
+                </div>
+
+                <!-- Start Carousel Wrapper -->
+                <div id="carousel-related-product" th:if="${not #lists.isEmpty(relatedProducts)}">
+                    <div class="p-2 pb-3" th:each="related : ${relatedProducts}">
+                        <div class="product-wap card rounded-0">
+                            <div class="card rounded-0">
+                                <img class="card-img rounded-0 img-fluid" th:src="@{${related.image}}">
+                            </div>
+                            <div class="card-body">
+                                <a th:href="@{/product/{id}(id=${related.id})}" class="h3 text-decoration-none" th:text="${related.name}">Tên sản phẩm</a>
+                                <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
+                                    <li class="pt-2">
+                                        <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
+                                        <span class="product-color-dot color-dot-blue float-left rounded-circle ml-1"></span>
+                                        <span class="product-color-dot color-dot-black float-left rounded-circle ml-1"></span>
+                                        <span class="product-color-dot color-dot-light float-left rounded-circle ml-1"></span>
+                                        <span class="product-color-dot color-dot-green float-left rounded-circle ml-1"></span>
+                                    </li>
+                                </ul>
+                                <p class="text-center mb-0" th:text="${#numbers.formatDecimal(related.price, 0, 'COMMA', 2, 'POINT')} + ' VND'">Giá sản phẩm</p>
+                                <!-- Nút Xem chi tiết -->
+                                <div class="text-center mt-2">
+                                    <a th:href="@{'/product/' + ${related.id}}" class="btn btn-outline-primary">Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(relatedProducts)}" class="text-muted">
+                    <p>Không có sản phẩm liên quan nào.</p>
+                </div>
             </div>
-        </div>
+        </section>
     </div>
 
     <div th:replace="~{/Layout/Footer}"></div>
@@ -93,21 +183,17 @@
     <script>
         AOS.init();
 
-        document.getElementById('increase').onclick = function() {
-            let qty = document.getElementById('quantity');
-            let max = parseInt(qty.max);
-            if (parseInt(qty.value) < max) {
-                qty.value = parseInt(qty.value) + 1;
-            }
-        }
-        
-        document.getElementById('decrease').onclick = function() {
-            let qty = document.getElementById('quantity');
-            if (parseInt(qty.value) > 1) {
-                qty.value = parseInt(qty.value) - 1;
-            }
-        }
+        // JavaScript để xử lý lăn chuột
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.getElementById('carousel-related-product');
 
+            // Xử lý sự kiện lăn chuột
+            carousel.addEventListener('wheel', (e) => {
+                e.preventDefault(); // Ngăn cuộn dọc mặc định của trang
+                const scrollAmount = e.deltaY * 4; // Tốc độ cuộn
+                carousel.scrollLeft += scrollAmount; // Cuộn ngang dựa trên lăn chuột
+            });
+        });
     </script>
 </body>
 </html>

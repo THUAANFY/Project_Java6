@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <link rel="stylesheet" th:href="@{/CSS/Navbar.css}">
@@ -47,49 +47,72 @@
 
                 <!-- Right links -->
                 <ul class="navbar-nav mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" th:text="${session.loggedInUser != null ? session.loggedInUser.fullname : 'Guest'}">FULL NAME</a>
-                    </li>                    
+                    <!-- Hiển thị tên người dùng nếu đã đăng nhập -->
+                    <li class="nav-item" th:if="${session.loggedInUser != null}">
+                        <a class="nav-link" th:text="${session.loggedInUser.fullname}">FULL NAME</a>
+                    </li>
+                    <!-- Hiển thị "Khách" nếu chưa đăng nhập -->
+                    <li class="nav-item" th:unless="${session.loggedInUser != null}">
+                        <a class="nav-link">Khách</a>
+                    </li>
+                    
                     <!-- Cart dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link" href="#">
                             <i class="fa-solid fa-cart-shopping"></i>
                         </a>
                     </li>
+                    
                     <!-- User profile dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://mdbootstrap.com/img/Photos/Avatars/img%20(2).jpg"
-                                class="rounded-circle img-fluid" height="25" width="25" alt="User avatar">
+                            <!-- Hiển thị avatar người dùng nếu đã đăng nhập, hoặc avatar mặc định nếu chưa đăng nhập -->
+                            <img th:src="${session.loggedInUser != null ? '/images/avatars/' + session.loggedInUser.id + '.jpg' : 'https://mdbootstrap.com/img/Photos/Avatars/img%20(2).jpg'}"
+                                class="rounded-circle img-fluid" height="25" width="25" alt="User avatar"
+                                onerror="this.src='https://mdbootstrap.com/img/Photos/Avatars/img%20(2).jpg'">
                         </a>
+                        
                         <!-- Dropdown menu -->
                         <ul class="dropdown-menu dropdown-menu-end p-1" aria-labelledby="navbarDropdownProfile">
-                            <li><a class="dropdown-item" href="/register">
-                                    <i class="fa-solid fa-user-plus me-2"></i>
-                                    Đăng Ký</a></li>
-                            <li><a class="dropdown-item" href="/login">
-                                    <i class="fa-solid fa-right-to-bracket me-2"></i>
-                                    Đăng Nhập
-                                </a></li>
-                            <li><a class="dropdown-item" href="/forgot-password">
-                                    <i class="fas fa-key me-2"></i>
-                                    Quên Mật Khẩu</a></li>
-                            <li><a class="dropdown-item" href="/changepassword">
-                                    <i class="fa-solid fa-lock me-2"></i>
-                                    Đổi Mật Khẩu</a></li>
-                            <li><a class="dropdown-item" href="/profileuser">
-                                    <i class="fa-solid fa-address-card me-2"></i>
-                                    Thông Tin Cá Nhân</a></li>
-                            <li><a class="dropdown-item" href="/logout">
-                                    <i class="fa-solid fa-right-from-bracket me-2"></i>
-                                    Đăng Xuất</a></li>
-                            <li><a class="dropdown-item" href="/manageproduct">
-                                    <i class="fa-solid fa-gear me-2"></i>
-                                    Quản Trị</a></li>
-                            <li><a class="dropdown-item" href="#">
-                                    <i class="fa-solid fa-box me-2"></i>
-                                    Đơn Hàng</a></li>
+                            <!-- Menu cho người dùng chưa đăng nhập -->
+                            <th:block th:if="${session.loggedInUser == null}">
+                                <li><a class="dropdown-item" href="/register">
+                                        <i class="fa-solid fa-user-plus me-2"></i>
+                                        Đăng Ký</a></li>
+                                <li><a class="dropdown-item" href="/login">
+                                        <i class="fa-solid fa-right-to-bracket me-2"></i>
+                                        Đăng Nhập
+                                    </a></li>
+                                <li><a class="dropdown-item" href="/forgot-password">
+                                        <i class="fas fa-key me-2"></i>
+                                        Quên Mật Khẩu</a></li>
+                            </th:block>
+                            
+                            <!-- Menu cho người dùng đã đăng nhập -->
+                            <th:block th:if="${session.loggedInUser != null}">
+                                <li><a class="dropdown-item" href="/profileuser">
+                                        <i class="fa-solid fa-address-card me-2"></i>
+                                        Thông Tin Cá Nhân</a></li>
+                                <li><a class="dropdown-item" href="/orders">
+                                        <i class="fa-solid fa-box me-2"></i>
+                                        Đơn Hàng</a></li>
+                                <li><a class="dropdown-item" href="/changepassword">
+                                        <i class="fa-solid fa-lock me-2"></i>
+                                        Đổi Mật Khẩu</a></li>
+                                
+                                <!-- Menu cho Admin -->
+                                <li th:if="${session.loggedInUser.role}">
+                                    <a class="dropdown-item" href="/manageproduct">
+                                        <i class="fa-solid fa-gear me-2"></i>
+                                        Quản Trị</a>
+                                </li>
+                                
+                                <li class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/logout">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i>
+                                        Đăng Xuất</a></li>
+                            </th:block>
                         </ul>
                     </li>
                 </ul>
@@ -99,3 +122,4 @@
 </body>
 
 </html>
+

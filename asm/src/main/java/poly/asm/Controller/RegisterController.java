@@ -3,7 +3,6 @@ package poly.asm.Controller;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -71,6 +70,7 @@ public class RegisterController {
         user.setPhone(userDTO.getPhone());
         user.setPassword(userDTO.getPassword());  // Nên mã hóa password trong thực tế
         user.setRole(false);
+        user.setImage("/Images/default.png");
         user.setActivated(false);
 
         // Lưu user và chuyển hướng

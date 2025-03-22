@@ -5,7 +5,6 @@
     --accent-gradient: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
     --danger-gradient: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
     --success-gradient: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
-    --warning-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
     --neutral-gradient: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%);
   
     --primary-color: #005bea;
@@ -180,17 +179,6 @@
     }
   }
   
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-  
   @keyframes pulse {
     0% {
       box-shadow: 0 0 0 0 rgba(0, 91, 234, 0.4);
@@ -285,16 +273,6 @@
     box-shadow: 0 6px 20px rgba(142, 158, 171, 0.4);
   }
   
-  .btn-warning {
-    background: var(--warning-gradient);
-    box-shadow: 0 4px 15px rgba(246, 211, 101, 0.3);
-  }
-  
-  .btn-warning:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(246, 211, 101, 0.4);
-  }
-  
   /* Table */
   .table-responsive {
     max-width: 100%;
@@ -314,10 +292,6 @@
     margin-bottom: 0;
     border-radius: var(--border-radius-lg);
     overflow: hidden;
-  }
-  
-  .table {
-    font-size: 0.85em; /* Smaller font size for table text */
   }
   
   .table thead th {
@@ -340,27 +314,10 @@
   }
   
   .table tbody td {
-    padding: 12px;
+    padding: 16px;
     vertical-align: middle;
     border-bottom: 1px solid rgba(0, 91, 234, 0.1);
     transition: var(--transition-fast);
-    max-width: 200px; /* Maximum width for cells */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  /* Add a specific class for product name column that might have longer text */
-  .product-name {
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  /* Make sure images don't get affected by the truncation */
-  .table td img {
-    max-width: none;
   }
   
   .table tbody tr:last-child td {
@@ -389,165 +346,124 @@
     box-shadow: var(--shadow-md);
   }
   
-  /* Tabs */
-  .nav-tabs {
-    border-bottom: none;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .nav-tabs .nav-item {
-    margin-bottom: 0;
-  }
-  
-  .nav-tabs .nav-link {
-    border: none;
-    padding: 12px 24px;
-    border-radius: var(--border-radius-md);
+  /* Status Badges */
+  .status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
     font-weight: 600;
-    color: var(--text-dark);
-    background: rgba(0, 91, 234, 0.05);
-    transition: var(--transition-normal);
-    position: relative;
+  }
+  
+  .status-active {
+    background: rgba(11, 163, 96, 0.1);
+    color: #0ba360;
+    border: 1px solid rgba(11, 163, 96, 0.2);
+  }
+  
+  .status-inactive {
+    background: rgba(255, 65, 108, 0.1);
+    color: #ff416c;
+    border: 1px solid rgba(255, 65, 108, 0.2);
+  }
+  
+  /* Modal */
+  .modal-content {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: none;
     overflow: hidden;
   }
   
-  .nav-tabs .nav-link::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
-  }
-  
-  .nav-tabs .nav-link:hover::before {
-    width: 300px;
-    height: 300px;
-  }
-  
-  .nav-tabs .nav-link.active {
+  .modal-header {
     background: var(--primary-gradient);
     color: var(--text-light);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    border-bottom: none;
+    padding: 20px 24px;
   }
   
-  .nav-tabs .nav-link:not(.active):hover {
-    background: rgba(0, 91, 234, 0.1);
-    transform: translateY(-3px);
-  }
-  
-  /* Tab Content */
-  .tab-content {
-    background: white;
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-md);
-    padding: 30px;
-    animation: fadeIn 0.5s ease-out;
-  }
-  
-  .tab-pane {
-    animation: slideUp 0.5s ease-out;
-  }
-  
-  /* Form Controls */
-  .form-control,
-  .form-select {
-    border-radius: var(--border-radius-md);
-    border: 2px solid rgba(0, 91, 234, 0.1);
-    padding: 12px;
-    transition: var(--transition-normal);
-    background-color: white;
-    color: var(--text-dark);
-  }
-  
-  .form-control:focus,
-  .form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 91, 234, 0.1);
-    transform: translateY(-2px);
-  }
-  
-  .form-label {
+  .modal-title {
     font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 8px;
-    font-size: 0.9em;
     letter-spacing: 0.5px;
   }
   
-  /* Textarea */
-  .comment-textarea {
-    min-height: 120px;
-    resize: vertical;
+  .modal-body {
+    padding: 24px;
+    color: var(--text-dark);
   }
   
-  /* Image Upload */
-  .poster-container {
-    background-color: rgba(0, 91, 234, 0.03);
-    border: 2px dashed rgba(0, 91, 234, 0.2);
-    border-radius: var(--border-radius-lg);
-    overflow: hidden;
-    position: relative;
-    min-height: 300px;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    transition: var(--transition-normal);
-    cursor: pointer;
-  }
-  
-  .poster-container:hover {
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-5px);
-  }
-  
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  .modal-body p {
+    margin-bottom: 16px;
+    font-size: 1em;
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background: rgba(255, 255, 255, 0.9);
+    gap: 8px;
+  }
+  
+  .modal-body p strong {
+    min-width: 100px;
+    color: var(--primary-color);
+  }
+  
+  .modal-body img {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 3px solid rgba(0, 91, 234, 0.1);
     transition: var(--transition-normal);
+    max-width: 120px;
+    height: auto;
   }
   
-  .overlay span {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-top: 10px;
+  .modal-body img:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
   }
   
-  .overlay i {
-    font-size: 3em;
-    color: var(--primary-color);
-    opacity: 0.7;
+  .modal-footer {
+    border-top: none;
+    padding: 20px 24px;
+    background: rgba(0, 91, 234, 0.02);
   }
   
-  .poster-input {
+  /* Form Select in Modal */
+  .form-select {
+    border-radius: var(--border-radius-md);
+    border: 2px solid rgba(0, 91, 234, 0.2);
+    background: #ffffff;
+    color: var(--text-dark);
+    transition: var(--transition-normal);
+    padding: 10px 12px;
+    font-size: 0.95em;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 91, 234, 0.2);
+    outline: none;
+  }
+  
+  /* Page Title */
+  .page-title {
+    font-size: 1.8em;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--text-dark);
+    position: relative;
+    display: inline-block;
+  }
+  
+  .page-title::after {
+    content: "";
     position: absolute;
-    top: 0;
+    bottom: -8px;
     left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-    z-index: 10;
-  }
-  
-  .poster {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: var(--transition-normal);
+    width: 60px;
+    height: 4px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
   }
   
   /* Responsive */
@@ -560,25 +476,9 @@
       margin-left: 240px;
       padding: 20px;
     }
-  
-    .tab-content {
-      padding: 20px;
-    }
   }
   
   @media (max-width: 767.98px) {
-    .table {
-      font-size: 0.8em; /* Even smaller on mobile */
-    }
-    
-    .table tbody td {
-      padding: 8px;
-      max-width: 120px;
-    }
-    
-    .product-name {
-      max-width: 100px;
-    }
     .sidebar {
       width: 70px;
       padding: 15px 10px;
@@ -622,55 +522,48 @@
       padding: 15px;
     }
   
-    .tab-content {
-      padding: 15px;
-    }
-  
-    .nav-tabs .nav-link {
-      padding: 10px 15px;
+    .table {
       font-size: 0.9em;
-    }
-  
-    .poster-container {
-      min-height: 200px;
-    }
-  
-    .form-label {
-      font-size: 0.8em;
-    }
-  
-    .btn {
-      padding: 8px 16px;
-      font-size: 0.9em;
-    }
-  }
-  
-  @media (max-width: 575.98px) {
-    .content {
-      padding: 10px;
-    }
-  
-    .tab-content {
-      padding: 10px;
     }
   
     .table thead th {
       padding: 12px 8px;
-      font-size: 0.75em;
     }
   
     .table tbody td {
-      padding: 10px 8px;
-      font-size: 0.85em;
+      padding: 12px 8px;
     }
   
     .btn-sm {
-      padding: 5px 10px;
-      font-size: 0.75em;
+      padding: 6px 10px;
+      font-size: 0.8em;
     }
   
-    .poster-container {
-      min-height: 150px;
+    .modal-dialog {
+      margin: 10px;
+    }
+  
+    .page-title {
+      font-size: 1.5em;
+    }
+  }
+  
+  @media (max-width: 575.98px) {
+    .table-responsive {
+      margin-top: 10px;
+    }
+  
+    .modal-body img {
+      max-width: 80px;
+    }
+  
+    .modal-body p strong {
+      min-width: 80px;
+    }
+  
+    .form-select {
+      padding: 8px;
+      font-size: 0.9em;
     }
   }
   
@@ -688,35 +581,30 @@
     border-right: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  .dark-mode .tab-content,
   .dark-mode .table {
     background: #1f2937;
   }
   
-  .dark-mode .form-control,
+  .dark-mode .table tbody td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .dark-mode .table-hover tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .dark-mode .modal-content {
+    background: #1f2937;
+  }
+  
+  .dark-mode .modal-footer {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  
   .dark-mode .form-select {
     background: #374151;
-    border-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-light);
-  }
-  
-  .dark-mode .nav-tabs .nav-link:not(.active) {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-light);
-  }
-  
-  .dark-mode .poster-container {
-    background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-light);
   }
   
-  .dark-mode .overlay {
-    background: rgba(31, 41, 55, 0.9);
-  }
-  
-  .dark-mode .overlay span {
-    color: var(--secondary-color);
-  }
-  
-
   

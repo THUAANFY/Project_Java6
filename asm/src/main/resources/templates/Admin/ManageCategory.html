@@ -1,90 +1,158 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head th:replace="~{/Layout/Head}">
-        <title>_____</title>
+        <title>Quản lý danh mục</title>
     </head>
     <head>
         <link rel="stylesheet" th:href="@{/CSS/ManageCate.css}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </head>
 <body>
     <div class="d-flex">
         <th:block th:replace="~{/Layout/Sidebar}"></th:block>
 
         <div class="content">
+            <h1 class="page-title mb-4">Quản lý danh mục</h1>
+            
+            <!-- Alert Message -->
+            <div th:if="${message != null}" class="alert-container">
+                <div th:class="${'alert alert-' + alertClass}" role="alert">
+                    <i th:class="${'fas fa-' + (alertClass == 'success' ? 'check-circle' : (alertClass == 'info' ? 'info-circle' : 'exclamation-circle')) + ' me-2'}"></i>
+                    <span th:text="${message}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+            
             <div class="form-container">
-                <form action="/Admin/ManageCategory" th:object="${item}" method="post" class="row g-3">
+                <form th:action="@{/managecategory}" th:object="${item}" method="post" class="row g-3">
                     <div class="col-12 col-md-6">
-                        <label class="form-label">ID LOẠI SẢN PHẨM</label>
+                        <label class="form-label">
+                            <i class="fas fa-hashtag me-2"></i>ID LOẠI SẢN PHẨM
+                        </label>
                         <input th:field="*{id}" class="form-control" placeholder="Nhập ID Loại Sản Phẩm" required>
                     </div>
                     <div class="col-12 col-md-6">
-                        <label class="form-label">TÊN LOẠI SẢN PHẨM</label>
+                        <label class="form-label">
+                            <i class="fas fa-tag me-2"></i>TÊN LOẠI SẢN PHẨM
+                        </label>
                         <input th:field="*{name}" class="form-control" placeholder="Nhập Tên Loại Sản Phẩm" required>
                     </div>
                     <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                        <button type="submit" formaction="/managecategory/create" class="btn btn-success">TẠO MỚI</button>
-                        <button type="submit" formaction="/managecategory/update" class="btn btn-primary">CẬP NHẬT</button>
-                        <a th:href="@{|/managecategory/delete/${item.id}|}" class="btn btn-danger">DELETE</a>
-                        <a href="/managecategory" class="btn btn-secondary">RESET</a>
+                        <button type="submit" formaction="/managecategory/create" class="btn btn-success">
+                            <i class="fas fa-plus-circle me-2"></i>TẠO MỚI
+                        </button>
+                        <button type="submit" formaction="/managecategory/update" class="btn btn-primary">
+                            <i class="fas fa-sync-alt me-2"></i>CẬP NHẬT
+                        </button>
+                        <a th:href="@{|/managecategory/delete/${item.id}|}" class="btn btn-danger" 
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">
+                            <i class="fas fa-trash-alt me-2"></i>XÓA
+                        </a>
+                        <a th:href="@{/managecategory}" class="btn btn-secondary">
+                            <i class="fas fa-undo me-2"></i>RESET
+                        </a>
                     </div>
                 </form>
             </div>
 
             <!-- Bảng hiển thị danh sách loại sản phẩm -->
             <div class="table-wrapper">
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>ID Loại Sản Phẩm</th>
-                                <th>Tên Loại Sản Phẩm</th>
-                                <th>Hành Động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="item : ${items}">
-                                <td th:text="${item.id}"></td>
-                                <td th:text="${item.name}"></td>
-                                <td>
-                                    <a th:href="@{|/managecategory/edit/${item.id}|}" class="btn btn-warning btn-sm">
-                                        <i class="fa-regular fa-pen-to-square me-1"></i> Chỉnh Sửa
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr th:if="${items.isEmpty()}">
-                                <td colspan="3" class="text-center text-muted py-4">Không có danh mục nào</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <table class="table table-fixed">
+                    <thead>
+                        <tr>
+                            <th width="25%">ID Loại Sản Phẩm</th>
+                            <th width="50%">Tên Loại Sản Phẩm</th>
+                            <th width="25%">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${items}">
+                            <td th:text="${item.id}" th:title="${item.id}"></td>
+                            <td class="category-name" th:text="${item.name}" th:title="${item.name}"></td>
+                            <td>
+                                <a th:href="@{|/managecategory/edit/${item.id}|}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit me-1"></i> Chỉnh Sửa
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(items)}">
+                            <td colspan="3" class="text-center text-muted py-4">
+                                <i class="fas fa-folder-open me-2"></i>Không có danh mục nào
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+        <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">Thông báo</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Thao tác thành công!
+            </div>
+        </div>
+    </div>
 
-    <script>
+    <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", function () {
             const links = document.querySelectorAll(".sidebar .nav-link");
-            const currentPage = localStorage.getItem("activePage");
-    
-            if (currentPage) {
-                links.forEach(link => {
-                    if (link.getAttribute("href") === currentPage) {
-                        link.classList.add("active");
-                    } else {
-                        link.classList.remove("active");
-                    }
-                });
-            }
+            const currentPage = localStorage.getItem("activePage") || window.location.pathname;
     
             links.forEach(link => {
+                if (link.getAttribute("href") === currentPage) {
+                    link.classList.add("active");
+                } else {
+                    link.classList.remove("active");
+                }
+                
                 link.addEventListener("click", function () {
                     localStorage.setItem("activePage", this.getAttribute("href"));
-                    links.forEach(l => l.classList.remove("active"));
-                    this.classList.add("active");
                 });
             });
+            
+            // Thêm hiệu ứng cho các hàng trong bảng
+            const tableRows = document.querySelectorAll("tbody tr");
+            tableRows.forEach((row, index) => {
+                row.style.animation = `fadeIn 0.3s ease-out forwards`;
+                row.style.animationDelay = `${index * 0.1}s`;
+                row.style.opacity = "0";
+            });
+            
+            // Hiển thị toast nếu có thông báo
+            const message = /*[[${message}]]*/ null;
+            if (message) {
+                showToast(message);
+            }
+            
+            // Tự động ẩn thông báo alert sau 5 giây
+            const alertElement = document.querySelector('.alert');
+            if (alertElement) {
+                setTimeout(function() {
+                    alertElement.classList.add('fade');
+                    setTimeout(function() {
+                        alertElement.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            }
         });
+        
+        // Hiển thị toast
+        function showToast(message) {
+            const toastBody = document.querySelector('.toast-body');
+            toastBody.textContent = message;
+            
+            const toastElement = document.getElementById('liveToast');
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+        }
     </script>
 </body>
 </html>
+

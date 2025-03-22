@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{/Layout/Head}">
+        <title>Quản lý người dùng</title>
+    </head>
+    <head>
+        <link rel="stylesheet" th:href="@{/CSS/ManageUser.css}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div th:replace="~{/Layout/Sidebar}"></div>
+
+        <!-- Nội dung chính -->
+        <div class="content">
+            <div class="container-fluid">
+                <h1 class="page-title">Quản lý người dùng</h1>
+                
+                <!-- Alert Message -->
+                <div th:if="${message != null}" class="alert-container">
+                    <div th:class="${'alert alert-' + alertClass}" role="alert">
+                        <i th:class="${'fas fa-' + (alertClass == 'success' ? 'check-circle' : (alertClass == 'info' ? 'info-circle' : (alertClass == 'warning' ? 'exclamation-triangle' : 'exclamation-circle'))) + ' me-2'}"></i>
+                        <span th:text="${message}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="text-center">
+                                <th>ID</th>
+                                <th>Hình Ảnh</th>
+                                <th>Họ Và Tên</th>
+                                <th>Email</th>
+                                <th>Trạng Thái</th>
+                                <th>Vai Trò</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${users}" class="text-center align-middle">
+                                <td th:text="${user.id}">1</td>
+                                <td>
+                                    <img th:src="${user.image != null && !user.image.isEmpty() ? user.image : '/Images/default.jpg'}" 
+                                         width="50" height="50" alt="Ảnh người dùng" class="rounded-circle">
+                                </td>
+                                <td th:text="${user.fullname}">Nguyễn Văn A</td>
+                                <td th:text="${user.email}">email@example.com</td>
+                                <td>
+                                    <span th:class="${'status-badge ' + (user.activated ? 'status-active' : 'status-inactive')}"
+                                          th:text="${user.activated ? 'Đã kích hoạt' : 'Chưa kích hoạt'}">
+                                        Đã kích hoạt
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:class="${'role-badge ' + (user.role ? 'role-admin' : 'role-user')}"
+                                          th:text="${user.role ? 'Admin' : 'Người dùng'}">
+                                        Người dùng
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#userModal" 
+                                            th:data-user-id="${user.id}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <a th:href="@{'/manageuser/delete/' + ${user.id}}" 
+                                       th:onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')"
+                                       class="btn btn-danger btn-sm"
+                                       th:classappend="${user.role ? 'disabled' : ''}"
+                                       th:title="${user.role ? 'Không thể xóa tài khoản admin' : 'Xóa người dùng'}">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(users)}">
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="fas fa-users me-2"></i>Không có người dùng nào
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Thông Tin Người Dùng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="userStatusForm" th:action="@{/manageuser/updateStatus}" method="post">
+                    <div class="modal-body">
+                        <div class="text-center mb-4">
+                            <img id="modalImage" src="/images/default.jpg" width="120" alt="Ảnh người dùng" class="rounded-circle">
+                        </div>
+                        <p><strong>ID:</strong> <span id="modalId"></span></p>
+                        <input type="hidden" id="userId" name="userId">
+                        <p><strong>Họ Và Tên:</strong> <span id="modalName"></span></p>
+                        <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                        <p><strong>Vai Trò:</strong> <span id="modalRole"></span></p>
+                        <p><strong>Trạng Thái:</strong>
+                            <select id="modalStatus" name="status" class="form-select mt-2">
+                                <option value="true">Đã kích hoạt</option>
+                                <option value="false">Chưa kích hoạt</option>
+                            </select>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" id="saveButton">
+                            <i class="fas fa-save me-2"></i>Lưu
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Đóng
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+        <div id="statusToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header" style="background: var(--success-gradient); color: white;">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">Thông báo</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script th:inline="javascript">
+        // Lưu trữ dữ liệu người dùng
+        const users = /*[[${users}]]*/ [];
+        
+        // Xử lý sự kiện click cho các nút xem chi tiết
+        document.addEventListener("DOMContentLoaded", function() {
+            const viewButtons = document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#userModal"]');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    showUserDetails(userId);
+                });
+            });
+        
+            const links = document.querySelectorAll(".sidebar .nav-link");
+            const currentPage = localStorage.getItem("activePage") || window.location.pathname;
+
+            links.forEach(link => {
+                if (link.getAttribute("href") === currentPage) {
+                    link.classList.add("active");
+                } else {
+                    link.classList.remove("active");
+                }
+                
+                link.addEventListener("click", function () {
+                    localStorage.setItem("activePage", this.getAttribute("href"));
+                });
+            });
+            
+            // Hiển thị toast nếu có thông báo
+            const message = /*[[${message}]]*/ null;
+            if (message) {
+                showToast(message);
+            }
+            
+            // Tự động ẩn thông báo alert sau 5 giây
+            const alertElement = document.querySelector('.alert');
+            if (alertElement) {
+                setTimeout(function() {
+                    alertElement.classList.add('fade');
+                    setTimeout(function() {
+                        alertElement.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            }
+            
+            // Chế độ tối (nếu cần)
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+                });
+                
+                // Khôi phục trạng thái chế độ tối
+                if (localStorage.getItem('darkMode') === 'true') {
+                    document.body.classList.add('dark-mode');
+                }
+            }
+        });
+        
+        function showUserDetails(id) {
+            // Tìm người dùng theo ID
+            const user = users.find(u => u.id === id);
+            
+            if (user) {
+                // Cập nhật thông tin trong modal
+                document.getElementById('modalImage').src = user.image || '/image/default.jpg';
+                document.getElementById('modalId').textContent = user.id;
+                document.getElementById('userId').value = user.id;
+                document.getElementById('modalName').textContent = user.fullname;
+                document.getElementById('modalEmail').textContent = user.email;
+                document.getElementById('modalRole').textContent = user.role ? 'Admin' : 'Người dùng';
+                document.getElementById('modalStatus').value = user.activated.toString();
+                
+                // Vô hiệu hóa nút lưu nếu là admin
+                const saveButton = document.getElementById('saveButton');
+                if (user.role) {
+                    saveButton.setAttribute('disabled', 'disabled');
+                    saveButton.setAttribute('title', 'Không thể thay đổi trạng thái tài khoản admin');
+                } else {
+                    saveButton.removeAttribute('disabled');
+                    saveButton.removeAttribute('title');
+                }
+            }
+        }
+
+        // Hiển thị thông báo
+        function showToast(message) {
+            document.getElementById('toastMessage').textContent = message;
+            const toast = new bootstrap.Toast(document.getElementById('statusToast'));
+            toast.show();
+        }
+    </script>
+</body>
+</html>

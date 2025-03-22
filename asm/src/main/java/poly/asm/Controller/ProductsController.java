@@ -41,17 +41,16 @@ public class ProductsController {
     public String productDetails(@PathVariable("id") Integer id, Model model) {
         // Lấy thông tin sản phẩm hiện tại
         Product product = productDAO.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid product Id: " + id));
-        
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product Id: " + id));
+
         // Lấy danh sách tất cả danh mục
         List<Category> categories = categoryDAO.findAll();
-        
+
         // Lấy danh sách sản phẩm liên quan từ cùng danh mục (trừ sản phẩm hiện tại)
         List<Product> relatedProducts = productDAO.findByCategory(product.getCategory())
-            .stream()
-            .filter(p -> !p.getId().equals(id)) // Loại bỏ sản phẩm hiện tại
-            .limit(4) // Giới hạn 4 sản phẩm liên quan
-            .collect(Collectors.toList());
+                .stream()
+                .filter(p -> !p.getId().equals(id)) // Loại bỏ sản phẩm hiện tại
+                .collect(Collectors.toList()); // Bỏ limit(4) để hiển thị tất cả
 
         // Thêm các thuộc tính vào model
         model.addAttribute("product", product);

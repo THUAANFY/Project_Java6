@@ -35,6 +35,9 @@
                 <!-- Tab Chỉnh Sửa -->
                 <div class="tab-pane fade show active" id="edit" role="tabpanel">
                     <form action="/Admin/ManageProduct" method="post" enctype="multipart/form-data" class="row g-4" th:object="${product}">
+                        <!-- Thêm input hidden để lưu ID sản phẩm khi cập nhật -->
+                        <input type="hidden" th:field="*{id}">
+                        
                         <div class="col-12 col-md-4">
                             <div class="poster-container">
                                 <img id="posterImage" th:src="@{${product.image != null ? product.image : '/images/default.jpg'}}" class="poster" th:classappend="${product.image != null ? '' : 'd-none'}">
@@ -87,10 +90,18 @@
                         </div>
                 
                         <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-                            <button type="submit" formaction="/manageproduct/create" class="btn btn-success"><i class="fas fa-plus-circle me-2"></i>TẠO MỚI</button>
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-sync-alt me-2"></i>CẬP NHẬT</button>
-                            <a th:href="@{|/manageproduct/delete/${product.id}|}" class="btn btn-danger"><i class="fas fa-trash-alt me-2"></i>XÓA</a>
-                            <a href="/manageproduct" class="btn btn-secondary"><i class="fas fa-undo me-2"></i>RESET</a>
+                            <button type="submit" formaction="/manageproduct/create" class="btn btn-success" th:classappend="${product.id == null ? '' : 'd-none'}">
+                                <i class="fas fa-plus-circle me-2"></i>TẠO MỚI
+                            </button>
+                            <button type="submit" formaction="/manageproduct/update" class="btn btn-primary" th:classappend="${product.id != null ? '' : 'd-none'}">
+                                <i class="fas fa-sync-alt me-2"></i>CẬP NHẬT
+                            </button>
+                            <a th:href="@{|/manageproduct/delete/${product.id}|}" class="btn btn-danger" th:classappend="${product.id != null ? '' : 'd-none'}">
+                                <i class="fas fa-trash-alt me-2"></i>XÓA
+                            </a>
+                            <a href="/manageproduct" class="btn btn-secondary">
+                                <i class="fas fa-undo me-2"></i>RESET
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -105,7 +116,10 @@
                             </div>
                         </div>
                         <div>
-                            <button class="btn btn-success"><i class="fas fa-plus-circle me-2"></i>Thêm mới</button>
+                            <a href="/manageproduct">
+                                <button class="btn btn-success"><i class="fas fa-plus-circle me-2"></i>Thêm mới</button>
+                            </a>
+                            
                         </div>
                     </div>
                     
@@ -136,7 +150,6 @@
                                     <td><span th:text="${item.category != null ? item.category.name : 'Không có danh mục'}" class="category-badge"></span></td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-2">
-                                            <!-- <a href="#" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a> -->
                                             <a th:href="@{/manageproduct/edit/{id}(id=${item.id}, p=${page.number})}" class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -211,6 +224,12 @@
                 row.style.animationDelay = `${index * 0.1}s`;
                 row.style.opacity = "0";
             });
+            
+            // Hiển thị thông báo nếu có
+            const message = /*[[${message}]]*/ null;
+            if (message) {
+                showToast(message);
+            }
         });
     
         function loadImage(event) {
@@ -247,3 +266,4 @@
     </script>
 </body>
 </html>
+

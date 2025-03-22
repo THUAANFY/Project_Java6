@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -109,6 +110,63 @@ public class ManagePrController {
         return "redirect:/manageproduct";
     }
 
+    @PostMapping("/manageproduct/update")
+    public String updateProduct(@ModelAttribute Product item, @RequestParam("imageFile") MultipartFile imageFile, Model model) {
+        // Kiểm tra xem sản phẩm có tồn tại không
+        Optional<Product> existingProductOpt = productDAO.findById(item.getId());
+        if (!existingProductOpt.isPresent()) {
+            model.addAttribute("message", "Không tìm thấy sản phẩm với ID: " + item.getId());
+            return "redirect:/manageproduct";
+        }
+        
+        Product existingProduct = existingProductOpt.get();
+        
+        // Xử lý ảnh mới nếu có
+        if (!imageFile.isEmpty()) {
+            try {
+                // Đường dẫn lưu ảnh
+                String uploadDir = "D:/HOCTAP/HocKyV/BLOCK_II/Java6/Assignment/Project_Java6/asm/src/main/resources/static/Images/";
+
+                // Tạo thư mục nếu chưa tồn tại
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                // Xóa ảnh cũ nếu có
+                if (existingProduct.getImage() != null && !existingProduct.getImage().isEmpty()) {
+                    String oldImagePath = "D:/HOCTAP/HocKyV/BLOCK_II/Java6/Assignment/Project_Java6/asm/src/main/resources/static" + existingProduct.getImage();
+                    File oldImageFile = new File(oldImagePath);
+                    if (oldImageFile.exists()) {
+                        oldImageFile.delete();
+                    }
+                }
+
+                // Tạo tên file duy nhất
+                String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
+                File saveFile = new File(uploadDir + fileName);
+
+                // Lưu file ảnh
+                imageFile.transferTo(saveFile);
+
+                // Gán đường dẫn ảnh vào product
+                item.setImage("/Images/" + fileName);
+            } catch (Exception e) {
+                e.printStackTrace();
+                model.addAttribute("message", "Lỗi khi lưu file: " + e.getMessage());
+                return "redirect:/manageproduct";
+            }
+        } else {
+            // Giữ nguyên ảnh cũ nếu không có ảnh mới
+            item.setImage(existingProduct.getImage());
+        }
+
+        // Cập nhật sản phẩm vào database
+        productDAO.save(item);
+        model.addAttribute("message", "Cập nhật sản phẩm thành công!");
+        return "redirect:/manageproduct";
+    }
+
     @GetMapping("/manageproduct/delete/{id}")
     public String deleteProduct(@PathVariable("id") Integer id, Model model) {
         try {
@@ -136,5 +194,5 @@ public class ManagePrController {
         }
         return "redirect:/manageproduct";
     }
-
 }
+

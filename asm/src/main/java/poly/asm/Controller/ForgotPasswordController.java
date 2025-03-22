@@ -58,7 +58,6 @@ public class ForgotPasswordController {
             "Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn tại Ứng dụng WebCongNghe vào lúc " + formattedDateTime + ".\n\n" +
             "Mật khẩu mới của bạn là: " + newPassword + "\n\n" +
             "Vui lòng đăng nhập bằng mật khẩu này và đổi mật khẩu ngay sau khi đăng nhập để đảm bảo an toàn.";
-
         // Gửi email chứa mật khẩu mới
         try {
             mailService.send("philtpd10207@gmail.com", email, "Mật khẩu mới của bạn", emailContent);

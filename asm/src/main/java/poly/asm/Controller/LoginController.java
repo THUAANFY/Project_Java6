@@ -80,5 +80,4 @@ public class LoginController {
         model.addAttribute("success", "Bạn đã đăng xuất thành công!");
         return "redirect:/index";
     }
-    
 }

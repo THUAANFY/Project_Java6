@@ -31,9 +31,4 @@ public class HomeController {
         model.addAttribute("products", products);
         return "Home/index";
     }
-    
-    @GetMapping("/changepassword")
-    public String changePassword(Model model) {
-        return "Home/changepass";
-    } 
 }

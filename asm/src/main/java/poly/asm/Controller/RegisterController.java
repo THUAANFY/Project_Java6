@@ -39,18 +39,17 @@ public class RegisterController {
 
     @PostMapping("/register")
     public String register(@Valid @ModelAttribute("userRegisterDTO") UserRegisterDTO userDTO, BindingResult bindingResult, Model model) {
-
         // Kiểm tra validation từ DTO
         if (bindingResult.hasErrors()) {
             return "register/register";
         }
-
+    
         // Kiểm tra password matching
         if (!userDTO.isPasswordMatching()) {
             bindingResult.rejectValue("confirmPassword", "error.confirmPassword", "Mật khẩu xác nhận không khớp");
             return "register/register";
         }
-
+    
         // Kiểm tra username hoặc email đã tồn tại
         User existingUser = userDAO.findByIdOrEmail(userDTO.getUsername());
         if (existingUser != null) {
@@ -61,29 +60,35 @@ public class RegisterController {
             }
             return "register/register";
         }
-
+    
+        // Debug giá trị fullname
+        System.out.println("Fullname từ form: " + userDTO.getFullname());
+    
         // Tạo user mới từ DTO
         User user = new User();
         user.setId(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setFullname(userDTO.getFullname());
         user.setPhone(userDTO.getPhone());
-        user.setPassword(userDTO.getPassword());  // Nên mã hóa password trong thực tế
+        user.setPassword(userDTO.getPassword()); // Nên mã hóa password trong thực tế
         user.setRole(false);
         user.setImage("/Images/default.png");
         user.setActivated(false);
-
-        // Lưu user và chuyển hướng
+    
+        // Lưu user
         userDAO.save(user);
-
+    
+        // Debug sau khi lưu
+        User savedUser = userDAO.findByIdOrEmail(user.getId());
+        System.out.println("Fullname từ DB: " + savedUser.getFullname());
+    
         // Tạo mã kích hoạt
-        // String activationCode = UUID.randomUUID().toString();
         String activationCode = Base64.getEncoder().encodeToString(user.getId().getBytes());
         activationStorage.put(activationCode, user.getEmail());
-
+    
         // Tạo liên kết kích hoạt
         String activationLink = "http://localhost:8080/activate?code=" + activationCode;
-
+    
         // Gửi email chứa liên kết kích hoạt
         try {
             mailService.send("philtpd10207@gmail.com", userDTO.getEmail(), "Xác nhận đăng ký", 

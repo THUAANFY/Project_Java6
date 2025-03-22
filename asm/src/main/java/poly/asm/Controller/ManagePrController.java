@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import poly.asm.DAO.CategoryDAO;
 import poly.asm.DAO.ProductDAO;
@@ -70,7 +71,9 @@ public class ManagePrController {
     }
 
     @RequestMapping("/manageproduct/create")
-    public String createProduct(@ModelAttribute Product item, @RequestParam("imageFile") MultipartFile imageFile, Model model) {
+    public String createProduct(@ModelAttribute Product item, 
+                               @RequestParam("imageFile") MultipartFile imageFile, 
+                               RedirectAttributes redirectAttributes) {
         if (!imageFile.isEmpty()) {
             try {
                 // Đường dẫn lưu ảnh
@@ -93,29 +96,34 @@ public class ManagePrController {
                 item.setImage("/Images/" + fileName);
             } catch (Exception e) {
                 e.printStackTrace();
-                model.addAttribute("message", "Lỗi khi lưu file: " + e.getMessage());
-                // Trả về lại trang quản lý sản phẩm với thông báo lỗi
-                Pageable pageable = PageRequest.of(0, 4);
-                Page<Product> page = productDAO.findAll(pageable);
-                model.addAttribute("page", page);
-                model.addAttribute("product", item);
-                List<Category> categories = categoryDAO.findAll();
-                model.addAttribute("categories", categories);
-                return "Admin/ManageProduct";
+                redirectAttributes.addFlashAttribute("message", "Lỗi khi lưu file: " + e.getMessage());
+                redirectAttributes.addFlashAttribute("alertType", "danger");
+                return "redirect:/manageproduct";
             }
         }
 
-        // Lưu sản phẩm vào database
-        productDAO.save(item);
+        try {
+            // Lưu sản phẩm vào database
+            productDAO.save(item);
+            redirectAttributes.addFlashAttribute("message", "Thêm sản phẩm thành công!");
+            redirectAttributes.addFlashAttribute("alertType", "success");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Lỗi khi lưu sản phẩm: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("alertType", "danger");
+        }
+        
         return "redirect:/manageproduct";
     }
 
     @PostMapping("/manageproduct/update")
-    public String updateProduct(@ModelAttribute Product item, @RequestParam("imageFile") MultipartFile imageFile, Model model) {
+    public String updateProduct(@ModelAttribute Product item, 
+                               @RequestParam("imageFile") MultipartFile imageFile, 
+                               RedirectAttributes redirectAttributes) {
         // Kiểm tra xem sản phẩm có tồn tại không
         Optional<Product> existingProductOpt = productDAO.findById(item.getId());
         if (!existingProductOpt.isPresent()) {
-            model.addAttribute("message", "Không tìm thấy sản phẩm với ID: " + item.getId());
+            redirectAttributes.addFlashAttribute("message", "Không tìm thấy sản phẩm với ID: " + item.getId());
+            redirectAttributes.addFlashAttribute("alertType", "danger");
             return "redirect:/manageproduct";
         }
         
@@ -153,7 +161,8 @@ public class ManagePrController {
                 item.setImage("/Images/" + fileName);
             } catch (Exception e) {
                 e.printStackTrace();
-                model.addAttribute("message", "Lỗi khi lưu file: " + e.getMessage());
+                redirectAttributes.addFlashAttribute("message", "Lỗi khi lưu file: " + e.getMessage());
+                redirectAttributes.addFlashAttribute("alertType", "danger");
                 return "redirect:/manageproduct";
             }
         } else {
@@ -161,14 +170,21 @@ public class ManagePrController {
             item.setImage(existingProduct.getImage());
         }
 
-        // Cập nhật sản phẩm vào database
-        productDAO.save(item);
-        model.addAttribute("message", "Cập nhật sản phẩm thành công!");
+        try {
+            // Cập nhật sản phẩm vào database
+            productDAO.save(item);
+            redirectAttributes.addFlashAttribute("message", "Cập nhật sản phẩm thành công!");
+            redirectAttributes.addFlashAttribute("alertType", "success");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("alertType", "danger");
+        }
+        
         return "redirect:/manageproduct";
     }
 
     @GetMapping("/manageproduct/delete/{id}")
-    public String deleteProduct(@PathVariable("id") Integer id, Model model) {
+    public String deleteProduct(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {
             // Kiểm tra sản phẩm có tồn tại không
             Optional<Product> productOpt = productDAO.findById(id);
@@ -184,15 +200,17 @@ public class ManagePrController {
                 }
                 // Xóa sản phẩm khỏi database
                 productDAO.deleteById(id);
-                model.addAttribute("message", "Xóa sản phẩm thành công!");
+                redirectAttributes.addFlashAttribute("message", "Xóa sản phẩm thành công!");
+                redirectAttributes.addFlashAttribute("alertType", "success");
             } else {
-                model.addAttribute("message", "Không tìm thấy sản phẩm với ID: " + id);
+                redirectAttributes.addFlashAttribute("message", "Không tìm thấy sản phẩm với ID: " + id);
+                redirectAttributes.addFlashAttribute("alertType", "warning");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("message", "Lỗi khi xóa sản phẩm: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("message", "Lỗi khi xóa sản phẩm: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("alertType", "danger");
         }
         return "redirect:/manageproduct";
     }
 }
-

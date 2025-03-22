@@ -96,7 +96,8 @@
                             <button type="submit" formaction="/manageproduct/update" class="btn btn-primary" th:classappend="${product.id != null ? '' : 'd-none'}">
                                 <i class="fas fa-sync-alt me-2"></i>CẬP NHẬT
                             </button>
-                            <a th:href="@{|/manageproduct/delete/${product.id}|}" class="btn btn-danger" th:classappend="${product.id != null ? '' : 'd-none'}">
+                            <a th:href="@{|/manageproduct/delete/${product.id}|}" class="btn btn-danger" th:classappend="${product.id != null ? '' : 'd-none'}"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
                                 <i class="fas fa-trash-alt me-2"></i>XÓA
                             </a>
                             <a href="/manageproduct" class="btn btn-secondary">
@@ -153,7 +154,10 @@
                                             <a th:href="@{/manageproduct/edit/{id}(id=${item.id}, p=${page.number})}" class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a th:href="@{/manageproduct/delete/{id}(id=${item.id})}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                                            <a th:href="@{/manageproduct/delete/{id}(id=${item.id})}" class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -186,22 +190,25 @@
         </div>
     </div>
 
-    <!-- Toast Notification và Script giữ nguyên -->
+    <!-- Toast Notification -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
         <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header bg-success text-white">
-                <i class="fas fa-check-circle me-2"></i>
+            <div th:class="${'toast-header ' + (alertType == 'success' ? 'bg-success' : 
+                                              alertType == 'danger' ? 'bg-danger' : 
+                                              alertType == 'warning' ? 'bg-warning' : 'bg-info')} + ' text-white'">
+                <i th:class="${alertType == 'success' ? 'fas fa-check-circle' : 
+                            alertType == 'danger' ? 'fas fa-exclamation-circle' : 
+                            alertType == 'warning' ? 'fas fa-exclamation-triangle' : 'fas fa-info-circle'} + ' me-2'"></i>
                 <strong class="me-auto">Thông báo</strong>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="toast-body">
+            <div class="toast-body" th:text="${message}">
                 Thao tác thành công!
             </div>
         </div>
     </div>
 
     <script th:inline="javascript">
-        /* Script giữ nguyên từ tài liệu gốc */
         document.addEventListener("DOMContentLoaded", function () {
             const links = document.querySelectorAll(".sidebar .nav-link");
             const currentPage = localStorage.getItem("activePage") || window.location.pathname;
@@ -227,8 +234,29 @@
             
             // Hiển thị thông báo nếu có
             const message = /*[[${message}]]*/ null;
+            const alertType = /*[[${alertType}]]*/ 'info';
+            
             if (message) {
-                showToast(message);
+                // Tùy chỉnh toast dựa trên loại thông báo
+                const toastHeader = document.querySelector('.toast-header');
+                const toastIcon = toastHeader.querySelector('i');
+                
+                if (alertType === 'success') {
+                    toastHeader.className = 'toast-header bg-success text-white';
+                    toastIcon.className = 'fas fa-check-circle me-2';
+                } else if (alertType === 'danger') {
+                    toastHeader.className = 'toast-header bg-danger text-white';
+                    toastIcon.className = 'fas fa-exclamation-circle me-2';
+                } else if (alertType === 'warning') {
+                    toastHeader.className = 'toast-header bg-warning text-white';
+                    toastIcon.className = 'fas fa-exclamation-triangle me-2';
+                } else {
+                    toastHeader.className = 'toast-header bg-info text-white';
+                    toastIcon.className = 'fas fa-info-circle me-2';
+                }
+                
+                const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+                toast.show();
             }
         });
     
@@ -238,13 +266,6 @@
             posterImage.src = URL.createObjectURL(event.target.files[0]);
             posterImage.classList.remove('d-none');
             overlay.classList.add('d-none');
-        }
-        
-        function showToast(message) {
-            const toastBody = document.querySelector('.toast-body');
-            toastBody.textContent = message;
-            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
-            toast.show();
         }
         
         document.addEventListener("DOMContentLoaded", function() {

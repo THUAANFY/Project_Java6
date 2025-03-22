@@ -39,19 +39,16 @@ public class ChangePasswordController {
             model.addAttribute("error", "Tên tài khoản không tồn tại!");
             return "Home/changepass";
         }
-
         // Kiểm tra mật khẩu cũ
         if (!user.getPassword().equals(oldPassword)) { // Giả sử mật khẩu chưa mã hóa
             model.addAttribute("error", "Mật khẩu cũ không đúng!");
             return "Home/changepass";
         }
-
         // Kiểm tra mật khẩu mới và xác nhận mật khẩu
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "Mật khẩu mới và xác nhận mật khẩu không khớp!");
             return "Home/changepass";
         }
-
         // Cập nhật mật khẩu mới
         user.setPassword(newPassword); // Nên mã hóa mật khẩu trong thực tế
         userDAO.save(user);

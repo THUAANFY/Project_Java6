@@ -1,6 +1,7 @@
 package poly.asm.Controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,12 +39,25 @@ public class ProductsController {
 
     @GetMapping("/product/{id}")
     public String productDetails(@PathVariable("id") Integer id, Model model) {
+        // Lấy thông tin sản phẩm hiện tại
         Product product = productDAO.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Invalid product Id: " + id));
+        
+        // Lấy danh sách tất cả danh mục
         List<Category> categories = categoryDAO.findAll();
         
+        // Lấy danh sách sản phẩm liên quan từ cùng danh mục (trừ sản phẩm hiện tại)
+        List<Product> relatedProducts = productDAO.findByCategory(product.getCategory())
+            .stream()
+            .filter(p -> !p.getId().equals(id)) // Loại bỏ sản phẩm hiện tại
+            .limit(4) // Giới hạn 4 sản phẩm liên quan
+            .collect(Collectors.toList());
+
+        // Thêm các thuộc tính vào model
         model.addAttribute("product", product);
         model.addAttribute("categories", categories);
+        model.addAttribute("relatedProducts", relatedProducts);
+
         return "Home/product-details";
     }
 }

@@ -7,16 +7,28 @@
     <link rel="stylesheet" th:href="@{/CSS/Index.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
     <style>
-        /* Tùy chỉnh kích thước ảnh sản phẩm */
+        /* Tùy chỉnh kích thước ảnh sản phẩm chính */
         .product-image-container {
             width: 100%;
-            max-width: 500px; /* Tăng kích thước tối đa của ảnh */
+            max-width: 500px;
             margin: 0 auto;
         }
         .product-image-container img {
             width: 100%;
             height: auto;
-            object-fit: contain; /* Đảm bảo ảnh không bị méo */
+            object-fit: contain;
+        }
+        /* Tùy chỉnh danh sách sản phẩm liên quan */
+        .related-products .card {
+            transition: transform 0.3s;
+        }
+        .related-products .card:hover {
+            transform: translateY(-10px);
+        }
+        /* Giảm kích thước ảnh trong danh sách sản phẩm liên quan */
+        .related-products .card-img-top {
+            height: 150px; /* Giảm chiều cao ảnh từ 200px xuống 150px */
+            object-fit: cover; /* Đảm bảo ảnh không bị méo */
         }
     </style>
 </head>
@@ -51,14 +63,6 @@
 
                 <!-- Quantity and Add to Cart -->
                 <div class="mt-4">
-                    <!-- <label for="quantity" class="form-label">Số lượng:</label>
-                    <div class="input-group w-25 mb-3">
-                        <button class="btn btn-outline-primary" type="button" id="decrease">-</button>
-                        <input type="number" class="form-control text-center" id="quantity" value="1" min="1" 
-                               th:max="${product.available}">
-                        <button class="btn btn-outline-primary" type="button" id="increase">+</button>
-                    </div> -->
-                    
                     <button class="btn btn-success btn-lg" th:disabled="${product.available <= 0}">
                         <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
                     </button>
@@ -84,6 +88,27 @@
                 <p>Thông tin chi tiết về sản phẩm sẽ được hiển thị ở đây.</p>
             </div>
         </div>
+
+        <!-- Related Products Section -->
+        <div class="mt-5 related-products">
+            <h4>Sản phẩm liên quan</h4>
+            <div class="row" th:if="${not #lists.isEmpty(relatedProducts)}">
+                <div class="col-md-3 col-sm-6 mb-4" th:each="related : ${relatedProducts}">
+                    <div class="card h-100">
+                        <img th:src="${related.image}" class="card-img" alt="Related Product Image">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${related.name}">Tên sản phẩm</h5>
+                            <p class="card-text text-danger fw-bold" 
+                               th:text="${#numbers.formatDecimal(related.price, 0, 'COMMA', 2, 'POINT')} + ' VND'">Giá</p>
+                            <a th:href="@{'/product/' + ${related.id}}" class="btn btn-outline-primary">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(relatedProducts)}" class="text-muted">
+                <p>Không có sản phẩm liên quan nào.</p>
+            </div>
+        </div>
     </div>
 
     <div th:replace="~{/Layout/Footer}"></div>
@@ -92,22 +117,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
         AOS.init();
-
-        document.getElementById('increase').onclick = function() {
-            let qty = document.getElementById('quantity');
-            let max = parseInt(qty.max);
-            if (parseInt(qty.value) < max) {
-                qty.value = parseInt(qty.value) + 1;
-            }
-        }
-        
-        document.getElementById('decrease').onclick = function() {
-            let qty = document.getElementById('quantity');
-            if (parseInt(qty.value) > 1) {
-                qty.value = parseInt(qty.value) - 1;
-            }
-        }
-
     </script>
 </body>
 </html>

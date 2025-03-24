@@ -40,6 +40,7 @@ public class ManagePrController {
 
         model.addAttribute("page", page);
         model.addAttribute("product", new Product());
+        model.addAttribute("isEditMode", false);
 
         List<Category> categories = categoryDAO.findAll();
         model.addAttribute("categories", categories);
@@ -59,6 +60,7 @@ public class ManagePrController {
             product = new Product();
         }
         model.addAttribute("product", product);
+        model.addAttribute("isEditMode", true);
 
         Pageable pageable = PageRequest.of(p.orElse(0), 4);
         Page<Product> page = productDAO.findAll(pageable);
@@ -107,6 +109,8 @@ public class ManagePrController {
             productDAO.save(item);
             redirectAttributes.addFlashAttribute("message", "Thêm sản phẩm thành công!");
             redirectAttributes.addFlashAttribute("alertType", "success");
+            redirectAttributes.addFlashAttribute("reloadPage", true); // Thêm flag để reload trang khi thêm mới
+            redirectAttributes.addFlashAttribute("activeTab", "list"); // Chuyển sang tab danh sách
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", "Lỗi khi lưu sản phẩm: " + e.getMessage());
             redirectAttributes.addFlashAttribute("alertType", "danger");
@@ -175,6 +179,7 @@ public class ManagePrController {
             productDAO.save(item);
             redirectAttributes.addFlashAttribute("message", "Cập nhật sản phẩm thành công!");
             redirectAttributes.addFlashAttribute("alertType", "success");
+            redirectAttributes.addFlashAttribute("activeTab", "list"); // Chỉ chuyển sang tab danh sách, không reload
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
             redirectAttributes.addFlashAttribute("alertType", "danger");
@@ -202,6 +207,7 @@ public class ManagePrController {
                 productDAO.deleteById(id);
                 redirectAttributes.addFlashAttribute("message", "Xóa sản phẩm thành công!");
                 redirectAttributes.addFlashAttribute("alertType", "success");
+                redirectAttributes.addFlashAttribute("activeTab", "list"); // Chỉ chuyển sang tab danh sách, không reload
             } else {
                 redirectAttributes.addFlashAttribute("message", "Không tìm thấy sản phẩm với ID: " + id);
                 redirectAttributes.addFlashAttribute("alertType", "warning");

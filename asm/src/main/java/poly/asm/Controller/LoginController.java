@@ -15,6 +15,7 @@ import poly.asm.Models.User;
 import poly.asm.DAO.UserDAO;
 import poly.asm.DTO.UserLoginDTO;
 
+import java.io.File;
 
 @Controller
 public class LoginController {
@@ -70,6 +71,10 @@ public class LoginController {
 
         // Đăng nhập thành công
         session.setAttribute("loggedInUser", user);
+        
+        // Kiểm tra thư mục avatar tồn tại
+        checkAvatarDirectory();
+        
         model.addAttribute("success", "Đăng nhập thành công! Chào mừng, " + user.getFullname());
         return "redirect:/index"; // Chuyển hướng đến trang index
     }
@@ -80,4 +85,16 @@ public class LoginController {
         model.addAttribute("success", "Bạn đã đăng xuất thành công!");
         return "redirect:/index";
     }
+    
+    /**
+     * Kiểm tra và tạo thư mục avatar nếu chưa tồn tại
+     */
+    private void checkAvatarDirectory() {
+        String uploadDir = "src/main/resources/static/images/avatars/";
+        File directory = new File(uploadDir);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+    }
 }
+

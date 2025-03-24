@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{/Layout/Head}">
-    <title>Quản lý sản phẩm</title>
+    <title th:text="${isEditMode ? 'Chỉnh sửa sản phẩm' : 'Thêm mới sản phẩm'}">Quản lý sản phẩm</title>
 </head>
 <head>
     <link rel="stylesheet" th:href="@{/CSS/ManagePr.css}">
@@ -20,7 +20,7 @@
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit" type="button" role="tab">
-                        <i class="fas fa-edit me-2"></i>Chỉnh sửa
+                        <i class="fas fa-edit me-2"></i><span th:text="${isEditMode ? 'Chỉnh sửa' : 'Thêm mới'}">Chỉnh sửa</span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -212,7 +212,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             const links = document.querySelectorAll(".sidebar .nav-link");
             const currentPage = localStorage.getItem("activePage") || window.location.pathname;
-    
+
             links.forEach(link => {
                 if (link.getAttribute("href") === currentPage) {
                     link.classList.add("active");
@@ -235,6 +235,8 @@
             // Hiển thị thông báo nếu có
             const message = /*[[${message}]]*/ null;
             const alertType = /*[[${alertType}]]*/ 'info';
+            const reloadPage = /*[[${reloadPage}]]*/ false; // Biến để kiểm tra có reload trang không
+            const activeTab = /*[[${activeTab}]]*/ null;
             
             if (message) {
                 // Tùy chỉnh toast dựa trên loại thông báo
@@ -257,6 +259,40 @@
                 
                 const toast = new bootstrap.Toast(document.getElementById('liveToast'));
                 toast.show();
+                
+                // Xử lý chuyển tab và reload trang
+                if (activeTab === 'list') {
+                    // Kích hoạt tab danh sách
+                    const listTab = document.getElementById('list-tab');
+                    if (listTab) {
+                        const bsTab = new bootstrap.Tab(listTab);
+                        bsTab.show();
+                        
+                        // Chỉ reload trang khi thêm mới sản phẩm
+                        if (reloadPage) {
+                            // Sau khi hiển thị toast, reload trang sau 1 giây
+                            setTimeout(function() {
+                                // Lưu tab hiện tại vào sessionStorage
+                                sessionStorage.setItem('activeTab', 'list');
+                                // Reload trang
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    }
+                }
+            }
+            
+            // Kiểm tra xem có tab đã lưu trong sessionStorage không
+            const savedTab = sessionStorage.getItem('activeTab');
+            if (savedTab === 'list') {
+                // Kích hoạt tab danh sách
+                const listTab = document.getElementById('list-tab');
+                if (listTab) {
+                    const bsTab = new bootstrap.Tab(listTab);
+                    bsTab.show();
+                }
+                // Xóa giá trị đã lưu để không ảnh hưởng đến lần truy cập tiếp theo
+                sessionStorage.removeItem('activeTab');
             }
         });
     
@@ -287,4 +323,3 @@
     </script>
 </body>
 </html>
-

@@ -43,20 +43,17 @@
                             <tr th:each="user : ${users}" class="text-center align-middle">
                                 <td th:text="${user.id}">1</td>
                                 <td>
-                                    <img th:src="${user.image != null && !user.image.isEmpty() ? user.image : '/Images/default.jpg'}" 
-                                         width="50" height="50" alt="Ảnh người dùng" class="rounded-circle">
+                                    <img th:src="${user.image != null && !user.image.isEmpty() ? user.image : '/Images/default.jpg'}" width="50" height="50" alt="Image" class="rounded-circle">
                                 </td>
                                 <td th:text="${user.fullname}">Nguyễn Văn A</td>
                                 <td th:text="${user.email}">email@example.com</td>
                                 <td>
-                                    <span th:class="${'status-badge ' + (user.activated ? 'status-active' : 'status-inactive')}"
-                                          th:text="${user.activated ? 'Đã kích hoạt' : 'Chưa kích hoạt'}">
+                                    <span th:class="${'status-badge ' + (user.activated ? 'status-active' : 'status-inactive')}" th:text="${user.activated ? 'Đã kích hoạt' : 'Chưa kích hoạt'}">
                                         Đã kích hoạt
                                     </span>
                                 </td>
                                 <td>
-                                    <span th:class="${'role-badge ' + (user.role ? 'role-admin' : 'role-user')}"
-                                          th:text="${user.role ? 'Admin' : 'Người dùng'}">
+                                    <span th:class="${'role-badge ' + (user.role ? 'role-admin' : 'role-user')}"th:text="${user.role ? 'Admin' : 'Người dùng'}">
                                         Người dùng
                                     </span>
                                 </td>

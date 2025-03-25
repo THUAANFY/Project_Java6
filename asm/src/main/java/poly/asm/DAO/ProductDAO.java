@@ -8,6 +8,5 @@ import poly.asm.Models.Category;
 import poly.asm.Models.Product;
 
 public interface ProductDAO extends JpaRepository<Product, Integer> {
-
     List<Product> findByCategory(Category category);
 }

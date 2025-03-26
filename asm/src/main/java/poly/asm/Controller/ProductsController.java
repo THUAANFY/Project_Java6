@@ -49,7 +49,6 @@ public class ProductsController {
         if (product == null){
             return "redirect:/products";
         }
-
         // Lấy danh mục của sản phẩm hiện tại
         Category category = product.getCategory();
         // Lấy các sản phẩm liên quan (cùng danh mục)

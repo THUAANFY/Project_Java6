@@ -1,6 +1,5 @@
 package poly.asm.Models;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,13 +27,52 @@ import lombok.NoArgsConstructor;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
-    String address;
-    @Temporal(TemporalType.DATE)
-    @Column(name = "Createdate")
-    Date createDate = new Date();
-    @ManyToOne @JoinColumn(name = "UserId")
+    private Integer id;
+    
+    @ManyToOne
+    @JoinColumn(name = "UserId")
     User user;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<OrderDetail> orderDetails = new ArrayList<>();
+    
+    @Column(nullable = false, unique = true)
+    private String orderCode;
+    
+    @Column(nullable = false)
+    private Double subtotal;
+    
+    @Column(nullable = false)
+    private Double shippingFee;
+    
+    @Column(nullable = false)
+    private Double total;
+    
+    @Column(nullable = false)
+    private String status;
+    
+    @Column(nullable = false)
+    private String paymentMethod;
+    
+    @Column(nullable = false)
+    private String recipientName;
+    
+    @Column(nullable = false)
+    private String recipientPhone;
+    
+    @Column(nullable = false)
+    private String shippingProvince;
+    
+    @Column(nullable = false)
+    private String shippingDistrict;
+    
+    @Column(nullable = false)
+    private String shippingWard;
+    
+    @Column(nullable = false)
+    private String shippingAddress;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date createdAt;
+    
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderDetail> orderDetail;
 }

@@ -75,6 +75,24 @@ public class LoginController {
         // Kiểm tra thư mục avatar tồn tại
         checkAvatarDirectory();
         
+        // Kiểm tra xem người dùng đã có địa chỉ chưa
+        if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
+            // Kiểm tra xem đã hiển thị thông báo cập nhật địa chỉ chưa
+            Boolean addressPromptShown = (Boolean) session.getAttribute("addressPromptShown_" + user.getId());
+            
+            // Nếu chưa hiển thị thông báo (null hoặc false)
+            if (addressPromptShown == null || !addressPromptShown) {
+                // Đánh dấu đã hiển thị thông báo
+                session.setAttribute("addressPromptShown_" + user.getId(), true);
+                
+                // Thêm thông báo yêu cầu cập nhật địa chỉ
+                session.setAttribute("message", "Vui lòng cập nhật địa chỉ của bạn để tiếp tục sử dụng dịch vụ.");
+                
+                // Chuyển hướng đến trang cập nhật thông tin cá nhân
+                return "redirect:/profile";
+            }
+        }
+        
         model.addAttribute("success", "Đăng nhập thành công! Chào mừng, " + user.getFullname());
         return "redirect:/index"; // Chuyển hướng đến trang index
     }

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/Layout/Head}">
+    <title>Chi tiết đơn hàng</title>
+</head>
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        .order-detail-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .order-header {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-confirmed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-shipped {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-delivered {
+            background-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .order-details {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .order-item {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-price {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .item-quantity {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .item-total {
+            font-weight: bold;
+            color: #212529;
+        }
+        
+        .order-summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .shipping-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .btn-cancel-order {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel-order:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 20px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #dee2e6;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -30px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #ffc107;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .timeline-dot.active {
+            background-color: #28a745;
+        }
+        
+        .timeline-dot.inactive {
+            background-color: #dee2e6;
+        }
+        
+        .timeline-content {
+            padding: 10px 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{/Layout/Navbar}"></div>
+
+    <div class="container-fluid py-5 mt-5 pt-5">
+        <div class="order-detail-container">
+            <!-- Thông báo -->
+            <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show">
+                <i class="fa-solid fa-check-circle me-2"></i>
+                <span th:text="${message}">Thông báo thành công</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <div th:if="${error != null}" class="alert alert-danger alert-dismissible fade show">
+                <i class="fa-solid fa-exclamation-circle me-2"></i>
+                <span th:text="${error}">Thông báo lỗi</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <!-- Tiêu đề và nút quay lại -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Chi tiết đơn hàng</h2>
+                <a href="/orders" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i>
+                    Quay lại danh sách
+                </a>
+            </div>
+            
+            <!-- Thông tin đơn hàng -->
+            <div class="order-header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-1">Đơn hàng #<span th:text="${order.orderCode}">ORD123456</span></h5>
+                        <p class="mb-0 text-muted">Ngày đặt: <span th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2023</span></p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <span th:class="${'status-badge ' + 
+                            (order.status == 'Chờ xác nhận' ? 'status-pending' : 
+                            (order.status == 'Đã xác nhận' ? 'status-confirmed' : 
+                            (order.status == 'Đang giao hàng' ? 'status-shipped' : 
+                            (order.status == 'Đã giao hàng' ? 'status-delivered' : 
+                            'status-cancelled'))))}">
+                            <span th:text="${order.status}">Trạng thái</span>
+                        </span>
+                        
+                        <!-- Nút hủy đơn hàng (chỉ hiển thị khi đơn hàng đang ở trạng thái "Chờ xác nhận") -->
+                        <form th:if="${order.status == 'Chờ xác nhận'}" th:action="@{/order/cancel}" method="post" class="d-inline-block ms-2">
+                            <input type="hidden" name="id" th:value="${order.orderCode}">
+                            <button type="submit" class="btn btn-cancel-order" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
+                                <i class="fa-solid fa-times me-1"></i>
+                                Hủy đơn hàng
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tiến trình đơn hàng -->
+            <div class="order-details shadow-sm">
+                <h5 class="fw-bold mb-3">Tiến trình đơn hàng</h5>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot active">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Đặt hàng thành công</h6>
+                            <p class="mb-0 text-muted small" th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2023 10:00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div th:class="${order.status != 'Chờ xác nhận' && order.status != 'Đã hủy' ? 'timeline-dot active' : 'timeline-dot inactive'}">
+                            <i th:class="${order.status != 'Chờ xác nhận' && order.status != 'Đã hủy' ? 'fa-solid fa-check' : 'fa-solid fa-clock'}"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Xác nhận đơn hàng</h6>
+                            <p class="mb-0 text-muted small">Đơn hàng đã được xác nhận và đang chuẩn bị</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div th:class="${order.status == 'Đang giao hàng' || order.status == 'Đã giao hàng' ? 'timeline-dot active' : 'timeline-dot inactive'}">
+                            <i th:class="${order.status == 'Đang giao hàng' || order.status == 'Đã giao hàng' ? 'fa-solid fa-check' : 'fa-solid fa-clock'}"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Đang giao hàng</h6>
+                            <p class="mb-0 text-muted small">Đơn hàng đang được giao đến địa chỉ của bạn</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div th:class="${order.status == 'Đã giao hàng' ? 'timeline-dot active' : 'timeline-dot inactive'}">
+                            <i th:class="${order.status == 'Đã giao hàng' ? 'fa-solid fa-check' : 'fa-solid fa-clock'}"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Giao hàng thành công</h6>
+                            <p class="mb-0 text-muted small">Đơn hàng đã được giao thành công</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chi tiết sản phẩm -->
+            <div class="order-details shadow-sm">
+                <h5 class="fw-bold mb-3">Chi tiết sản phẩm</h5>
+                
+                <div class="order-items">
+                    <div th:each="item : ${order.orderDetail}" class="order-item">
+                        <img th:src="${item.productImage}" alt="Product Image" class="item-image">
+                        <div class="item-details">
+                            <h6 class="mb-1" th:text="${item.productName}">Tên sản phẩm</h6>
+                            <div class="item-price mb-1" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Giá</div>
+                            <div class="d-flex justify-content-between">
+                                <span class="item-quantity" th:text="'SL: ' + ${item.quantity}">SL: 1</span>
+                                <span class="item-total" th:text="${#numbers.formatDecimal(item.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Tổng</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính:</span>
+                        <span th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Phí vận chuyển:</span>
+                        <span th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Tổng cộng:</span>
+                        <span class="text-success" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Thông tin giao hàng -->
+            <div class="shipping-info shadow-sm">
+                <h5 class="fw-bold mb-3">Thông tin giao hàng</h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Người nhận:</strong> <span th:text="${order.recipientName}">Tên người nhận</span></p>
+                        <p class="mb-1"><strong>Số điện thoại:</strong> <span th:text="${order.recipientPhone}">Số điện thoại</span></p>
+                        <p class="mb-3"><strong>Địa chỉ:</strong> <span th:text="${order.shippingAddress} + ', ' + ${order.shippingWard} + ', ' + ${order.shippingDistrict} + ', ' + ${order.shippingProvince}">Địa chỉ đầy đủ</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Phương thức thanh toán:</strong> 
+                            <span th:if="${order.paymentMethod == 'codPayment'}">Thanh toán khi nhận hàng (COD)</span>
+                            <span th:if="${order.paymentMethod == 'bankPayment'}">Chuyển khoản ngân hàng</span>
+                            <span th:if="${order.paymentMethod == 'momoPayment'}">Thanh toán MoMo</span>
+                        </p>
+                        <p class="mb-1"><strong>Trạng thái đơn hàng:</strong> <span th:text="${order.status}">Trạng thái</span></p>
+                        <p class="mb-3"><strong>Ngày đặt hàng:</strong> <span th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">Ngày đặt hàng</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{/Layout/Footer}"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>AOS.init();</script>
+</body>
+</html>

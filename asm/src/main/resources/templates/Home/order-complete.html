@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/Layout/Head}">
+    <title>Đặt hàng thành công</title>
+</head>
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        .order-complete-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .order-success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 40px;
+        }
+        
+        .order-details {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .order-item {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-price {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .item-quantity {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .item-total {
+            font-weight: bold;
+            color: #212529;
+        }
+        
+        .order-summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .shipping-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .btn-continue-shopping {
+            background-color: #ffc107;
+            color: #212529;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-continue-shopping:hover {
+            background-color: #ffca2c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,193,7,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{/Layout/Navbar}"></div>
+
+    <div class="container-fluid py-5 mt-5 pt-5">
+        <div class="order-complete-container">
+            <div class="text-center mb-4">
+                <div class="order-success-icon">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h2 class="fw-bold">Đặt hàng thành công!</h2>
+                <p class="text-muted">Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đang được xử lý.</p>
+                <p class="mb-0">Mã đơn hàng: <strong th:text="${order.id}">ORD123456</strong></p>
+            </div>
+            
+            <div class="order-details shadow-sm">
+                <h5 class="fw-bold mb-3">Chi tiết đơn hàng</h5>
+                
+                <div class="order-items">
+                    <div th:each="item : ${order.items}" class="order-item">
+                        <img th:src="${item.productImage}" alt="Product Image" class="item-image">
+                        <div class="item-details">
+                            <h6 class="mb-1" th:text="${item.productName}">Tên sản phẩm</h6>
+                            <div class="item-price mb-1" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Giá</div>
+                            <div class="d-flex justify-content-between">
+                                <span class="item-quantity" th:text="'SL: ' + ${item.quantity}">SL: 1</span>
+                                <span class="item-total" th:text="${#numbers.formatDecimal(item.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Tổng</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính:</span>
+                        <span th:text="${#numbers.formatDecimal(order.subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Phí vận chuyển:</span>
+                        <span th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Tổng cộng:</span>
+                        <span class="text-success" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="shipping-info shadow-sm">
+                <h5 class="fw-bold mb-3">Thông tin giao hàng</h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Người nhận:</strong> <span th:text="${order.shippingAddress.name}">Tên người nhận</span></p>
+                        <p class="mb-1"><strong>Số điện thoại:</strong> <span th:text="${order.shippingAddress.phone}">Số điện thoại</span></p>
+                        <p class="mb-3"><strong>Địa chỉ:</strong> <span th:text="${order.shippingAddress.addressDetail} + ', ' + ${order.shippingAddress.ward} + ', ' + ${order.shippingAddress.district} + ', ' + ${order.shippingAddress.province}">Địa chỉ đầy đủ</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Phương thức thanh toán:</strong> 
+                            <span th:if="${order.paymentMethod == 'codPayment'}">Thanh toán khi nhận hàng (COD)</span>
+                            <span th:if="${order.paymentMethod == 'bankPayment'}">Chuyển khoản ngân hàng</span>
+                            <span th:if="${order.paymentMethod == 'momoPayment'}">Thanh toán MoMo</span>
+                        </p>
+                        <p class="mb-1"><strong>Trạng thái đơn hàng:</strong> <span th:text="${order.status}">Trạng thái</span></p>
+                        <p class="mb-3"><strong>Ngày đặt hàng:</strong> <span th:text="${#dates.format(new java.util.Date(order.createdAt), 'dd/MM/yyyy HH:mm')}">Ngày đặt hàng</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="/orders" class="btn btn-outline-primary me-2">
+                    <i class="fa-solid fa-list me-1"></i>
+                    Xem đơn hàng của tôi
+                </a>
+                <a href="/" class="btn btn-continue-shopping">
+                    <i class="fa-solid fa-bag-shopping me-2"></i>
+                    Tiếp tục mua sắm
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{/Layout/Footer}"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>AOS.init();</script>
+</body>
+</html>

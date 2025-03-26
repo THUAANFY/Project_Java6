@@ -8,8 +8,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.http.HttpSession;
 import poly.asm.DAO.ProductDAO;
 import poly.asm.Models.Product;
+import poly.asm.Models.User;
 
 
 @Controller
@@ -26,8 +28,13 @@ public class HomeController {
     }
 
     @GetMapping("/index")
-    public String index(Model model) {
+    public String index(Model model, HttpSession session) {
         List<Product> products = productDAO.findAll();
+
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        // Nếu user null, dùng icon user mặc định
+        String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
+        model.addAttribute("image", imagePath);
         model.addAttribute("products", products);
         return "Home/index";
     }

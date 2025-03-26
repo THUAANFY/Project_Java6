@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.http.HttpSession;
 import poly.asm.DAO.CategoryDAO;
 import poly.asm.DAO.ProductDAO;
 import poly.asm.Models.Category;
 import poly.asm.Models.Product;
+import poly.asm.Models.User;
 
 @Controller
 public class ProductsController {
@@ -31,35 +33,18 @@ public class ProductsController {
     }
 
     @GetMapping("/products")
-    public String products(Model model) {
+    public String products(Model model, HttpSession session) {
         List<Category> categories = categoryDAO.findAll();
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        // Nếu user null, dùng icon user mặc định
+        String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
+        model.addAttribute("image", imagePath);
         model.addAttribute("categories", categories);
         return "Home/products";
     }
 
     @GetMapping("/product/{id}")
-    // public String productDetails(@PathVariable("id") Integer id, Model model) {
-    //     // Lấy thông tin sản phẩm hiện tại
-    //     Product product = productDAO.findById(id)
-    //             .orElseThrow(() -> new IllegalArgumentException("Invalid product Id: " + id));
-
-    //     // Lấy danh sách tất cả danh mục
-    //     List<Category> categories = categoryDAO.findAll();
-
-    //     // Lấy danh sách sản phẩm liên quan từ cùng danh mục (trừ sản phẩm hiện tại)
-    //     List<Product> relatedProducts = productDAO.findByCategory(product.getCategory())
-    //             .stream()
-    //             .filter(p -> !p.getId().equals(id)) // Loại bỏ sản phẩm hiện tại
-    //             .collect(Collectors.toList()); // Bỏ limit(4) để hiển thị tất cả
-
-    //     // Thêm các thuộc tính vào model
-    //     model.addAttribute("product", product);
-    //     model.addAttribute("categories", categories);
-    //     model.addAttribute("relatedProducts", relatedProducts);
-
-    //     return "Home/product-details";
-    // }
-    public String detail(Model model, @PathVariable("id") Integer id) {
+    public String detail(Model model, @PathVariable("id") Integer id, HttpSession session) {
         Product product = productDAO.findById(id).orElse(null);
         if (product == null){
             return "redirect:/products";
@@ -69,6 +54,10 @@ public class ProductsController {
         Category category = product.getCategory();
         // Lấy các sản phẩm liên quan (cùng danh mục)
         List<Product> relatedProducts = productDAO.findByCategory(category);
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        // Nếu user null, dùng icon user mặc định
+        String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
+        model.addAttribute("image", imagePath);
         model.addAttribute("relatedProducts", relatedProducts);
 
         model.addAttribute("product", product);

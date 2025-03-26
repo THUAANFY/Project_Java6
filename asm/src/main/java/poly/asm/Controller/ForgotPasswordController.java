@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpSession;
 import poly.asm.DAO.UserDAO;
 import poly.asm.Models.User;
 import poly.asm.Services.MailService;
@@ -27,7 +29,11 @@ public class ForgotPasswordController {
 
     // Hiển thị form quên mật khẩu
     @GetMapping("/forgot-password")
-    public String showForgotPasswordForm() {
+    public String showForgotPasswordForm(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        // Nếu user null, dùng icon user mặc định
+        String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
+        model.addAttribute("image", imagePath);
         return "Home/forgot-password"; // Trả về tệp forgot-password.html
     }
 

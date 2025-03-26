@@ -43,7 +43,7 @@
                             <tr th:each="user : ${users}" class="text-center align-middle">
                                 <td th:text="${user.id}">1</td>
                                 <td>
-                                    <img th:src="${user.image != null && !user.image.isEmpty() ? user.image : '/Images/default.jpg'}" width="50" height="50" alt="Image" class="rounded-circle">
+                                    <img th:src="@{'/Images/' + ${user.image != null && !user.image.isEmpty() ? user.image : 'default.jpg'}}" width="50" height="50" alt="User Avatar" class="rounded-circle">
                                 </td>
                                 <td th:text="${user.fullname}">Nguyễn Văn A</td>
                                 <td th:text="${user.email}">email@example.com</td>
@@ -94,7 +94,9 @@
                 <form id="userStatusForm" th:action="@{/manageuser/updateStatus}" method="post">
                     <div class="modal-body">
                         <div class="text-center mb-4">
-                            <img id="modalImage" src="/images/default.jpg" width="120" alt="Ảnh người dùng" class="rounded-circle">
+                            <img id="modalImage" src="/images/default.jpg" width="120" alt="Ảnh người dùng" 
+                            class="rounded-circle">
+
                         </div>
                         <p><strong>ID:</strong> <span id="modalId"></span></p>
                         <input type="hidden" id="userId" name="userId">
@@ -179,20 +181,6 @@
                     }, 500);
                 }, 5000);
             }
-            
-            // Chế độ tối (nếu cần)
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            if (darkModeToggle) {
-                darkModeToggle.addEventListener('click', function() {
-                    document.body.classList.toggle('dark-mode');
-                    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-                });
-                
-                // Khôi phục trạng thái chế độ tối
-                if (localStorage.getItem('darkMode') === 'true') {
-                    document.body.classList.add('dark-mode');
-                }
-            }
         });
         
         function showUserDetails(id) {
@@ -201,7 +189,9 @@
             
             if (user) {
                 // Cập nhật thông tin trong modal
-                document.getElementById('modalImage').src = user.image || '/image/default.jpg';
+                // Sửa đường dẫn ảnh để khớp với cách hiển thị trong bảng
+                document.getElementById('modalImage').src = 
+                    user.image && user.image.trim() !== '' ? `/Images/${user.image}` : '/Images/default.jpg';
                 document.getElementById('modalId').textContent = user.id;
                 document.getElementById('userId').value = user.id;
                 document.getElementById('modalName').textContent = user.fullname;

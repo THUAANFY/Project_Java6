@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light ">
         <div class="container-fluid">
             <!-- Navbar brand -->
             <a class="navbar-brand" href="#">
@@ -58,7 +58,7 @@
                     
                     <!-- Cart dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="/yourcart">
                             <i class="fa-solid fa-cart-shopping"></i>
                         </a>
                     </li>
@@ -68,9 +68,7 @@
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <!-- Hiển thị avatar người dùng nếu đã đăng nhập, hoặc avatar mặc định nếu chưa đăng nhập -->
-                            <img th:src="${session.loggedInUser != null ? '/images/avatars/' + session.loggedInUser.id + '.jpg' : 'https://mdbootstrap.com/img/Photos/Avatars/img%20(2).jpg'}"
-                                class="rounded-circle img-fluid" height="25" width="25" alt="User avatar"
-                                onerror="this.src='https://mdbootstrap.com/img/Photos/Avatars/img%20(2).jpg'">
+                                <img th:src="@{'/Images/' + ${image}}" class="rounded-circle img-fluid" height="25" width="25">
                         </a>
                         
                         <!-- Dropdown menu -->
@@ -91,7 +89,7 @@
                             
                             <!-- Menu cho người dùng đã đăng nhập -->
                             <th:block th:if="${session.loggedInUser != null}">
-                                <li><a class="dropdown-item" href="/profileuser">
+                                <li><a class="dropdown-item" href="/profile">
                                         <i class="fa-solid fa-address-card me-2"></i>
                                         Thông Tin Cá Nhân</a></li>
                                 <li><a class="dropdown-item" href="/orders">

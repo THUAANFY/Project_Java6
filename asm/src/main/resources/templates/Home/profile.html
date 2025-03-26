@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{/Layout/Head}">
+        <title>_______  </title>
+    </head>
+    <head>
+        <!-- <link rel="stylesheet" th:href="@{/CSS/Index.css}"> -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+        <style>
+            :root {
+            /* Tone màu công nghệ sáng */
+                --primary-color: #2196F3; /* Xanh dương sáng */
+                --secondary-color: #03A9F4;
+                --accent-color: #00BCD4;
+                --light-color: #f8f9fa;
+                --dark-color: #37474F;
+                --success-color: #4CAF50;
+                --border-color: #E0E0E0;
+                --shadow-color: rgba(0, 0, 0, 0.08);
+                --hover-color: rgba(33, 150, 243, 0.08);
+                --error-color: #F44336;
+                --info-color: #2196F3;
+                --warning-color: #FF9800;
+            }
+            #personal-info-form i{
+                color: var(--secondary-color);
+            }
+
+            .page-title {
+                color: var(--dark-color);
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+            }
+
+            .profile-section {
+                background-color: white;
+                border-radius: 12px;
+                box-shadow: 0 5px 20px var(--shadow-color);
+                padding: 30px;
+                margin-bottom: 30px;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                border: 1px solid rgba(33, 150, 243, 0.1);
+            }
+
+            .profile-section:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 30px rgba(33, 150, 243, 0.15);
+            }
+
+            .avatar-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                border-right: 1px solid var(--border-color);
+                padding-right: 25px;
+            }
+
+            @media (max-width: 767.98px) {
+                .avatar-container {
+                    border-right: none;
+                    border-bottom: 1px solid var(--border-color);
+                    padding-right: 0;
+                    padding-bottom: 25px;
+                    margin-bottom: 25px;
+                }
+            }
+
+            .avatar {
+                width: 150px;
+                height: 150px;
+                background-color: #f1f1f1;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 20px;
+                border: 5px solid white;
+                box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+                overflow: hidden;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                cursor: pointer; /* Thêm con trỏ để hiển thị là có thể click */
+            }
+
+            .avatar:hover {
+                transform: scale(1.05);
+                box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+            }
+
+            .avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .section-title {
+                font-weight: 600;
+                color: var(--dark-color);
+                margin-bottom: 1.5rem;
+                position: relative;
+                padding-bottom: 0.5rem;
+            }
+
+            .section-title::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 50px;
+                height: 3px;
+                background-color: var(--primary-color);
+            }
+
+            .btn-primary {
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
+            }
+
+            .btn-primary:hover {
+                background-color: #1E88E5;
+                border-color: #1E88E5;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(33, 150, 243, 0.4);
+            }
+
+            .btn-outline-secondary {
+                color: var(--secondary-color);
+                border-color: var(--secondary-color);
+                transition: all 0.3s ease;
+            }
+
+            .btn-outline-secondary:hover {
+                background-color: var(--secondary-color);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(3, 169, 244, 0.3);
+            }
+
+            .form-control:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+                background-color: white;
+            }
+
+            .form-label {
+                font-weight: 500;
+                color: #455A64;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-select {
+                border-radius: 8px;
+                padding: 0.6rem 1rem;
+                border: 1px solid var(--border-color);
+                transition: all 0.3s ease;
+                background-color: #FAFAFA;
+            }
+
+            .form-select:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+                background-color: white;
+            }
+
+            /* Toast notification - Improved */
+            .toast-container {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1050;
+                width: 350px;
+            }
+
+            .custom-toast {
+                background-color: white;
+                color: #333;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+                margin-bottom: 10px;
+                overflow: hidden;
+                opacity: 0;
+                transform: translateY(-20px);
+                transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+                border: none;
+            }
+
+            .custom-toast.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .toast-header {
+                background-color: transparent;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                padding: 12px 15px;
+                display: flex;
+                align-items: center;
+            }
+
+            .toast-body {
+                padding: 15px;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            .toast-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                margin-right: 10px;
+                color: white;
+            }
+
+            .toast-success {
+                border-left: 4px solid var(--success-color);
+            }
+
+            .toast-success .toast-icon {
+                background-color: var(--success-color);
+            }
+
+            .toast-error {
+                border-left: 4px solid var(--error-color);
+            }
+
+            .toast-error .toast-icon {
+                background-color: var(--error-color);
+            }
+
+            .toast-info {
+                border-left: 4px solid var(--info-color);
+            }
+
+            .toast-info .toast-icon {
+                background-color: var(--info-color);
+            }
+
+            .toast-warning {
+                border-left: 4px solid var(--warning-color);
+            }
+
+            .toast-warning .toast-icon {
+                background-color: var(--warning-color);
+            }
+
+            .toast-title {
+                font-weight: 600;
+                margin-right: auto;
+            }
+
+            .toast-time {
+                font-size: 12px;
+                color: #757575;
+            }
+
+            .btn-close {
+                font-size: 0.8rem;
+                opacity: 0.5;
+                transition: opacity 0.2s;
+            }
+
+            .btn-close:hover {
+                opacity: 1;
+            }
+
+            /* Loading spinner */
+            .spinner-border-sm {
+                width: 1rem;
+                height: 1rem;
+                border-width: 0.2em;
+            }
+
+            /* Success checkmark animation */
+            @keyframes checkmark {
+                0% {
+                    transform: scale(0);
+                    opacity: 0;
+                }
+                50% {
+                    transform: scale(1.2);
+                }
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
+            .checkmark {
+                display: inline-block;
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                background-color: var(--success-color);
+                color: white;
+                text-align: center;
+                line-height: 22px;
+                animation: checkmark 0.5s ease-in-out;
+            }
+
+            /* Input group with icon */
+            .input-group-text {
+                background-color: transparent;
+                border-right: none;
+                color: var(--primary-color);
+                border-color: var(--border-color);
+            }
+
+            .input-group .form-control {
+                border-left: none;
+            }
+        </style>
+    </head>
+<body>
+    <div th:replace="~{/Layout/Navbar}"></div>
+
+    <h1 style="opacity: 0;">FY</h1>
+    <!-- Toast Notification Container - Improved -->
+    <div class="toast-container" id="toastContainer">
+        <!-- Success Toast Template -->
+        <div class="toast custom-toast toast-success" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <strong class="toast-title">Thành công</strong>
+                <small class="toast-time">Vừa xong</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="successToastMessage">
+                <span th:text="${message}" th:if="${message != null}"></span>
+            </div>
+        </div>
+        
+        <!-- Error Toast Template -->
+        <div class="toast custom-toast toast-error" role="alert" aria-live="assertive" aria-atomic="true" id="errorToast">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <strong class="toast-title">Lỗi</strong>
+                <small class="toast-time">Vừa xong</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="errorToastMessage">
+                <span th:text="${error}" th:if="${error != null}"></span>
+            </div>
+        </div>
+        
+        <!-- Info Toast Template -->
+        <div class="toast custom-toast toast-info" role="alert" aria-live="assertive" aria-atomic="true" id="infoToast">
+            <div class="toast-header">
+                <div class="toast-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <strong class="toast-title">Thông tin</strong>
+                <small class="toast-time">Vừa xong</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="infoToastMessage"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mt-3 pt-4">
+        <form id="personal-info-form" method="post" action="/profile" enctype="multipart/form-data" onsubmit="document.getElementById('save-btn').disabled = true; document.getElementById('save-btn').innerHTML = '<span class=\'spinner-border spinner-border-sm\' role=\'status\' aria-hidden=\'true\'></span> Đang lưu...';">
+        <!-- Hidden fields for address data -->
+        <input type="hidden" name="province" id="provinceInput">
+        <input type="hidden" name="district" id="districtInput">
+        <input type="hidden" name="ward" id="wardInput">
+        
+        <!-- Account Info Section -->
+        <div class="row profile-section">
+            <!-- Avatar Section -->
+            <div class="col-md-3 avatar-container">
+                <h5 class="section-title">Ảnh đại diện</h5>
+                <div class="avatar" id="avatar-preview" onclick="document.getElementById('avatar-upload').click()">
+                    <!-- Sử dụng ảnh từ model với timestamp để tránh cache -->
+                    <img th:src="@{'/Images/' + ${image} + '?t=' + ${timestamp}}" class="img-fluid" alt="Avatar" />
+                </div>
+                <p class="text-muted small text-center">JPG, JPEG hoặc PNG. Kích thước tối đa 1000KB</p>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-primary" id="upload-btn" onclick="document.getElementById('avatar-upload').click()">
+                        <i class="fas fa-upload me-1 text-white"></i> Tải lên
+                    </button>
+                </div>
+                <input type="file" id="avatar-upload" name="avatar" accept="image/*" style="display: none;">
+            </div>
+
+            <!-- Personal Information -->
+            <div class="col-md-9">
+                <h5 class="section-title">Thông tin cá nhân</h5>
+                
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label"><i class="fas fa-user me-2"></i>Họ và tên</label>
+                        <input type="text" class="form-control" name="fullname" th:value="${fullname}" placeholder="Tên tài khoản">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Tỉnh/Thành phố</label>
+                        <select class="form-select" id="province">
+                            <option value="">Chọn tỉnh/thành phố</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Quận/Huyện</label>
+                        <select class="form-select" id="district">
+                            <option value="">Chọn quận/huyện</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Phường/Xã</label>
+                        <select class="form-select" id="ward">
+                            <option value="">Chọn phường/xã</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row form-row mb-3 form-field">
+                    <div class="col-md-12">
+                        <label class="form-label"><i class="fas fa-map-marker-alt me-2"></i>Chi tiết</label>
+                        <input type="text" class="form-control" name="address" id="addressDetail" placeholder="Nhập địa chỉ cụ thể" th:value="${address}">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Số điện thoại</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                            <input type="tel" class="form-control" name="phone" th:value="${phone}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input type="email" class="form-control" name="email" th:value="${email}" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 form-field">
+                    <button type="submit" class="btn btn-primary" id="save-btn">
+                        <i class="fas fa-save me-1 text-white"></i> Lưu thay đổi
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+    </form>
+    </div>
+
+    <div th:replace="~{/Layout/Footer}"></div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khởi tạo các biến
+            const avatarUpload = document.getElementById('avatar-upload');
+            const avatarPreview = document.getElementById('avatar-preview');
+            const provinceSelect = document.getElementById("province");
+            const districtSelect = document.getElementById("district");
+            const wardSelect = document.getElementById("ward");
+            const provinceInput = document.getElementById("provinceInput");
+            const districtInput = document.getElementById("districtInput");
+            const wardInput = document.getElementById("wardInput");
+            
+            // Lấy giá trị đã lưu từ model (nếu có)
+            const savedProvince = /*[[${province}]]*/ '';
+            const savedDistrict = /*[[${district}]]*/ '';
+            const savedWard = /*[[${ward}]]*/ '';
+            
+            // Đặt giá trị cho các input ẩn
+            if (savedProvince) provinceInput.value = savedProvince;
+            if (savedDistrict) districtInput.value = savedDistrict;
+            if (savedWard) wardInput.value = savedWard;
+            
+            // Biến để theo dõi trạng thái đã chọn
+            let provinceSelected = false;
+            let districtSelected = false;
+            
+            // Avatar upload functionality
+            avatarUpload.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    // Check file size
+                    if (file.size > 1000 * 1024) {
+                        showToast('error', 'Kích thước file quá lớn. Tối đa 1000KB.');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = avatarPreview.querySelector('img');
+                        if (img) {
+                            img.src = e.target.result;
+                        } else {
+                            avatarPreview.innerHTML = `<img src="${e.target.result}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">`;
+                        }
+                        showToast('success', 'Ảnh đã được tải lên. Nhấn Lưu thay đổi để cập nhật.');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Hàm tải danh sách quận/huyện
+            function loadDistricts(provinceCode) {
+                fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Xóa các tùy chọn hiện tại
+                        districtSelect.innerHTML = "<option value=''>Chọn quận/huyện</option>";
+                        
+                        // Thêm các tùy chọn mới
+                        data.districts.forEach(district => {
+                            let option = document.createElement("option");
+                            option.value = district.code;
+                            option.textContent = district.name;
+                            districtSelect.appendChild(option);
+                            
+                            // Nếu tên quận/huyện trùng với giá trị đã lưu, chọn nó
+                            if (savedDistrict && district.name === savedDistrict) {
+                                option.selected = true;
+                                districtSelected = true;
+                                
+                                // Tải danh sách phường/xã cho quận/huyện đã chọn
+                                loadWards(district.code);
+                            }
+                        });
+                        
+                        // Nếu không tìm thấy quận/huyện trùng khớp, nhưng có giá trị đã lưu
+                        if (savedDistrict && !districtSelected) {
+                            // Thêm tùy chọn mới với giá trị đã lưu
+                            let option = document.createElement("option");
+                            option.value = "custom";
+                            option.textContent = savedDistrict;
+                            option.selected = true;
+                            districtSelect.appendChild(option);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Lỗi khi lấy danh sách quận/huyện:", error);
+                        showToast('error', 'Không thể tải danh sách quận/huyện. Vui lòng thử lại sau.');
+                    });
+            }
+            
+            // Hàm tải danh sách phường/xã
+            function loadWards(districtCode) {
+                fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Xóa các tùy chọn hiện tại
+                        wardSelect.innerHTML = "<option value=''>Chọn phường/xã</option>";
+                        
+                        // Thêm các tùy chọn mới
+                        data.wards.forEach(ward => {
+                            let option = document.createElement("option");
+                            option.value = ward.code;
+                            option.textContent = ward.name;
+                            wardSelect.appendChild(option);
+                            
+                            // Nếu tên phường/xã trùng với giá trị đã lưu, chọn nó
+                            if (savedWard && ward.name === savedWard) {
+                                option.selected = true;
+                            }
+                        });
+                        
+                        // Nếu không tìm thấy phường/xã trùng khớp, nhưng có giá trị đã lưu
+                        if (savedWard && !wardSelect.querySelector('option[selected]')) {
+                            // Thêm tùy chọn mới với giá trị đã lưu
+                            let option = document.createElement("option");
+                            option.value = "custom";
+                            option.textContent = savedWard;
+                            option.selected = true;
+                            wardSelect.appendChild(option);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Lỗi khi lấy danh sách phường/xã:", error);
+                        showToast('error', 'Không thể tải danh sách phường/xã. Vui lòng thử lại sau.');
+                    });
+            }
+            
+            // Lấy danh sách tỉnh/thành phố từ API
+            fetch("https://provinces.open-api.vn/api/p/")
+                .then(response => response.json())
+                .then(data => {
+                    // Thêm các tùy chọn vào dropdown tỉnh/thành phố
+                    data.forEach(province => {
+                        let option = document.createElement("option");
+                        option.value = province.code;
+                        option.textContent = province.name;
+                        provinceSelect.appendChild(option);
+                        
+                        // Nếu tên tỉnh/thành phố trùng với giá trị đã lưu, chọn nó
+                        if (savedProvince && province.name === savedProvince) {
+                            option.selected = true;
+                            provinceSelected = true;
+                            
+                            // Tải danh sách quận/huyện cho tỉnh/thành phố đã chọn
+                            loadDistricts(province.code);
+                        }
+                    });
+                    
+                    // Nếu không tìm thấy tỉnh/thành phố trùng khớp, nhưng có giá trị đã lưu
+                    if (savedProvince && !provinceSelected) {
+                        // Thêm tùy chọn mới với giá trị đã lưu
+                        let option = document.createElement("option");
+                        option.value = "custom";
+                        option.textContent = savedProvince;
+                        option.selected = true;
+                        provinceSelect.appendChild(option);
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi khi lấy danh sách tỉnh/thành phố:", error);
+                    showToast('error', 'Không thể tải danh sách tỉnh/thành phố. Vui lòng thử lại sau.');
+                });
+            
+            // Sự kiện khi chọn tỉnh/thành phố
+            provinceSelect.addEventListener("change", function() {
+                const provinceCode = this.value;
+                const provinceName = this.options[this.selectedIndex].text;
+                
+                // Cập nhật giá trị input ẩn
+                provinceInput.value = provinceName;
+                
+                // Xóa các tùy chọn quận/huyện và phường/xã
+                districtSelect.innerHTML = "<option value=''>Chọn quận/huyện</option>";
+                wardSelect.innerHTML = "<option value=''>Chọn phường/xã</option>";
+                
+                // Xóa giá trị input ẩn cho quận/huyện và phường/xã
+                districtInput.value = "";
+                wardInput.value = "";
+                
+                // Nếu đã chọn tỉnh/thành phố, tải danh sách quận/huyện
+                if (provinceCode && provinceCode !== "custom") {
+                    loadDistricts(provinceCode);
+                }
+            });
+            
+            // Sự kiện khi chọn quận/huyện
+            districtSelect.addEventListener("change", function() {
+                const districtCode = this.value;
+                const districtName = this.options[this.selectedIndex].text;
+                
+                // Cập nhật giá trị input ẩn
+                districtInput.value = districtName;
+                
+                // Xóa các tùy chọn phường/xã
+                wardSelect.innerHTML = "<option value=''>Chọn phường/xã</option>";
+                
+                // Xóa giá trị input ẩn cho phường/xã
+                wardInput.value = "";
+                
+                // Nếu đã chọn quận/huyện, tải danh sách phường/xã
+                if (districtCode && districtCode !== "custom") {
+                    loadWards(districtCode);
+                }
+            });
+            
+            // Sự kiện khi chọn phường/xã
+            wardSelect.addEventListener("change", function() {
+                const wardName = this.options[this.selectedIndex].text;
+                
+                // Cập nhật giá trị input ẩn
+                wardInput.value = wardName;
+            });
+            
+            // Hiển thị thông báo nếu có
+            const message = /*[[${message}]]*/ null;
+            const error = /*[[${error}]]*/ null;
+
+            if (message) {
+                showToast('success', message);
+            } else if (error) {
+                showToast('error', error);
+            }
+            
+            // Improved Toast notification function
+            function showToast(type, message) {
+                let toastElement;
+                let messageElement;
+                
+                // Determine which toast to show based on type
+                switch(type) {
+                    case 'success':
+                        toastElement = document.getElementById('successToast');
+                        messageElement = document.getElementById('successToastMessage');
+                        break;
+                    case 'error':
+                        toastElement = document.getElementById('errorToast');
+                        messageElement = document.getElementById('errorToastMessage');
+                        break;
+                    case 'info':
+                        toastElement = document.getElementById('infoToast');
+                        messageElement = document.getElementById('infoToastMessage');
+                        break;
+                    default:
+                        toastElement = document.getElementById('infoToast');
+                        messageElement = document.getElementById('infoToastMessage');
+                }
+                
+                // Set the message
+                messageElement.textContent = message;
+                
+                // Create a clone of the toast to ensure animations work every time
+                const toastClone = toastElement.cloneNode(true);
+                toastElement.parentNode.replaceChild(toastClone, toastElement);
+                
+                // Create Bootstrap Toast instance and show it
+                const bsToast = new bootstrap.Toast(toastClone, {
+                    autohide: true,
+                    delay: 5000
+                });
+                
+                // Add show class for custom animation
+                toastClone.classList.add('show');
+                bsToast.show();
+                
+                // Auto-remove toast after it's hidden to prevent stacking
+                toastClone.addEventListener('hidden.bs.toast', function() {
+                    if (toastClone.parentNode) {
+                        toastClone.parentNode.removeChild(toastClone);
+                    }
+                });
+            }
+        });
+    </script>    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>AOS.init();</script>
+</body>
+</html>

@@ -26,6 +26,10 @@ public class User {
     String email;
     String phone;
     String image;
+    String province;
+    String district;
+    String ward;
+    String address;
     boolean role;
     boolean activated;
     @OneToMany(mappedBy = "user")

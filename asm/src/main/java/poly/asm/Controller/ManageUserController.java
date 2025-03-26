@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpSession;
 import poly.asm.DAO.UserDAO;
 import poly.asm.Models.User;
 
@@ -21,8 +22,11 @@ public class ManageUserController {
     private UserDAO userDAO;
 
     @GetMapping("/manageuser")
-    public String manageUser(Model model) {
+    public String manageUser(Model model, HttpSession session) {
         List<User> users = userDAO.findAll();
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        String imagePath = loggedInUser.getImage();
+        model.addAttribute("image", imagePath);
         model.addAttribute("users", users);
         return "Admin/testuser";
     }

@@ -19,7 +19,11 @@ public class ChangePasswordController {
 
     // Hiển thị form đổi mật khẩu
     @GetMapping("/changepassword")
-    public String showChangePasswordForm() {
+    public String showChangePasswordForm(Model model, HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        // Nếu user null, dùng icon user mặc định
+        String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
+        model.addAttribute("image", imagePath);
         return "Home/changepass"; // Trả về tệp Home/changepass.html
     }
 

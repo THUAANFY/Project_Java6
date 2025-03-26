@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{/Layout/Head}">
+        <title>Giỏ hàng</title>
+    </head>
+    <head>
+        <!-- <link rel="stylesheet" th:href="@{/CSS/Index.css}"> -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+        <style>
+            .transition-all {
+                transition: all 0.3s ease;
+            }
+        
+            .transition-all:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+            }
+        
+            .transition-hover {
+                transition: all 0.2s ease;
+            }
+        
+            .transition-hover:hover {
+                transform: scale(1.02);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            }
+        
+            .transition-btn {
+                transition: all 0.3s ease;
+            }
+        
+            .transition-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(255,193,7,0.4);
+                background-color: #ffca2c;
+            }
+        </style>
+    </head>
+<body>
+    <div th:replace="~{/Layout/Navbar}"></div>
+
+    <div class="container-fluid py-5 mt-5 pt-5">
+        <!-- Login Required Message -->
+        <div class="row" th:if="${loginMessage != null}">
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <span th:text="${loginMessage}">Vui lòng đăng nhập để xem giỏ hàng của bạn</span>
+                    <a th:href="@{/login}" class="btn btn-sm btn-primary ms-3">Đăng nhập ngay</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="row" th:if="${addSuccess}">
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="fa-solid fa-check-circle me-2"></i>
+                    Sản phẩm đã được thêm vào giỏ hàng thành công!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Content - Only show if user is logged in -->
+        <div class="row gx-3" th:if="${loginMessage == null}">
+            <div class="col-lg-8 col-12 pe-4">
+                <div class="cart-container border border-1 p-3 rounded-2 mb-3">
+                    <h4 class="fw-bold text-info">GIỎ HÀNG</h4>
+
+                    <table class="table table-striped">
+                        <thead class="table-light">
+                            <tr class="text-center">
+                                <th scope="col">Tên sản phẩm</th>
+                                <th scope="col">Hình ảnh</th> <!-- Cột Hình ảnh -->
+                                <th scope="col" class="text-center">Giá gốc</th>
+                                <th scope="col" class="text-center">Số lượng</th>
+                                <th scope="col" class="text-center">Tổng tiền</th>
+                                <th scope="col" class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Hiển thị thông báo khi giỏ hàng trống -->
+                            <tr th:if="${#lists.isEmpty(cartItems)}">
+                                <td colspan="6" class="text-center text-muted">Giỏ hàng của bạn đang trống</td>
+                            </tr>
+                            
+                            <!-- Hiển thị các sản phẩm trong giỏ hàng -->
+                            <tr th:each="item : ${cartItems}" th:if="${not #lists.isEmpty(cartItems)}">
+                                <td class="text-center align-middle fw-semibold" th:text="${item.name}">Tên Sản Phẩm</td>
+                                <td class="text-center align-middle">
+                                    <img th:src="${item.image}" alt="Product Image" class="img-thumbnail" width="100">
+                                </td>
+                                <td class="text-center align-middle price" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'" th:data-price="${item.price}" th:data-id="${item.id}">000000</td>
+
+                                <td class="text-center align-middle">
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <button class="btn btn-sm decrease-btn" th:data-id="${item.id}">
+                                            <i class="fa-solid fa-minus"></i>
+                                        </button>
+                                        <span class="mx-2 quantity" th:id="'quantity-' + ${item.id}" th:text="${item.quantity}">1</span>
+                                        <button class="btn btn-sm increase-btn" th:data-id="${item.id}">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="text-center align-middle subtotal" th:id="'subtotal-' + ${item.id}" th:text="${#numbers.formatDecimal(item.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                <td class="text-center align-middle">
+                                    <form th:action="@{/cart/remove}" method="post" style="display: inline;">
+                                        <input type="hidden" name="id" th:value="${item.id}">
+                                        <button type="submit" class="btn remove-btn" style="color: red;">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-12 mt-3 mt-lg-0">
+                <div class="order-summary border shadow-sm p-4 rounded-3 bg-light transition-all">
+                    <h5 class="fw-bold mb-4 text-success position-relative">
+                        THÔNG TIN THANH TOÁN
+                        <span class="position-absolute bottom-0 start-0 bg-success h-1 w-25 rounded"></span>
+                    </h5>
+                    
+                    <div class="border p-3 mb-3 rounded-3 bg-white shadow-sm transition-hover">
+                        <strong class="d-block mb-2 text-dark">
+                            <i class="fa-solid fa-truck-moving me-2 text-primary"></i>
+                            Fy Express
+                        </strong>
+                        <span class="text-muted">
+                            Giao hàng nhanh 24/7
+                        </span>
+                    </div>
+            
+                    <div class="border-top pt-3 mt-3">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Subtotal</span>
+                            <span id="totalAmount" class="fw-semibold" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Tổng tiền</span>
+                        </div>
+                        <h6 class="d-flex justify-content-between fw-bold mt-2 mb-4 text-dark">
+                            <span>Total</span>
+                            <span id="finalTotal" class="text-success" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Tổng cộng</span>
+                        </h6>
+                    </div>
+            
+                    <a href="/order/pay" class="btn btn-warning w-100 mt-2 rounded-pill py-2 fw-semibold transition-btn">
+                        <i class="fa-solid fa-money-bill me-2"></i>
+                        THANH TOÁN
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{/Layout/Footer}"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>AOS.init();</script>
+
+    <script th:if="${loginMessage == null}">
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".increase-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const id = this.getAttribute("data-id");
+                    updateQuantity(id, 1);
+                });
+            });
+
+            document.querySelectorAll(".decrease-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const id = this.getAttribute("data-id");
+                    updateQuantity(id, -1);
+                });
+            });
+
+            function updateQuantity(id, change) {
+                const quantityElem = document.getElementById("quantity-" + id);
+                let quantity = parseInt(quantityElem.textContent) + change;
+                if (quantity < 1) return;
+
+                quantityElem.textContent = quantity;
+                updateSubtotal(id, quantity);
+
+                // Gửi request cập nhật số lượng lên server
+                fetch('/cart/update?id=' + id + '&quantity=' + quantity, {
+                    method: 'POST'
+                }).then(response => {
+                    if (!response.ok) {
+                        console.error('Cập nhật thất bại');
+                    } else {
+                        return response.text();
+                    }
+                }).then(data => {
+                    if (data === "login_required") {
+                        window.location.href = "/login";
+                    }
+                });
+            }
+
+            function updateSubtotal(id, quantity) {
+                const priceElem = document.querySelector(`.price[data-id="${id}"]`);
+                if (!priceElem) return;
+                const price = parseFloat(priceElem.getAttribute("data-price"));
+                const subtotal = price * quantity;
+                document.getElementById("subtotal-" + id).textContent = subtotal.toLocaleString("vi-VN") + " ₫";
+                updateTotal();
+            }
+
+            function updateTotal() {
+                let total = 0;
+                document.querySelectorAll(".subtotal").forEach(subtotalElem => {
+                    const subtotalText = subtotalElem.textContent.trim();
+                    if (subtotalText) {
+                        let subtotal = parseFloat(subtotalText.replace(/[^\d]/g, ""));
+                        total += subtotal || 0;
+                    }
+                });
+
+                document.getElementById("totalAmount").textContent = total.toLocaleString("vi-VN") + " ₫";
+                document.getElementById("finalTotal").textContent = total.toLocaleString("vi-VN") + " ₫"; // Tổng tiền = tổng cộng
+            }
+
+            // Gọi cập nhật tổng tiền ngay khi tải trang
+            updateTotal();
+        });
+    </script>
+</body>
+</html>
+

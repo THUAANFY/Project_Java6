@@ -11,4 +11,6 @@ import poly.asm.Models.OrderDetail;
 @Repository
 public interface OrderDetailDAO extends JpaRepository<OrderDetail, Integer>{
     List<OrderDetail> findByOrder(Order order);
+    // Tìm chi tiết đơn hàng theo đơn hàng
+    List<OrderDetail> findByOrderId(Integer orderId);
 }

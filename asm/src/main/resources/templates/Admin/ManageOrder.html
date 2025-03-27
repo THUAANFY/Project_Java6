@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/Layout/Head}">
+    <title>Quản lý đơn hàng</title>
+</head>
+<head>
+    <link rel="stylesheet" th:href="@{/CSS/ManagePr.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-confirmed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-shipped {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-delivered {
+            background-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* .dashboard-card {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border-left: 5px solid;
+            overflow: hidden;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        } */
+        .dashboard-card {
+            border-radius: 8px; /* Giảm từ 10px xuống 8px */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Giảm bóng đổ */
+            transition: all 0.3s;
+            border-left: 4px solid; /* Giảm từ 5px xuống 4px */
+            overflow: hidden;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px); /* Giảm từ -5px xuống -4px */
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1); /* Giảm bóng đổ khi hover */
+        }
+        
+        .card-pending {
+            border-left-color: #ffc107;
+        }
+        
+        .card-confirmed {
+            border-left-color: #17a2b8;
+        }
+        
+        .card-shipped {
+            border-left-color: #28a745;
+        }
+        
+        .card-delivered {
+            border-left-color: #20c997;
+        }
+        
+        .card-cancelled {
+            border-left-color: #dc3545;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .icon-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .icon-confirmed {
+            background-color: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+        
+        .icon-shipped {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .icon-delivered {
+            background-color: rgba(32, 201, 151, 0.1);
+            color: #20c997;
+        }
+        
+        .icon-cancelled {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .card-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .filter-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        
+        .filter-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .filter-header {
+            border-bottom: 1px solid #f1f1f1;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .search-input {
+            border-radius: 50px;
+            padding-left: 40px;
+            border: 1px solid #ced4da;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+            border-color: #ffc107;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Nhúng Sidebar -->
+        <th:block th:replace="~{/Layout/Sidebar :: sidebar}"></th:block>
+    
+        <!-- Nội dung chính -->
+        <div class="content">
+            <h1 class="page-title mb-4">Quản lý đơn hàng</h1>
+            
+            <!-- Alert Messages -->
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" th:if="${message != null}">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${message}">Thao tác thành công!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" th:if="${error != null}">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}">Đã xảy ra lỗi!</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <!-- Order Statistics -->
+            <div class="row mb-2"> <!-- Giảm mb-3 thành mb-2 -->
+                <div class="col-md-4 col-lg-2 mb-1"> <!-- Giảm mb-2 thành mb-1 -->
+                    <div class="dashboard-card card-pending p-1"> <!-- Giảm p-2 thành p-1 -->
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon icon-pending me-1"> <!-- Giảm me-2 thành me-1 -->
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <div class="card-value" th:text="${pendingCount}" style="font-size: 1rem;">0</div> <!-- Giảm từ 1.2rem xuống 1rem -->
+                                <div class="card-label" style="font-size: 0.75rem;">Chờ xác nhận</div> <!-- Giảm từ 0.85rem xuống 0.75rem -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-2 mb-1">
+                    <div class="dashboard-card card-confirmed p-1">
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon icon-confirmed me-1">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <div class="card-value" th:text="${confirmedCount}" style="font-size: 1rem;">0</div>
+                                <div class="card-label" style="font-size: 0.75rem;">Đã xác nhận</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-2 mb-1">
+                    <div class="dashboard-card card-shipped p-1">
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon icon-shipped me-1">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div>
+                                <div class="card-value" th:text="${shippingCount}" style="font-size: 1rem;">0</div>
+                                <div class="card-label" style="font-size: 0.75rem;">Đang giao</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-2 mb-1">
+                    <div class="dashboard-card card-delivered p-1">
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon icon-delivered me-1">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <div>
+                                <div class="card-value" th:text="${deliveredCount}" style="font-size: 1rem;">0</div>
+                                <div class="card-label" style="font-size: 0.75rem;">Đã giao</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-2 mb-1">
+                    <div class="dashboard-card card-cancelled p-1">
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon icon-cancelled me-1">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <div>
+                                <div class="card-value" th:text="${cancelledCount}" style="font-size: 1rem;">0</div>
+                                <div class="card-label" style="font-size: 0.75rem;">Đã hủy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-2 mb-1">
+                    <div class="dashboard-card p-1" style="border-left-color: #6f42c1;">
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon me-1" style="background-color: rgba(111, 66, 193, 0.1); color: #6f42c1;">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div>
+                                <div class="card-value" th:text="${totalCount}" style="font-size: 1rem;">0</div>
+                                <div class="card-label" style="font-size: 0.75rem;">Tổng đơn</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="list-tab" data-bs-toggle="tab" data-bs-target="#list" type="button" role="tab">
+                        <i class="fas fa-list me-2"></i>Danh sách đơn hàng
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="filter-tab" data-bs-toggle="tab" data-bs-target="#filter" type="button" role="tab">
+                        <i class="fas fa-filter me-2"></i>Bộ lọc nâng cao
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Tab nội dung -->
+            <div class="tab-content">
+                <!-- Tab Danh Sách -->
+                <div class="tab-pane fade show active" id="list" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" placeholder="Tìm kiếm đơn hàng...">
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-file-export me-2"></i>Xuất Excel
+                            </button>
+                            <button class="btn btn-outline-secondary">
+                                <i class="fas fa-print me-2"></i>In báo cáo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr class="text-center">
+                                    <th>Mã đơn hàng</th>
+                                    <th>Khách hàng</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Thanh toán</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="order : ${orders}" class="align-middle text-center">
+                                    <td class="fw-bold" th:text="${order.orderCode}"></td>
+                                    <td>
+                                        <div th:text="${order.recipientName}"></div>
+                                        <small class="text-muted" th:text="${order.recipientPhone}"></small>
+                                    </td>
+                                    <td>
+                                        <div th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy')}"></div>
+                                        <small class="text-muted" th:text="${#dates.format(order.createdAt, 'HH:mm')}"></small>
+                                    </td>
+                                    <td class="fw-bold text-success" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                    <td>
+                                        <span class="badge bg-light text-dark" th:text="${order.paymentMethod == 'codPayment' ? 'COD' : (order.paymentMethod == 'bankPayment' ? 'Chuyển khoản' : 'MoMo')}"></span>
+                                    </td>
+                                    <td>
+                                        <span th:class="'status-badge ' + ${order.status == 'Chờ xác nhận' ? 'status-pending' : 
+                                                    (order.status == 'Đã xác nhận' ? 'status-confirmed' : 
+                                                    (order.status == 'Đang giao hàng' ? 'status-shipped' : 
+                                                    (order.status == 'Đã giao hàng' ? 'status-delivered' : 'status-cancelled')))}" 
+                                            th:text="${order.status}">
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a th:href="@{/manageorder/detail/{orderCode}(orderCode=${order.orderCode})}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" th:data-bs-target="'#updateStatusModal-' + ${order.orderCode}">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="'#deleteOrderModal-' + ${order.orderCode}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${orders.isEmpty()}">
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="text-muted">Không tìm thấy đơn hàng nào</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Phân trang -->
+                    <div class="d-flex justify-content-center mt-4">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                
+                <!-- Tab Bộ lọc -->
+                <div class="tab-pane fade" id="filter" role="tabpanel">
+                    <form th:action="@{/manageorder}" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="fas fa-tasks me-2"></i>Trạng thái đơn hàng</label>
+                            <select class="form-select" name="status">
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="Chờ xác nhận">Chờ xác nhận</option>
+                                <option value="Đã xác nhận">Đã xác nhận</option>
+                                <option value="Đang giao hàng">Đang giao hàng</option>
+                                <option value="Đã giao hàng">Đã giao hàng</option>
+                                <option value="Đã hủy">Đã hủy</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="fas fa-credit-card me-2"></i>Phương thức thanh toán</label>
+                            <select class="form-select" name="paymentMethod">
+                                <option value="">Tất cả phương thức</option>
+                                <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                                <option value="bank">Chuyển khoản ngân hàng</option>
+                                <option value="momo">Ví MoMo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="fas fa-sort me-2"></i>Sắp xếp theo</label>
+                            <select class="form-select" name="sortBy">
+                                <option value="createdAt">Ngày đặt</option>
+                                <option value="total">Tổng tiền</option>
+                                <option value="status">Trạng thái</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Khoảng thời gian</label>
+                            <div class="input-group">
+                                <input type="date" class="form-control" name="startDate" placeholder="Từ ngày">
+                                <span class="input-group-text">đến</span>
+                                <input type="date" class="form-control" name="endDate" placeholder="Đến ngày">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-search me-2"></i>Tìm kiếm</label>
+                            <input type="text" class="form-control" name="search" placeholder="Tìm kiếm theo mã đơn hàng, tên khách hàng hoặc số điện thoại...">
+                        </div>
+                        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter me-2"></i>Áp dụng bộ lọc
+                            </button>
+                            <a href="/manageorder" class="btn btn-secondary">
+                                <i class="fas fa-undo me-2"></i>Đặt lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Update Status Modals -->
+    <div th:each="order : ${orders}" th:id="'updateStatusModal-' + ${order.orderCode}" class="modal fade" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateStatusModalLabel">Cập nhật trạng thái đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/manageorder/update-status}" method="post">
+                        <input type="hidden" name="orderCode" th:value="${order.orderCode}">
+                        <div class="mb-3">
+                            <label for="orderCode" class="form-label">Mã đơn hàng</label>
+                            <input type="text" class="form-control" id="orderCode" th:value="${order.orderCode}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="currentStatus" class="form-label">Trạng thái hiện tại</label>
+                            <input type="text" class="form-control" id="currentStatus" th:value="${order.status}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newStatus" class="form-label">Trạng thái mới</label>
+                            <select class="form-select" id="newStatus" name="status">
+                                <option value="Chờ xác nhận" th:selected="${order.status == 'Chờ xác nhận'}">Chờ xác nhận</option>
+                                <option value="Đã xác nhận" th:selected="${order.status == 'Đã xác nhận'}">Đã xác nhận</option>
+                                <option value="Đang giao hàng" th:selected="${order.status == 'Đang giao hàng'}">Đang giao hàng</option>
+                                <option value="Đã giao hàng" th:selected="${order.status == 'Đã giao hàng'}">Đã giao hàng</option>
+                                <option value="Đã hủy" th:selected="${order.status == 'Đã hủy'}">Đã hủy</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="statusNote" class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="statusNote" name="note" rows="3" placeholder="Nhập ghi chú về việc thay đổi trạng thái..."></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Order Modals -->
+    <div th:each="order : ${orders}" th:id="'deleteOrderModal-' + ${order.orderCode}" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận xóa đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa đơn hàng <span class="fw-bold" th:text="${order.orderCode}"></span>?</p>
+                    <p class="text-danger">Lưu ý: Hành động này không thể hoàn tác.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form th:action="@{/manageorder/delete}" method="post">
+                        <input type="hidden" name="orderCode" th:value="${order.orderCode}">
+                        <button type="submit" class="btn btn-danger">Xóa đơn hàng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+        <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">Thông báo</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" th:text="${message}">
+                Thao tác thành công!
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const links = document.querySelectorAll(".sidebar .nav-link");
+            const currentPage = localStorage.getItem("activePage") || window.location.pathname;
+    
+            links.forEach(link => {
+                if (link.getAttribute("href") === currentPage) {
+                    link.classList.add("active");
+                } else {
+                    link.classList.remove("active");
+                }
+                
+                link.addEventListener("click", function () {
+                    localStorage.setItem("activePage", this.getAttribute("href"));
+                });
+            });
+            
+            // Thêm hiệu ứng cho các hàng trong bảng
+            const tableRows = document.querySelectorAll("tbody tr");
+            tableRows.forEach((row, index) => {
+                row.style.animation = `fadeIn 0.3s ease-out forwards`;
+                row.style.animationDelay = `${index * 0.1}s`;
+                row.style.opacity = "0";
+            });
+            
+            // Hiển thị toast nếu có thông báo
+            const message = /*[[${message}]]*/ null;
+            if (message) {
+                const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+                toast.show();
+            }
+            
+            // Tự động ẩn thông báo alert sau 5 giây
+            const alertElement = document.querySelector('.alert');
+            if (alertElement) {
+                setTimeout(function() {
+                    alertElement.classList.add('fade');
+                    setTimeout(function() {
+                        alertElement.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>
+

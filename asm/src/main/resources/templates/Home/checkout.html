@@ -164,6 +164,58 @@
             background-color: #ffc107;
             border-color: #ffc107;
         }
+        
+        /* CSS cho phần mã giảm giá */
+        .coupon-section {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .coupon-input {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .coupon-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border-radius: 5px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .coupon-error {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-radius: 5px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .btn-apply-coupon {
+            background-color: #ffc107;
+            color: #212529;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .btn-apply-coupon:hover {
+            background-color: #ffca2c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,193,7,0.4);
+        }
+        
+        .btn-remove-coupon {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            margin-left: auto;
+            padding: 0;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -373,6 +425,36 @@
                             <span class="text-muted">Phí vận chuyển</span>
                             <span id="shippingFee" class="fw-semibold">30,000 ₫</span>
                         </div>
+                        
+                        <!-- Phần mã giảm giá -->
+                        <div class="coupon-section">
+                            <div class="coupon-input">
+                                <input type="text" class="form-control me-2" id="couponCode" placeholder="Nhập mã giảm giá">
+                                <button class="btn btn-apply-coupon" id="applyCouponBtn">Áp dụng</button>
+                            </div>
+                            
+                            <!-- Hiển thị khi áp dụng mã giảm giá thành công -->
+                            <div class="coupon-success d-none" id="couponSuccess">
+                                <i class="fa-solid fa-check-circle text-success me-2"></i>
+                                <span>Đã áp dụng mã: <strong id="appliedCouponCode">WELCOME10</strong></span>
+                                <button class="btn-remove-coupon" id="removeCouponBtn">
+                                    <i class="fa-solid fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Hiển thị khi mã giảm giá không hợp lệ -->
+                            <div class="coupon-error d-none" id="couponError">
+                                <i class="fa-solid fa-exclamation-circle text-danger me-2"></i>
+                                <span>Mã giảm giá không hợp lệ hoặc đã hết hạn</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Hiển thị giảm giá khi áp dụng mã giảm giá thành công -->
+                        <div class="d-flex justify-content-between mb-2 d-none" id="discountRow">
+                            <span class="text-muted">Giảm giá</span>
+                            <span id="discountAmount" class="fw-semibold text-danger">-10,000 ₫</span>
+                        </div>
+                        
                         <h6 class="d-flex justify-content-between fw-bold mt-3 mb-4 text-dark">
                             <span>Tổng cộng</span>
                             <span id="finalTotal" class="text-success" th:with="total=${totalPrice + 30000}" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
@@ -542,6 +624,58 @@
                     loadWards(districtCode);
                 }
             });
+            
+            // Xử lý mã giảm giá
+            const applyCouponBtn = document.getElementById('applyCouponBtn');
+            const removeCouponBtn = document.getElementById('removeCouponBtn');
+            const couponSuccess = document.getElementById('couponSuccess');
+            const couponError = document.getElementById('couponError');
+            const discountRow = document.getElementById('discountRow');
+            const couponCodeInput = document.getElementById('couponCode');
+            const appliedCouponCode = document.getElementById('appliedCouponCode');
+            
+            // Xử lý khi nhấn nút áp dụng mã giảm giá
+            applyCouponBtn.addEventListener('click', function() {
+                const couponCode = couponCodeInput.value.trim();
+                
+                if (couponCode) {
+                    // Giả lập kiểm tra mã giảm giá (chỉ UI, không có logic thực)
+                    if (couponCode.toUpperCase() === 'WELCOME10' || couponCode.toUpperCase() === 'SALE20') {
+                        // Hiển thị thông báo áp dụng thành công
+                        couponSuccess.classList.remove('d-none');
+                        couponError.classList.add('d-none');
+                        discountRow.classList.remove('d-none');
+                        appliedCouponCode.textContent = couponCode.toUpperCase();
+                        
+                        // Xóa giá trị input
+                        couponCodeInput.value = '';
+                        
+                        // Trong thực tế, cần tính toán lại tổng tiền dựa trên giá trị giảm giá
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        couponSuccess.classList.add('d-none');
+                        couponError.classList.remove('d-none');
+                        discountRow.classList.add('d-none');
+                    }
+                }
+            });
+            
+            // Xử lý khi nhấn nút xóa mã giảm giá
+            removeCouponBtn.addEventListener('click', function() {
+                couponSuccess.classList.add('d-none');
+                discountRow.classList.add('d-none');
+                couponCodeInput.value = '';
+                
+                // Trong thực tế, cần tính toán lại tổng tiền khi xóa giảm giá
+            });
+            
+            // Xử lý khi nhấn Enter trong input mã giảm giá
+            couponCodeInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyCouponBtn.click();
+                }
+            });
 
             // Xử lý nút đặt hàng
             const placeOrderBtn = document.getElementById('placeOrderBtn');
@@ -575,6 +709,11 @@
                     useProfileAddress: useProfileAddress.checked,
                     paymentMethod: selectedPaymentMethod
                 };
+                
+                // Thêm thông tin mã giảm giá nếu có
+                if (!couponSuccess.classList.contains('d-none')) {
+                    orderData.couponCode = appliedCouponCode.textContent;
+                }
                 
                 if (useNewAddress.checked) {
                     orderData.newAddress = {
@@ -618,3 +757,4 @@
     </script>
 </body>
 </html>
+

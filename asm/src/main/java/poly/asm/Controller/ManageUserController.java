@@ -1,5 +1,6 @@
 package poly.asm.Controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,44 @@ public class ManageUserController {
     private UserDAO userDAO;
 
     @GetMapping("/manageuser")
+    // public String manageUser(Model model, HttpSession session) {
+    //     try {
+    //         List<User> users = userDAO.findAll();
+    //         User loggedInUser = (User) session.getAttribute("loggedInUser");
+            
+    //         if (loggedInUser != null) {
+    //             String imagePath = loggedInUser.getImage();
+    //             model.addAttribute("image", imagePath);
+    //         }
+            
+    //         model.addAttribute("users", users);
+    //         return "Admin/testuser";
+    //     } catch (Exception e) {
+    //         // Log the exception
+    //         e.printStackTrace();
+    //         model.addAttribute("error", "Đã xảy ra lỗi: " + e.getMessage());
+    //         return "error"; // Create a simple error page
+    //     }
+    // }
     public String manageUser(Model model, HttpSession session) {
-        List<User> users = userDAO.findAll();
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        String imagePath = loggedInUser.getImage();
-        model.addAttribute("image", imagePath);
-        model.addAttribute("users", users);
-        return "Admin/testuser";
+        try {
+            List<User> users = userDAO.findAll();
+            User loggedInUser = (User) session.getAttribute("loggedInUser");
+            
+            if (loggedInUser != null) {
+                model.addAttribute("image", loggedInUser.getImage());
+            }
+            
+            model.addAttribute("users", users != null ? users : Collections.emptyList());
+            return "Admin/testuser";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Đã xảy ra lỗi: " + e.getMessage());
+            return "error";
+        }
     }
-    
+
+
     @PostMapping("/manageuser/updateStatus")
     public String updateStatus(
             @RequestParam("userId") String userId,

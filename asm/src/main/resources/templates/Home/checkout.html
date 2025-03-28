@@ -216,6 +216,70 @@
             padding: 0;
             font-size: 16px;
         }
+        
+        /* Voucher card styles */
+        .voucher-select {
+            position: relative;
+            width: 100%;
+        }
+        
+        .voucher-option {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .voucher-option:hover {
+            border-color: #ffc107;
+            background-color: rgba(255, 193, 7, 0.05);
+        }
+        
+        .voucher-option.selected {
+            border-color: #ffc107;
+            background-color: rgba(255, 193, 7, 0.1);
+        }
+        
+        .voucher-code {
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        .voucher-discount {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .voucher-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .voucher-expiry {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .voucher-min-order {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+        
+        .no-vouchers {
+            text-align: center;
+            padding: 15px;
+            color: #6c757d;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #dee2e6;
+        }
     </style>
 </head>
 <body>
@@ -391,6 +455,56 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Voucher Selection Section -->
+                <div class="border border-1 p-4 rounded-3 mb-4 bg-white shadow-sm">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fa-solid fa-ticket-alt me-2 text-warning"></i>
+                        Mã giảm giá
+                    </h5>
+                    
+                    <div class="voucher-select">
+                        <!-- Dropdown để chọn voucher -->
+                        <select class="form-select mb-3" id="voucherSelect">
+                            <option value="">-- Chọn mã giảm giá --</option>
+                            <option th:each="voucher : ${availableVouchers}" 
+                                    th:value="${voucher.code}" 
+                                    th:text="${voucher.code + ' - Giảm ' + #numbers.formatDecimal(voucher.discountAmount, 0, 'COMMA', 0, 'POINT') + '₫'}"
+                                    th:data-discount="${voucher.discountAmount}"
+                                    th:data-min-order="${voucher.minimumOrderAmount}">
+                                WELCOME10 - Giảm 50,000₫
+                            </option>
+                        </select>
+                        
+                        <!-- Hiển thị chi tiết voucher đã chọn -->
+                        <div id="selectedVoucherDetails" class="d-none">
+                            <div class="voucher-option selected">
+                                <div>
+                                    <div class="voucher-code" id="selectedVoucherCode">WELCOME10</div>
+                                    <div class="voucher-description" id="selectedVoucherDescription">
+                                        Giảm <span id="selectedVoucherAmount">50,000₫</span> cho đơn hàng
+                                    </div>
+                                    <div class="voucher-min-order" id="selectedVoucherMinOrder">
+                                        Đơn tối thiểu: 200,000₫
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close" id="removeVoucherBtn" aria-label="Close"></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Hiển thị khi không có voucher nào khả dụng -->
+                        <div th:if="${#lists.isEmpty(availableVouchers)}" class="no-vouchers">
+                            <i class="fa-solid fa-ticket-alt me-2 text-muted"></i>
+                            Hiện không có mã giảm giá nào khả dụng
+                        </div>
+                        
+                        <!-- Hiển thị khi voucher không hợp lệ -->
+                        <div class="coupon-error d-none" id="voucherError">
+                            <i class="fa-solid fa-exclamation-circle text-danger me-2"></i>
+                            <span id="voucherErrorMessage">Đơn hàng không đủ điều kiện áp dụng mã giảm giá này</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col-lg-4 col-12">
@@ -419,34 +533,11 @@
                     <div class="border-top pt-3 mt-3">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">Tạm tính</span>
-                            <span id="subtotal" class="fw-semibold" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                            <span id="subtotal" class="fw-semibold" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'" th:data-value="${totalPrice}">0 ₫</span>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">Phí vận chuyển</span>
-                            <span id="shippingFee" class="fw-semibold">30,000 ₫</span>
-                        </div>
-                        
-                        <!-- Phần mã giảm giá -->
-                        <div class="coupon-section">
-                            <div class="coupon-input">
-                                <input type="text" class="form-control me-2" id="couponCode" placeholder="Nhập mã giảm giá">
-                                <button class="btn btn-apply-coupon" id="applyCouponBtn">Áp dụng</button>
-                            </div>
-                            
-                            <!-- Hiển thị khi áp dụng mã giảm giá thành công -->
-                            <div class="coupon-success d-none" id="couponSuccess">
-                                <i class="fa-solid fa-check-circle text-success me-2"></i>
-                                <span>Đã áp dụng mã: <strong id="appliedCouponCode">WELCOME10</strong></span>
-                                <button class="btn-remove-coupon" id="removeCouponBtn">
-                                    <i class="fa-solid fa-times"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- Hiển thị khi mã giảm giá không hợp lệ -->
-                            <div class="coupon-error d-none" id="couponError">
-                                <i class="fa-solid fa-exclamation-circle text-danger me-2"></i>
-                                <span>Mã giảm giá không hợp lệ hoặc đã hết hạn</span>
-                            </div>
+                            <span id="shippingFee" class="fw-semibold" data-value="30000">30,000 ₫</span>
                         </div>
                         
                         <!-- Hiển thị giảm giá khi áp dụng mã giảm giá thành công -->
@@ -625,56 +716,98 @@
                 }
             });
             
-            // Xử lý mã giảm giá
-            const applyCouponBtn = document.getElementById('applyCouponBtn');
-            const removeCouponBtn = document.getElementById('removeCouponBtn');
-            const couponSuccess = document.getElementById('couponSuccess');
-            const couponError = document.getElementById('couponError');
+            // Xử lý chọn voucher
+            const voucherSelect = document.getElementById('voucherSelect');
+            const selectedVoucherDetails = document.getElementById('selectedVoucherDetails');
+            const selectedVoucherCode = document.getElementById('selectedVoucherCode');
+            const selectedVoucherAmount = document.getElementById('selectedVoucherAmount');
+            const selectedVoucherMinOrder = document.getElementById('selectedVoucherMinOrder');
+            const removeVoucherBtn = document.getElementById('removeVoucherBtn');
+            const voucherError = document.getElementById('voucherError');
+            const voucherErrorMessage = document.getElementById('voucherErrorMessage');
             const discountRow = document.getElementById('discountRow');
-            const couponCodeInput = document.getElementById('couponCode');
-            const appliedCouponCode = document.getElementById('appliedCouponCode');
+            const discountAmount = document.getElementById('discountAmount');
             
-            // Xử lý khi nhấn nút áp dụng mã giảm giá
-            applyCouponBtn.addEventListener('click', function() {
-                const couponCode = couponCodeInput.value.trim();
+            // Lấy giá trị đơn hàng
+            const subtotalElement = document.getElementById('subtotal');
+            const shippingFeeElement = document.getElementById('shippingFee');
+            const finalTotalElement = document.getElementById('finalTotal');
+            
+            let subtotal = parseFloat(subtotalElement.getAttribute('data-value') || 0);
+            let shippingFee = parseFloat(shippingFeeElement.getAttribute('data-value') || 30000);
+            let discount = 0;
+            
+            // Format currency
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫';
+            }
+            
+            // Calculate and update the final total
+            function updateTotalPrice() {
+                const finalTotal = subtotal + shippingFee - discount;
+                finalTotalElement.textContent = formatCurrency(finalTotal);
+            }
+            
+            // Xử lý khi chọn voucher từ dropdown
+            voucherSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const voucherCode = this.value;
                 
-                if (couponCode) {
-                    // Giả lập kiểm tra mã giảm giá (chỉ UI, không có logic thực)
-                    if (couponCode.toUpperCase() === 'WELCOME10' || couponCode.toUpperCase() === 'SALE20') {
-                        // Hiển thị thông báo áp dụng thành công
-                        couponSuccess.classList.remove('d-none');
-                        couponError.classList.add('d-none');
-                        discountRow.classList.remove('d-none');
-                        appliedCouponCode.textContent = couponCode.toUpperCase();
-                        
-                        // Xóa giá trị input
-                        couponCodeInput.value = '';
-                        
-                        // Trong thực tế, cần tính toán lại tổng tiền dựa trên giá trị giảm giá
-                    } else {
-                        // Hiển thị thông báo lỗi
-                        couponSuccess.classList.add('d-none');
-                        couponError.classList.remove('d-none');
-                        discountRow.classList.add('d-none');
-                    }
+                // Nếu không chọn voucher nào
+                if (!voucherCode) {
+                    selectedVoucherDetails.classList.add('d-none');
+                    voucherError.classList.add('d-none');
+                    discountRow.classList.add('d-none');
+                    discount = 0;
+                    updateTotalPrice();
+                    return;
                 }
+                
+                // Lấy thông tin voucher từ option đã chọn
+                const discountValue = parseFloat(selectedOption.getAttribute('data-discount') || 0);
+                const minOrderValue = parseFloat(selectedOption.getAttribute('data-min-order') || 0);
+                
+                // Kiểm tra điều kiện áp dụng voucher
+                if (subtotal < minOrderValue) {
+                    voucherError.classList.remove('d-none');
+                    voucherErrorMessage.textContent = `Đơn hàng không đủ điều kiện áp dụng mã giảm giá này (tối thiểu ${formatCurrency(minOrderValue)})`;
+                    selectedVoucherDetails.classList.add('d-none');
+                    discountRow.classList.add('d-none');
+                    discount = 0;
+                    updateTotalPrice();
+                    
+                    // Reset select về giá trị mặc định sau 3 giây
+                    setTimeout(() => {
+                        this.value = '';
+                        voucherError.classList.add('d-none');
+                    }, 3000);
+                    
+                    return;
+                }
+                
+                // Hiển thị thông tin voucher đã chọn
+                selectedVoucherCode.textContent = voucherCode;
+                selectedVoucherAmount.textContent = formatCurrency(discountValue);
+                selectedVoucherMinOrder.textContent = `Đơn tối thiểu: ${formatCurrency(minOrderValue)}`;
+                selectedVoucherDetails.classList.remove('d-none');
+                voucherError.classList.add('d-none');
+                
+                // Cập nhật giảm giá
+                discount = discountValue;
+                discountAmount.textContent = `-${formatCurrency(discount)}`;
+                discountRow.classList.remove('d-none');
+                
+                // Cập nhật tổng tiền
+                updateTotalPrice();
             });
             
-            // Xử lý khi nhấn nút xóa mã giảm giá
-            removeCouponBtn.addEventListener('click', function() {
-                couponSuccess.classList.add('d-none');
+            // Xử lý khi xóa voucher
+            removeVoucherBtn.addEventListener('click', function() {
+                voucherSelect.value = '';
+                selectedVoucherDetails.classList.add('d-none');
                 discountRow.classList.add('d-none');
-                couponCodeInput.value = '';
-                
-                // Trong thực tế, cần tính toán lại tổng tiền khi xóa giảm giá
-            });
-            
-            // Xử lý khi nhấn Enter trong input mã giảm giá
-            couponCodeInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    applyCouponBtn.click();
-                }
+                discount = 0;
+                updateTotalPrice();
             });
 
             // Xử lý nút đặt hàng
@@ -711,8 +844,9 @@
                 };
                 
                 // Thêm thông tin mã giảm giá nếu có
-                if (!couponSuccess.classList.contains('d-none')) {
-                    orderData.couponCode = appliedCouponCode.textContent;
+                if (voucherSelect.value) {
+                    orderData.couponCode = voucherSelect.value;
+                    orderData.discountAmount = discount;
                 }
                 
                 if (useNewAddress.checked) {
@@ -757,4 +891,3 @@
     </script>
 </body>
 </html>
-

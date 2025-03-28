@@ -47,6 +47,33 @@ public class ManagePrController {
         return "Admin/ManageProduct"; 
     }
 
+    @GetMapping("/manageproduct/search")
+    public String searchProducts(Model model,
+                               @RequestParam("keyword") String keyword,
+                               @RequestParam("p") Optional<Integer> p) {
+        Pageable pageable = PageRequest.of(p.orElse(0), 4);
+        Page<Product> page;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            page = productDAO.findByNameContainingIgnoreCase(keyword, pageable);
+            model.addAttribute("keyword", keyword);
+        } else {
+            page = productDAO.findAll(pageable);
+        }
+
+        model.addAttribute("page", page);
+        model.addAttribute("product", new Product());
+        model.addAttribute("isEditMode", false);
+
+        List<Category> categories = categoryDAO.findAll();
+        model.addAttribute("categories", categories);
+
+        // Set active tab to list
+        model.addAttribute("activeTab", "list");
+
+        return "Admin/ManageProduct";
+    }
+
     @GetMapping("/manageproduct/edit/{id}")
     public String editProduct(Model model, @PathVariable("id") Integer id, @RequestParam("p") Optional<Integer> p) {
         Optional<Product> productOpt = productDAO.findById(id);

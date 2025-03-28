@@ -12,14 +12,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
+import poly.asm.Models.CartItem;
 import poly.asm.Models.Order;
 import poly.asm.Models.OrderDetail;
 import poly.asm.Models.User;
+import poly.asm.Models.Voucher;
 import poly.asm.Services.CartService;
 import poly.asm.Services.OrderService;
+import poly.asm.Services.VoucherService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class OrderController {
@@ -28,6 +32,9 @@ public class OrderController {
     
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private VoucherService voucherService;
     
     /**
      * Hiển thị trang thanh toán
@@ -45,6 +52,15 @@ public class OrderController {
         if (cartService.getCartItems().isEmpty()) {
             return "redirect:/yourcart";
         }
+
+        // Tính tổng tiền
+        // double totalPrice = 0;
+        // for (CartItem item : cartService.getCartItems()) {
+        //     totalPrice += item.getTotalPrice();
+        // }
+
+        // Lấy tổng tiền từ service thay vì tính toán thủ công
+        double totalPrice = cartService.getTotalPrice();
         
         // Thêm thông tin giỏ hàng vào model
         model.addAttribute("cartItems", cartService.getCartItems());
@@ -58,6 +74,19 @@ public class OrderController {
         model.addAttribute("ward", loggedInUser.getWard());
         model.addAttribute("address", loggedInUser.getAddress());
         model.addAttribute("image", loggedInUser.getImage());
+
+        // Lấy danh sách voucher khả dụng cho người dùng
+        List<Voucher> availableVouchers = voucherService.getAllAvailableVouchers();
+
+        // Sử dụng biến final cho lambda expression
+        final double finalTotalPrice = totalPrice;
+        
+        // Lọc voucher theo điều kiện đơn hàng tối thiểu
+        List<Voucher> applicableVouchers = availableVouchers.stream()
+                .filter(v -> v.canBeApplied(finalTotalPrice))
+                .collect(Collectors.toList());
+        
+        model.addAttribute("availableVouchers", applicableVouchers);
         
         return "Home/checkout";
     }

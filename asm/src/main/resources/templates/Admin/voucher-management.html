@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/Layout/Head}">
+    <title>Quản lý Voucher</title>
+</head>
+<head>
+    <link rel="stylesheet" th:href="@{/CSS/ManagePr.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .voucher-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .voucher-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .voucher-header {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px dashed #dee2e6;
+            position: relative;
+        }
+        
+        .voucher-code {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #343a40;
+            background-color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px dashed #ffc107;
+            display: inline-block;
+        }
+        
+        .voucher-body {
+            padding: 15px;
+        }
+        
+        .voucher-discount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        
+        .voucher-info {
+            margin-bottom: 5px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .voucher-info i {
+            width: 20px;
+            text-align: center;
+            margin-right: 5px;
+        }
+        
+        .voucher-footer {
+            padding: 15px;
+            border-top: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .voucher-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-expired {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .voucher-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-3px);
+        }
+        
+        .voucher-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-new {
+            background-color: #cff4fc;
+            color: #055160;
+        }
+        
+        .badge-popular {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+        
+        .badge-limited {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+        
+        .circle-punch {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+        
+        .circle-left {
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .circle-right {
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .filter-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .filter-option {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-option:hover {
+            transform: translateY(-2px);
+        }
+        
+        .filter-option.active {
+            background-color: #ffc107;
+            color: #212529;
+            font-weight: 600;
+        }
+        
+        .search-section {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            padding-left: 40px;
+            border-radius: 20px;
+            border: 1px solid #ced4da;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <th:block th:replace="~{/Layout/Sidebar :: sidebar}"></th:block>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Quản lý Voucher</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Quản lý Voucher</li>
+                        </ol>
+                    </nav>
+                </div>
+                <a href="/admin/vouchers/create" class="btn btn-warning">
+                    <i class="fas fa-plus me-2"></i>
+                    Tạo Voucher mới
+                </a>
+            </div>
+            
+            <!-- Alert Messages -->
+            <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${message != null}">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error != null}">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <!-- Filter and Search Section -->
+            <div class="filter-section">
+                <div class="filter-title">Lọc Voucher</div>
+                <div class="filter-options">
+                    <div class="filter-option active" data-filter="all">Tất cả</div>
+                    <div class="filter-option" data-filter="active">Đang hoạt động</div>
+                    <div class="filter-option" data-filter="inactive">Đã vô hiệu</div>
+                    <div class="filter-option" data-filter="expired">Đã hết hạn</div>
+                </div>
+            </div>
+            
+            <div class="search-section">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="form-control search-input" id="searchVoucher" placeholder="Tìm kiếm voucher theo mã...">
+            </div>
+            
+            <!-- Vouchers Grid -->
+            <div class="row" id="vouchersContainer">
+                <!-- Voucher Card -->
+                <div th:each="voucher : ${vouchers}" class="col-md-4 mb-4 voucher-item" 
+                     th:data-status="${voucher.active ? (voucher.isExpired() ? 'expired' : 'active') : 'inactive'}"
+                     th:data-code="${voucher.code}">
+                    <div class="voucher-card">
+                        <!-- Voucher Header -->
+                        <div class="voucher-header">
+                            <div class="voucher-code" th:text="${voucher.code}">WELCOME10</div>
+                            
+                            <!-- Badge based on conditions -->
+                            <div th:if="${voucher.usageCount == 0}" class="voucher-badge badge-new">Mới</div>
+                            <div th:if="${voucher.usageCount > 10}" class="voucher-badge badge-popular">Phổ biến</div>
+                            <div th:if="${voucher.usageLimit - voucher.usageCount < 5 && voucher.usageLimit > 0}" class="voucher-badge badge-limited">Sắp hết</div>
+                            
+                            <!-- Circle punches for voucher design -->
+                            <div class="circle-punch circle-left"></div>
+                            <div class="circle-punch circle-right"></div>
+                        </div>
+                        
+                        <!-- Voucher Body -->
+                        <div class="voucher-body">
+                            <div class="voucher-discount" th:text="${#numbers.formatDecimal(voucher.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">50,000 ₫</div>
+                            
+                            <div class="voucher-info">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Hết hạn: </span>
+                                <span th:text="${#dates.format(voucher.expiryDate, 'dd/MM/yyyy HH:mm')}">31/12/2023</span>
+                            </div>
+                            
+                            <div class="voucher-info">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>Đơn tối thiểu: </span>
+                                <span th:text="${#numbers.formatDecimal(voucher.minimumOrderAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">200,000 ₫</span>
+                            </div>
+                            
+                            <div class="voucher-info">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Lượt sử dụng: </span>
+                                <span th:text="${voucher.usageCount} + '/' + (${voucher.usageLimit} > 0 ? ${voucher.usageLimit} : '∞')">5/10</span>
+                            </div>
+                            
+                            <div class="voucher-info">
+                                <i class="fas fa-clock"></i>
+                                <span>Ngày tạo: </span>
+                                <span th:text="${#dates.format(voucher.createdAt, 'dd/MM/yyyy')}">01/01/2023</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Voucher Footer -->
+                        <div class="voucher-footer">
+                            <div th:class="'voucher-status ' + ${voucher.active ? (voucher.isExpired() ? 'status-expired' : 'status-active') : 'status-inactive'}"
+                                 th:text="${voucher.active ? (voucher.isExpired() ? 'Đã hết hạn' : 'Đang hoạt động') : 'Đã vô hiệu'}">
+                                Đang hoạt động
+                            </div>
+                            
+                            <div class="voucher-actions">
+                                <a th:href="@{/admin/vouchers/edit/{id}(id=${voucher.id})}" class="btn btn-primary btn-action" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                <form th:action="@{/admin/vouchers/toggle-status/{id}(id=${voucher.id})}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-warning btn-action" th:title="${voucher.active ? 'Vô hiệu hóa' : 'Kích hoạt'}">
+                                        <i th:class="${voucher.active ? 'fas fa-toggle-off' : 'fas fa-toggle-on'}"></i>
+                                    </button>
+                                </form>
+                                
+                                <form th:action="@{/admin/vouchers/delete/{id}(id=${voucher.id})}" method="post" class="d-inline delete-form">
+                                    <button type="button" class="btn btn-danger btn-action delete-btn" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Empty State -->
+                <div class="col-12 text-center py-5" id="emptyState" style="display: none;">
+                    <img src="/images/empty-box.svg" alt="No vouchers" style="width: 120px; opacity: 0.5;" class="mb-3">
+                    <h5 class="text-muted">Không tìm thấy voucher nào</h5>
+                    <p class="text-muted">Hãy tạo voucher mới hoặc thay đổi bộ lọc</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa voucher này không? Hành động này không thể hoàn tác.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const links = document.querySelectorAll(".sidebar .nav-link");
+            const currentPage = localStorage.getItem("activePage") || window.location.pathname;
+    
+            links.forEach(link => {
+                if (link.getAttribute("href") === currentPage) {
+                    link.classList.add("active");
+                } else {
+                    link.classList.remove("active");
+                }
+                
+                link.addEventListener("click", function () {
+                    localStorage.setItem("activePage", this.getAttribute("href"));
+                });
+            });
+            
+            // Delete confirmation
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            let formToSubmit = null;
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    formToSubmit = this.closest('.delete-form');
+                    deleteModal.show();
+                });
+            });
+            
+            document.getElementById('confirmDelete').addEventListener('click', function() {
+                if (formToSubmit) {
+                    formToSubmit.submit();
+                }
+                deleteModal.hide();
+            });
+            
+            // Filter functionality
+            const filterOptions = document.querySelectorAll('.filter-option');
+            const voucherItems = document.querySelectorAll('.voucher-item');
+            const emptyState = document.getElementById('emptyState');
+            
+            filterOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Update active class
+                    filterOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Filter vouchers
+                    let visibleCount = 0;
+                    voucherItems.forEach(item => {
+                        if (filter === 'all' || item.getAttribute('data-status') === filter) {
+                            item.style.display = 'block';
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    
+                    // Show/hide empty state
+                    emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('searchVoucher');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                let visibleCount = 0;
+                
+                voucherItems.forEach(item => {
+                    const code = item.getAttribute('data-code').toLowerCase();
+                    const activeFilter = document.querySelector('.filter-option.active').getAttribute('data-filter');
+                    const status = item.getAttribute('data-status');
+                    
+                    // Check if item matches both search and filter
+                    if ((code.includes(searchTerm)) && (activeFilter === 'all' || status === activeFilter)) {
+                        item.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide empty state
+                emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

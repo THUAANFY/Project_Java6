@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -32,6 +34,7 @@ public class User {
     String address;
     boolean role;
     boolean activated;
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     List<Order> orders;
 }

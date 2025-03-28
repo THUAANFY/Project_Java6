@@ -41,6 +41,14 @@ public class Order {
     
     @Column(nullable = false)
     private Double shippingFee;
+
+    // New field for voucher discount
+    @Column
+    private Double discount = 0.0;
+    
+    // New field for voucher code
+    @Column
+    private String voucherCode;
     
     @Column(nullable = false)
     private Double total;
@@ -75,4 +83,43 @@ public class Order {
     
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetail;
+
+
+    // Helper method to calculate total with discount
+    public void calculateTotal() {
+        if (this.discount == null) {
+            this.discount = 0.0;
+        }
+        
+        if (this.subtotal == null) {
+            this.subtotal = 0.0;
+        }
+        
+        if (this.shippingFee == null) {
+            this.shippingFee = 0.0;
+        }
+        
+        this.total = this.subtotal + this.shippingFee - this.discount;
+    }
+    
+    // Helper method to apply voucher
+    public void applyVoucher(Voucher voucher) {
+        if (voucher != null && voucher.isValid() && voucher.canBeApplied(this.subtotal)) {
+            this.voucherCode = voucher.getCode();
+            this.discount = voucher.getDiscountAmount();
+            calculateTotal();
+        }
+    }
+    
+    // Helper method to remove voucher
+    public void removeVoucher() {
+        this.voucherCode = null;
+        this.discount = 0.0;
+        calculateTotal();
+    }
+    
+    // Helper method to check if order has a voucher applied
+    public boolean hasVoucher() {
+        return this.voucherCode != null && !this.voucherCode.isEmpty();
+    }
 }

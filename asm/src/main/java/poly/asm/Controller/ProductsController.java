@@ -1,14 +1,12 @@
 package poly.asm.Controller;
 
 import java.util.List;
-// import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
 import poly.asm.DAO.CategoryDAO;
@@ -21,45 +19,62 @@ import poly.asm.Models.User;
 public class ProductsController {
 
     @Autowired
-    CategoryDAO categoryDAO;
+    private CategoryDAO categoryDAO;
 
     @Autowired
-    ProductDAO productDAO;
-
-    @ResponseBody
-    @GetMapping("/api/categories")
-    public List<Category> getCategories() {
-        return categoryDAO.findAll();
-    }
+    private ProductDAO productDAO;
 
     @GetMapping("/products")
-    public String products(Model model, HttpSession session) {
+    public String allProducts(Model model, HttpSession session) {
+        List<Product> products = productDAO.findAll();
         List<Category> categories = categoryDAO.findAll();
+        
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        // Nếu user null, dùng icon user mặc định
         String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
+        
         model.addAttribute("image", imagePath);
         model.addAttribute("categories", categories);
+        model.addAttribute("products", products);
+        
+        return "Home/products";
+    }
+
+    @GetMapping("/products/category/{id}")
+    public String productsByCategory(@PathVariable("id") String categoryId, Model model, HttpSession session) {
+        Category category = categoryDAO.findById(categoryId).orElse(null);
+        List<Product> products = (category != null) ? productDAO.findByCategory(category) : List.of();
+        
+        List<Category> categories = categoryDAO.findAll();
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
+        
+        model.addAttribute("image", imagePath);
+        model.addAttribute("categories", categories);
+        model.addAttribute("products", products);
+        
+        if (products.isEmpty()) {
+            model.addAttribute("message", "Chưa có sản phẩm trong danh mục này.");
+        }
+        
         return "Home/products";
     }
 
     @GetMapping("/product/{id}")
-    public String detail(Model model, @PathVariable("id") Integer id, HttpSession session) {
+    public String productDetail(@PathVariable("id") Integer id, Model model, HttpSession session) {
         Product product = productDAO.findById(id).orElse(null);
-        if (product == null){
+        if (product == null) {
             return "redirect:/products";
         }
-        // Lấy danh mục của sản phẩm hiện tại
+        
         Category category = product.getCategory();
-        // Lấy các sản phẩm liên quan (cùng danh mục)
         List<Product> relatedProducts = productDAO.findByCategory(category);
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        // Nếu user null, dùng icon user mặc định
         String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
+        
         model.addAttribute("image", imagePath);
         model.addAttribute("relatedProducts", relatedProducts);
-
         model.addAttribute("product", product);
-        return "/Home/product-details";
-    } 
+        
+        return "Home/product-details";
+    }
 }

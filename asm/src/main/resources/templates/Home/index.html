@@ -46,28 +46,33 @@
         <th:block th:remove="tag" th:utext="${session.removeAttribute('success')}"></th:block>
     </th:block>
 
-    <h2 class="mt-4 ms-4 fw-semibold">TOP MÁY ẢNH</h2>
     <div class="container-fluid mt-3 p-5 pt-0" data-aos="fade-up" data-aos-duration="1000">
-        <div class="row">
-            <!-- Sản phẩm -->
-            <div class="col-12 col-md-4 col-lg-3 mb-4" th:each="item : ${products}">
-                <div class="card h-100">
-                    <a th:href="@{/product/{id}(id=${item.id})}">
-                        <img th:src="${item.image}" class="card-img-top p-5" alt="Product">
-                    </a>
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title" th:text="${item.name}">Sản phẩm 1</h5>
-                        <p class="card-text" th:text="${item.description}">Mô tả ngắn về sản phẩm 1. Chất lượng cao, giá hợp lý.</p>
-                        <p class="card-text text-danger">
-                            <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT')} + ' VND'">Giá: 500.000 VNĐ</strong>
-                        </p>
-                        <div class="mt-auto">
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+        <!-- Lặp qua từng danh mục -->
+        <th:block th:each="category : ${categories}">
+            <h2 th:text="${category.name}" class="mt-4 ms-4 fw-semibold"></h2>
+            <div class="row">
+                <!-- Lặp qua sản phẩm thuộc danh mục hiện tại -->
+                <div class="col-12 col-md-4 col-lg-3 mb-4" 
+                     th:each="item : ${products}" 
+                     th:if="${item.category.id == category.id}">
+                    <div class="card h-100">
+                        <a th:href="@{/product/{id}(id=${item.id})}">
+                            <img th:src="${item.image}" class="card-img-top p-5" alt="Product">
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title" th:text="${item.name}">Sản phẩm</h5>
+                            <p class="card-text" th:text="${item.description}">Mô tả ngắn về sản phẩm.</p>
+                            <p class="card-text text-danger">
+                                <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT') + ' VND'}">Giá: 500.000 VNĐ</strong>
+                            </p>
+                            <div class="mt-auto">
+                                <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </th:block>
     </div>
 
     <div th:replace="~{/Layout/Footer}"></div>

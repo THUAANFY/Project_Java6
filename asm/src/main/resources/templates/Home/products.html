@@ -107,6 +107,9 @@
                     margin-left: 0;
                 }
             }
+            .no-pr{
+                height: 300px;
+            }
         </style>
     </head>
 <body>
@@ -115,122 +118,52 @@
     <div class="container-fluid mt-5 pt-5">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h4 class="mt-5">DANH MỤC</h4>
+            <h4>Danh Mục</h4>
             <hr>
-            <th:block th:each="item : ${categories}">
-                <ul class="list-unstyled category-list">
+            <ul class="list-unstyled category-list">
+                <th:block th:each="item : ${categories}">
                     <li>
-                        <a class="collapsed d-flex justify-content-between h5 text-decoration-none" th:href="@{'/products/category/' + ${item.id}}" th:text="${item.name}">
-                            <i class="pull-right fa fa-fw fa-chevron-circle-down mt-1"></i>
-                        </a>
+                        <a class="d-flex justify-content-between h5 text-decoration-none" 
+                           th:href="@{'/products/category/' + ${item.id}}" 
+                           th:text="${item.name}"></a>
                     </li>
-                </ul>
-            </th:block>
-            <!-- <ul class="list-unstyled category-list">
-                <li>Danh mục 1</li>
-                <li>Danh mục 2</li>
-                <li>Danh mục 3</li>
-                <li>Danh mục 4</li>
-                <li>Danh mục 5</li>
-                <li>Danh mục 6</li>
-            </ul> -->
+                </th:block>
+            </ul>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="https://surfaceviet.vn/wp-content/uploads/2024/05/Surface-Laptop-7-Platinum-13.8-inch.jpg" class="card-img-top" alt="Product 1">
-                        <div class="card-body">
-                            <h5 class="card-title">Sản phẩm 1</h5>
-                            <p class="card-text">Mô tả sản phẩm 1</p>
-                            <p class="card-text text-danger">Giá: 500.000 VNĐ</p>
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ</a>
+            <!-- Hiển thị tên danh mục được chọn -->
+            <h3 th:text="${selectedCategory != null ? selectedCategory.name : 'Tất cả sản phẩm'}" class="mb-4"></h3>
+            <div class="row">
+                <!-- Kiểm tra nếu không có sản phẩm -->
+                <th:block th:if="${#lists.isEmpty(products)}">
+                    <div class="col-12 no-pr">
+                        <p class="no-products">Chưa có sản phẩm</p>
+                    </div>
+                </th:block>
+                <!-- Hiển thị sản phẩm nếu có -->
+                <th:block th:unless="${#lists.isEmpty(products)}">
+                    <div class="col-12 col-md-6 col-lg-4 mb-4" th:each="item : ${products}">
+                        <div class="card">
+                            <a th:href="@{/product/{id}(id=${item.id})}">
+                                <img th:src="${item.image}" class="card-img-top" alt="Product">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${item.name}"></h5>
+                                <p class="card-text" th:text="${item.description}"></p>
+                                <p class="card-text text-danger">
+                                    <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' VND'}"></strong>
+                                </p>
+                                <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="https://surfaceviet.vn/wp-content/uploads/2024/05/Surface-Laptop-7-Platinum-13.8-inch.jpg" class="card-img-top" alt="Product 2">
-                        <div class="card-body">
-                            <h5 class="card-title">Sản phẩm 2</h5>
-                            <p class="card-text">Mô tả sản phẩm 2</p>
-                            <p class="card-text text-danger">Giá: 600.000 VNĐ</p>
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="https://surfaceviet.vn/wp-content/uploads/2024/05/Surface-Laptop-7-Platinum-13.8-inch.jpg" class="card-img-top" alt="Product 3">
-                        <div class="card-body">
-                            <h5 class="card-title">Sản phẩm 3</h5>
-                            <p class="card-text">Mô tả sản phẩm 3</p>
-                            <p class="card-text text-danger">Giá: 700.000 VNĐ</p>
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="https://surfaceviet.vn/wp-content/uploads/2024/05/Surface-Laptop-7-Platinum-13.8-inch.jpg" class="card-img-top" alt="Product 4">
-                        <div class="card-body">
-                            <h5 class="card-title">Sản phẩm 4</h5>
-                            <p class="card-text">Mô tả sản phẩm 4</p>
-                            <p class="card-text text-danger">Giá: 800.000 VNĐ</p>
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="https://surfaceviet.vn/wp-content/uploads/2024/05/Surface-Laptop-7-Platinum-13.8-inch.jpg" class="card-img-top" alt="Product 5">
-                        <div class="card-body">
-                            <h5 class="card-title">Sản phẩm 5</h5>
-                            <p class="card-text">Mô tả sản phẩm 5</p>
-                            <p class="card-text text-danger">Giá: 900.000 VNĐ</p>
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="https://surfaceviet.vn/wp-content/uploads/2024/05/Surface-Laptop-7-Platinum-13.8-inch.jpg" class="card-img-top" alt="Product 6">
-                        <div class="card-body">
-                            <h5 class="card-title">Sản phẩm 6</h5>
-                            <p class="card-text">Mô tả sản phẩm 6</p>
-                            <p class="card-text text-danger">Giá: 1.000.000 VNĐ</p>
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="https://surfaceviet.vn/wp-content/uploads/2024/05/Surface-Laptop-7-Platinum-13.8-inch.jpg" class="card-img-top" alt="Product 7">
-                        <div class="card-body">
-                            <h5 class="card-title">Sản phẩm 7</h5>
-                            <p class="card-text">Mô tả sản phẩm 7</p>
-                            <p class="card-text text-danger">Giá: 1.100.000 VNĐ</p>
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="https://surfaceviet.vn/wp-content/uploads/2024/05/Surface-Laptop-7-Platinum-13.8-inch.jpg" class="card-img-top" alt="Product 8">
-                        <div class="card-body">
-                            <h5 class="card-title">Sản phẩm 8</h5>
-                            <p class="card-text">Mô tả sản phẩm 8</p>
-                            <p class="card-text text-danger">Giá: 1.200.000 VNĐ</p>
-                            <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ</a>
-                        </div>
-                    </div>
-                </div>
+                </th:block>
             </div>
         </div>
     </div>
 
-    <div th:replace="~{/Layout/Footer}"></div>
+    <div class="footer" th:replace="~{/Layout/Footer}"></div>
 </body>
 </html>

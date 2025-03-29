@@ -40,9 +40,10 @@
                 </ul>
 
                 <!-- Search form -->
-                <form class="d-flex input-group w-auto me-3">
-                    <input type="search" class="form-control form" placeholder="Tìm kiếm..." aria-label="Search" />
-                    <button class="btn" type="button">Tìm</button>
+                <form class="d-flex input-group w-auto me-3" method="get" action="/products">
+                    <input type="search" name="search" class="form-control form" placeholder="Tìm kiếm..." aria-label="Search" 
+                           th:value="${search}" />
+                    <button class="btn" type="submit">Tìm</button>
                 </form>
 
                 <!-- Right links -->

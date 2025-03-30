@@ -140,6 +140,11 @@
                         <span>Phí vận chuyển:</span>
                         <span th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
                     </div>
+                    <!-- Hiển thị giảm giá nếu có -->
+                    <div class="d-flex justify-content-between mb-2" th:if="${order.discountAmount != null && order.discountAmount > 0}">
+                        <span>Giảm giá:</span>
+                        <span class="text-danger" th:text="'-' + ${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">-0 ₫</span>
+                    </div>
                     <div class="d-flex justify-content-between fw-bold">
                         <span>Tổng cộng:</span>
                         <span class="text-success" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
@@ -187,3 +192,4 @@
     <script>AOS.init();</script>
 </body>
 </html>
+

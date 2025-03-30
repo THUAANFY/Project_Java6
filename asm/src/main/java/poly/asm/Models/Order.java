@@ -84,6 +84,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetail;
 
+    private Double discountAmount = 0.0;
 
     // Helper method to calculate total with discount
     public void calculateTotal() {

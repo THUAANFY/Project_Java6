@@ -813,6 +813,8 @@
             // Xử lý nút đặt hàng
             const placeOrderBtn = document.getElementById('placeOrderBtn');
             
+            // Tìm đoạn code xử lý khi nhấn nút đặt hàng và thay đổi như sau:
+
             placeOrderBtn.addEventListener('click', function() {
                 // Kiểm tra xem đã chọn địa chỉ mới hay không
                 if (useNewAddress.checked) {
@@ -846,7 +848,9 @@
                 // Thêm thông tin mã giảm giá nếu có
                 if (voucherSelect.value) {
                     orderData.couponCode = voucherSelect.value;
+                    // Lấy giá trị discount từ biến discount đã được tính toán
                     orderData.discountAmount = discount;
+                    console.log("Sending discount amount:", discount); // Thêm log để kiểm tra
                 }
                 
                 if (useNewAddress.checked) {

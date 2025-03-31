@@ -13,8 +13,10 @@ import poly.asm.Models.Order;
 import poly.asm.Models.OrderDetail;
 import poly.asm.Models.Product;
 import poly.asm.Models.User;
+import poly.asm.Utils.ShippingCalculator;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -212,6 +214,16 @@ public class OrderService {
         orderInfo.put("createdAt", order.getCreatedAt().getTime());
         orderInfo.put("items", orderItems);
         
+        // Add estimated delivery date
+        Date estimatedDeliveryDate = calculateEstimatedDeliveryDate(order);
+        if (estimatedDeliveryDate != null) {
+            orderInfo.put("estimatedDeliveryDate", estimatedDeliveryDate.getTime());
+        }
+        
+        // Add shipping days and delivery time range
+        orderInfo.put("shippingDays", getShippingDays(order));
+        orderInfo.put("deliveryTimeRange", getDeliveryTimeRangeText(order));
+        
         Map<String, String> shippingAddress = new HashMap<>();
         shippingAddress.put("name", order.getRecipientName());
         shippingAddress.put("phone", order.getRecipientPhone());
@@ -301,5 +313,70 @@ public class OrderService {
         orderDAO.save(order);
         return true;
     }
+    
+    /**
+     * Calculate the estimated delivery date for an order
+     * 
+     * @param order The order
+     * @return The estimated delivery date
+     */
+    public Date calculateEstimatedDeliveryDate(Order order) {
+        // If the order is cancelled, return null
+        if ("Đã hủy".equals(order.getStatus())) {
+            return null;
+        }
+        
+        // If the order is already delivered, return null or the actual delivery date if you track it
+        if ("Đã giao hàng".equals(order.getStatus())) {
+            return null; // Or return actual delivery date if you track it
+        }
+        
+        // Calculate the estimated delivery date based on the order date and shipping province
+        return ShippingCalculator.calculateEstimatedDeliveryDate(
+            order.getCreatedAt(), 
+            order.getShippingProvince()
+        );
+    }
+    
+    /**
+     * Get the shipping days for an order
+     * 
+     * @param order The order
+     * @return The number of shipping days
+     */
+    public int getShippingDays(Order order) {
+        return ShippingCalculator.calculateShippingDays(order.getShippingProvince());
+    }
+    
+    /**
+     * Get the delivery time range text for an order
+     * 
+     * @param order The order
+     * @return A text description of the delivery time range
+     */
+    public String getDeliveryTimeRangeText(Order order) {
+        int shippingDays = getShippingDays(order);
+        return ShippingCalculator.getDeliveryTimeRangeText(shippingDays);
+    }
+    
+    /**
+     * Calculate shipping days for a specific province
+     * 
+     * @param province The province name
+     * @return The number of shipping days
+     */
+    public int calculateShippingDaysForProvince(String province) {
+        return ShippingCalculator.calculateShippingDays(province);
+    }
+    
+    /**
+     * Get delivery time range text for a specific province
+     * 
+     * @param province The province name
+     * @return A text description of the delivery time range
+     */
+    public String getDeliveryTimeRangeForProvince(String province) {
+        int shippingDays = calculateShippingDaysForProvince(province);
+        return ShippingCalculator.getDeliveryTimeRangeText(shippingDays);
+    }
 }
-

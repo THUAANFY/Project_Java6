@@ -51,8 +51,14 @@ public class CartController {
             return "redirect:/login"; // Chuyển hướng đến trang đăng nhập
         }
         
-        cartService.addToCart(id, quantity);
-        redirectAttributes.addFlashAttribute("addSuccess", true);
+        try {
+            cartService.addToCart(id, quantity);
+            redirectAttributes.addFlashAttribute("addSuccess", true);
+        } catch (IllegalArgumentException e) {
+            // Handle inventory validation error
+            redirectAttributes.addFlashAttribute("inventoryError", true);
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/yourcart";
     }
     
@@ -67,8 +73,16 @@ public class CartController {
             return "login_required";
         }
         
-        cartService.updateCartItem(id, quantity);
-        return "success";
+        try {
+            boolean success = cartService.updateCartItem(id, quantity);
+            if (!success) {
+                return "Số lượng sản phẩm tồn kho không đủ";
+            }
+            return "success";
+        } catch (IllegalArgumentException e) {
+            // Return the error message directly
+            return e.getMessage();
+        }
     }
     
     @PostMapping("/cart/remove")

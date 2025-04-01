@@ -33,10 +33,19 @@ public class CartService {
         Map<Integer, CartItem> cart = getCart();
         Product product = productDAO.findById(id).orElse(null);
         if (product != null) {
+            // Check if requested quantity exceeds available inventory
+            if (quantity > product.getAvailable()) {
+                throw new IllegalArgumentException("Số lượng sản phẩm tồn kho không đủ. Chỉ còn " + product.getAvailable() + " sản phẩm.");
+            }
+            
             CartItem item = cart.get(id);
             if (item == null) {
                 item = new CartItem(product.getId(), product.getName(), quantity, product.getPrice(), product.getImage());
             } else {
+                // Check if updated quantity exceeds available inventory
+                if (item.getQuantity() + quantity > product.getAvailable()) {
+                    throw new IllegalArgumentException("Số lượng sản phẩm tồn kho không đủ. Chỉ còn " + product.getAvailable() + " sản phẩm.");
+                }
                 item.setQuantity(item.getQuantity() + quantity);
             }
             cart.put(id, item);
@@ -64,13 +73,23 @@ public class CartService {
                 .sum();
     }
 
-    public void updateCartItem(Integer id, Integer quantity) {
+    public boolean updateCartItem(Integer id, Integer quantity) {
         Map<Integer, CartItem> cart = getCart();
         CartItem item = cart.get(id);
-        if (item != null && quantity > 0) {
+        Product product = productDAO.findById(id).orElse(null);
+        
+        if (item != null && quantity > 0 && product != null) {
+            // Check if requested quantity exceeds available inventory
+            if (quantity > product.getAvailable()) {
+                throw new IllegalArgumentException("Số lượng sản phẩm tồn kho không đủ. Chỉ còn " + product.getAvailable() + " sản phẩm.");
+            }
+            
             item.setQuantity(quantity);
             cart.put(id, item);
             session.setAttribute("cart", cart); // Cập nhật session
+            return true; // Return true to indicate success
         }
+        return false;
     }
 }
+

@@ -34,10 +34,35 @@
                 box-shadow: 0 5px 15px rgba(255,193,7,0.4);
                 background-color: #ffca2c;
             }
+
+            /* Toast notification styles */
+            .toast-container {
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                z-index: 9999;
+            }
+            
+            .toast {
+                min-width: 300px;
+            }
         </style>
     </head>
 <body>
     <div th:replace="~{/Layout/Navbar}"></div>
+
+    <!-- Toast notification container -->
+    <div class="toast-container">
+        <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" id="inventoryErrorToast">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    <span id="inventoryErrorMessage">Số lượng sản phẩm tồn kho không đủ.</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 
     <div class="container-fluid py-5 mt-5 pt-5">
         <!-- Login Required Message -->
@@ -57,6 +82,17 @@
                 <div class="alert alert-success alert-dismissible fade show">
                     <i class="fa-solid fa-check-circle me-2"></i>
                     Sản phẩm đã được thêm vào giỏ hàng thành công!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Error Message -->
+        <div class="row" th:if="${inventoryError}">
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    <span th:text="${errorMessage}">Số lượng sản phẩm tồn kho không đủ.</span>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
@@ -99,7 +135,7 @@
                                             <i class="fa-solid fa-minus"></i>
                                         </button>
                                         <span class="mx-2 quantity" th:id="'quantity-' + ${item.id}" th:text="${item.quantity}">1</span>
-                                        <button class="btn btn-sm increase-btn" th:data-id="${item.id}">
+                                        <button class="btn btn-sm increase-btn" th:data-id="${item.id}" th:data-product-id="${item.id}">
                                             <i class="fa-solid fa-plus"></i>
                                         </button>
                                     </div>
@@ -163,6 +199,11 @@
 
     <script th:if="${loginMessage == null}">
         document.addEventListener("DOMContentLoaded", function () {
+            // Initialize Bootstrap toast
+            const inventoryErrorToast = new bootstrap.Toast(document.getElementById('inventoryErrorToast'), {
+                delay: 5000
+            });
+            
             document.querySelectorAll(".increase-btn").forEach(button => {
                 button.addEventListener("click", function () {
                     const id = this.getAttribute("data-id");
@@ -182,22 +223,31 @@
                 let quantity = parseInt(quantityElem.textContent) + change;
                 if (quantity < 1) return;
 
-                quantityElem.textContent = quantity;
-                updateSubtotal(id, quantity);
-
                 // Gửi request cập nhật số lượng lên server
                 fetch('/cart/update?id=' + id + '&quantity=' + quantity, {
                     method: 'POST'
-                }).then(response => {
+                })
+                .then(response => {
                     if (!response.ok) {
-                        console.error('Cập nhật thất bại');
-                    } else {
-                        return response.text();
+                        throw new Error('Cập nhật thất bại');
                     }
-                }).then(data => {
+                    return response.text();
+                })
+                .then(data => {
                     if (data === "login_required") {
                         window.location.href = "/login";
+                    } else if (data === "success") {
+                        // Cập nhật thành công
+                        quantityElem.textContent = quantity;
+                        updateSubtotal(id, quantity);
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        document.getElementById('inventoryErrorMessage').textContent = data;
+                        inventoryErrorToast.show();
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                 });
             }
 
@@ -230,4 +280,3 @@
     </script>
 </body>
 </html>
-

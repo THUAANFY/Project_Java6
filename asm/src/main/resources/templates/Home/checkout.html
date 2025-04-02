@@ -645,6 +645,9 @@
             const newAddressForm = document.getElementById('newAddressForm');
             const profileShippingTimeInfo = document.getElementById('profileShippingTimeInfo');
             const newAddressShippingTimeInfo = document.getElementById('newAddressShippingTimeInfo');
+            const provinceSelect = document.getElementById('newProvince');
+            const districtSelect = document.getElementById('newDistrict');
+            const wardSelect = document.getElementById('newWard');
 
             useProfileAddress.addEventListener('change', function() {
                 if (this.checked) {
@@ -665,7 +668,6 @@
                         profileShippingTimeInfo.classList.add('d-none');
                     }
                     // Hiển thị thông tin giao hàng cho địa chỉ mới nếu đã chọn tỉnh/thành phố
-                    const provinceSelect = document.getElementById('newProvince');
                     if (provinceSelect.selectedIndex > 0) {
                         newAddressShippingTimeInfo.classList.remove('d-none');
                     }
@@ -704,10 +706,6 @@
             });
 
             // Xử lý API địa chỉ cho form địa chỉ mới
-            const provinceSelect = document.getElementById("newProvince");
-            const districtSelect = document.getElementById("newDistrict");
-            const wardSelect = document.getElementById("newWard");
-
             // Lấy danh sách tỉnh/thành phố từ API
             fetch("https://provinces.open-api.vn/api/p/")
                 .then(response => response.json())
@@ -965,9 +963,7 @@
                 // Thêm thông tin mã giảm giá nếu có
                 if (voucherSelect.value) {
                     orderData.couponCode = voucherSelect.value;
-                    // Lấy giá trị discount từ biến discount đã được tính toán
                     orderData.discountAmount = discount;
-                    console.log("Sending discount amount:", discount); // Thêm log để kiểm tra
                 }
                 
                 if (useNewAddress.checked) {
@@ -996,8 +992,15 @@
                     throw new Error('Có lỗi xảy ra khi đặt hàng');
                 })
                 .then(data => {
-                    // Chuyển hướng đến trang hoàn tất đơn hàng
-                    window.location.href = '/order/complete?id=' + data.orderId;
+                    // Xử lý dựa trên phương thức thanh toán
+                    if (selectedPaymentMethod === 'momoPayment') {
+                        // Chuyển hướng đến trang thanh toán MoMo - FIX: Sử dụng đúng đường dẫn và đảm bảo amount được truyền
+                        const totalAmount = subtotal + shippingFee - discount;
+                        window.location.href = '/momo-payment?orderId=' + data.orderId + '&amount=' + totalAmount;
+                    } else {
+                        // Chuyển hướng đến trang hoàn tất đơn hàng
+                        window.location.href = '/order/complete?id=' + data.orderId;
+                    }
                 })
                 .catch(error => {
                     console.error('Lỗi:', error);

@@ -283,4 +283,17 @@ public class OrderController {
         
         return response;
     }
+
+    /**
+     * API kiểm tra trạng thái thanh toán
+     */
+    @GetMapping("/api/order/check-payment-status")
+    @ResponseBody
+    public Map<String, String> checkPaymentStatus(@RequestParam("orderCode") String orderCode) {
+        Order order = orderService.getOrderByCode(orderCode);
+        if (order != null) {
+            return Map.of("status", order.getStatus());
+        }
+        return Map.of("status", "unknown");
+    }
 }

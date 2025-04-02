@@ -49,64 +49,130 @@
 
             /* Card styles */
             .card {
-                border: 1px solid #ddd;
-                border-radius: 10px;
-                transition: all 0.3s ease;
-                overflow: hidden;
-                position: relative;
+                border: none; /* Bỏ viền mặc định của Bootstrap */
+                border-radius: 15px; /* Bo góc mềm mại */
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 2px 10px rgba(0, 0, 0, 0.05); /* Bóng nhẹ với nhiều lớp */
+                transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.3s ease; /* Hiệu ứng mượt mà */
+                overflow: hidden; /* Đảm bảo nội dung không tràn ra ngoài */
+                position: relative; /* Để thêm hiệu ứng overlay */
             }
 
             .card:hover {
-                transform: scale(1.05);
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-                border-color: #ff6f61;
+                transform: translateY(-8px) rotateX(2deg); /* Nhấc lên và nghiêng nhẹ để tạo chiều sâu */
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 4px 15px rgba(0, 0, 0, 0.1); /* Tăng bóng khi hover */
+                background: linear-gradient(145deg, #f8f9fa, #ffffff); /* Gradient nhẹ khi hover */
+            }
+
+            .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2));
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                z-index: 0;
+            }
+
+            .card:hover::before {
+                opacity: 1; /* Hiệu ứng ánh sáng nhẹ khi hover */
             }
 
             .card-img-top {
-                height: 200px;
+                height: 300px; /* Chiều cao cố định cho ảnh */
                 object-fit: cover;
-                border-radius: 10px 10px 0 0;
-                transition: opacity 0.3s ease;
+                border-top-left-radius: 15px; /* Bo góc trên ảnh */
+                border-top-right-radius: 15px;
+                transition: transform 0.5s ease, filter 0.3s ease; /* Hiệu ứng zoom và làm sáng ảnh */
             }
 
             .card:hover .card-img-top {
-                opacity: 0.9;
+                transform: scale(1.08); /* Phóng to ảnh mượt hơn */
+                filter: brightness(1.1); /* Làm sáng ảnh khi hover */
+            }
+
+            .card-body {
+                padding: 15px; /* Giảm padding để gọn hơn */
+                background-color: #fff; /* Nền trắng cho card body */
+                position: relative; /* Để nội dung không bị ảnh hưởng bởi ::before */
+                z-index: 1;
+                transition: background-color 0.3s ease;
+            }
+
+            .card:hover .card-body {
+                background-color: #fafafa; /* Làm sáng nhẹ nền khi hover */
             }
 
             .card-title {
-                font-size: 1.1rem;
-                color: #333;
-                margin: 10px 0;
+                font-size: 1.2rem; /* Kích thước chữ tiêu đề */
+                font-weight: 600; /* Độ đậm chữ */
+                color: #333; /* Màu chữ đậm hơn */
+                margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
                 transition: color 0.3s ease;
             }
 
             .card:hover .card-title {
-                color: #ff6f61;
+                color: #1a73e8; /* Đổi màu tiêu đề khi hover */
             }
 
             .card-text {
-                font-size: 0.9rem;
-                color: #666;
+                font-size: 0.9rem; /* Kích thước chữ mô tả */
+                color: #666; /* Màu chữ nhạt hơn */
+                margin-bottom: 10px; /* Khoảng cách dưới mô tả */
+                transition: color 0.3s ease;
+            }
+
+            .card:hover .card-text {
+                color: #555; /* Làm đậm nhẹ mô tả khi hover */
             }
 
             .card-text.text-danger {
-                font-size: 1rem;
-                font-weight: 700;
+                font-size: 1.1rem; /* Kích thước chữ giá */
+                font-weight: 700; /* Độ đậm chữ giá */
+                margin-bottom: 15px; /* Khoảng cách dưới giá */
+                transition: color 0.3s ease;
             }
 
-            /* Responsive adjustments */
-            @media (max-width: 767.98px) {
-                .sidebar {
-                    position: static;
-                    width: 100%;
-                    min-height: auto;
-                    border-right: none;
-                    border-bottom: 2px solid #000;
-                }
+            .card:hover .card-text.text-danger {
+                color: #dc3545; /* Tăng độ nổi bật của giá khi hover */
+            }
 
-                .main-content {
-                    margin-left: 0;
-                }
+            .btn-success {
+                background: linear-gradient(45deg, #28a745, #34c759); /* Gradient màu xanh lá */
+                border: none; /* Bỏ viền nút */
+                border-radius: 8px; /* Bo góc nút */
+                padding: 8px 15px; /* Padding nút */
+                font-size: 0.9rem; /* Kích thước chữ nút */
+                position: relative; /* Để thêm hiệu ứng ánh sáng */
+                overflow: hidden;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .btn-success:hover {
+                background: linear-gradient(45deg, #218838, #2ea44f); /* Gradient đậm hơn khi hover */
+                transform: scale(1.05) translateY(-2px); /* Phóng to và nhấc lên nhẹ */
+                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); /* Thêm bóng màu xanh */
+            }
+
+            .btn-success::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.4s ease;
+            }
+
+            .btn-success:hover::before {
+                left: 100%; /* Hiệu ứng ánh sáng chạy ngang khi hover */
+            }
+
+            .btn-success i {
+                margin-right: 5px; /* Khoảng cách giữa icon và chữ */
             }
             .no-pr{
                 height: 300px;
@@ -148,13 +214,13 @@
                     <div class="col-12 col-md-6 col-lg-4 mb-4" th:each="item : ${products}">
                         <div class="card">
                             <a th:href="@{/product/{id}(id=${item.id})}">
-                                <img th:src="${item.image}" class="card-img-top" alt="Product">
+                                <img th:src="${item.image}" class="card-img-top p-5" alt="Product">
                             </a>
                             <div class="card-body">
                                 <h5 class="card-title" th:text="${item.name}"></h5>
                                 <p class="card-text" th:text="${item.description}"></p>
                                 <p class="card-text text-danger">
-                                    <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' VND'}"></strong>
+                                    <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></strong>
                                 </p>
                                 <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
                             </div>

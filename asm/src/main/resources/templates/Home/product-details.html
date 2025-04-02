@@ -23,6 +23,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
+    <!-- Alert for inventory errors -->
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${inventoryError}">
+        <strong>Lỗi!</strong> <span th:text="${errorMessage}">Số lượng sản phẩm tồn kho không đủ.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <!-- Product Detail Section -->
     <div class="container mt-5 pt-5" data-aos="fade-up" data-aos-duration="1000">
         <div class="product-container">
@@ -51,7 +57,7 @@
 
                         <!-- Quantity and Add to Cart -->
                         <div th:if="${session.loggedInUser != null}">
-                            <form th:action="@{/cart/add}" method="post" class="mb-4">
+                            <form th:action="@{/cart/add}" method="post" class="mb-4" id="addToCartForm">
                                 <input type="hidden" name="id" th:value="${product.id}">
                                 <div class="quantity-control">
                                     <label for="quantity" class="quantity-label">Số lượng:</label>
@@ -59,7 +65,7 @@
                                         <button type="button" class="quantity-btn" id="decrease-qty">
                                             <i class="fas fa-minus"></i>
                                         </button>
-                                        <input type="number" id="quantity" name="quantity" class="quantity-input" value="1" min="1" max="99">
+                                        <input type="number" id="quantity" name="quantity" class="quantity-input" value="1" min="1" th:max="${product.available}">
                                         <button type="button" class="quantity-btn" id="increase-qty">
                                             <i class="fas fa-plus"></i>
                                         </button>
@@ -96,10 +102,10 @@
                                         <span class="info-label">Danh mục:</span>
                                         <span class="info-value" th:text="${product.category.name}">Máy ảnh</span>
                                     </li>
-                                    <li class="info-item">
+                                    <!-- <li class="info-item">
                                         <span class="info-label">Ngày tạo:</span>
                                         <span class="info-value" th:text="${#dates.format(product.createDate, 'dd/MM/yyyy')}">01/01/2023</span>
-                                    </li>
+                                    </li> -->
                                 </ul>
                             </div>
                         </div>
@@ -151,28 +157,62 @@
     <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
     <script th:src="@{/JS/Detail.js}"></script>
     
-    <script>
+    <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
+            // Get available quantity from Thymeleaf
+            const availableQuantity = /*[[${product.available}]]*/ 0;
+            
             // Quantity control for product detail page
             const quantityInput = document.getElementById('quantity');
             const decreaseBtn = document.getElementById('decrease-qty');
             const increaseBtn = document.getElementById('increase-qty');
+            const addToCartForm = document.getElementById('addToCartForm');
             
             if (decreaseBtn && increaseBtn && quantityInput) {
+                // Set max attribute based on available quantity
+                quantityInput.setAttribute('max', availableQuantity);
+                
                 decreaseBtn.addEventListener('click', function() {
                     let value = parseInt(quantityInput.value);
                     if (value > 1) {
-                        quantityInput.value = value - 1;
+                        quantityInput.value = value - 0;
                     }
                 });
                 
                 increaseBtn.addEventListener('click', function() {
                     let value = parseInt(quantityInput.value);
-                    let max = parseInt(quantityInput.getAttribute('max'));
-                    if (value < max) {
-                        quantityInput.value = value + 0;
+                    if (value < availableQuantity) {
+                        quantityInput.value = value + 0; // Fixed: was adding 0 instead of 1
+                    } else {
+                        // Show alert if trying to exceed available quantity
+                        alert('Số lượng sản phẩm tồn kho không đủ. Chỉ còn ' + availableQuantity + ' sản phẩm.');
                     }
                 });
+                
+                // Add validation when input value changes
+                quantityInput.addEventListener('change', function() {
+                    let value = parseInt(quantityInput.value);
+                    
+                    if (isNaN(value) || value < 1) {
+                        quantityInput.value = 1;
+                    } else if (value > availableQuantity) {
+                        quantityInput.value = availableQuantity;
+                        alert('Số lượng sản phẩm tồn kho không đủ. Chỉ còn ' + availableQuantity + ' sản phẩm.');
+                    }
+                });
+                
+                // Form validation before submit
+                if (addToCartForm) {
+                    addToCartForm.addEventListener('submit', function(e) {
+                        let value = parseInt(quantityInput.value);
+                        
+                        if (value > availableQuantity) {
+                            e.preventDefault();
+                            alert('Số lượng sản phẩm tồn kho không đủ. Chỉ còn ' + availableQuantity + ' sản phẩm.');
+                            quantityInput.value = availableQuantity;
+                        }
+                    });
+                }
             }
         });
     </script>

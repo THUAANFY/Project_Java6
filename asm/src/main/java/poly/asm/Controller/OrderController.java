@@ -20,7 +20,10 @@ import poly.asm.Models.Voucher;
 import poly.asm.Services.CartService;
 import poly.asm.Services.OrderService;
 import poly.asm.Services.VoucherService;
+import poly.asm.Utils.ShippingCalculator;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -88,6 +91,14 @@ public class OrderController {
         
         model.addAttribute("availableVouchers", applicableVouchers);
         
+        // Thêm thông tin thời gian giao hàng dự kiến nếu có địa chỉ
+        if (loggedInUser.getProvince() != null && !loggedInUser.getProvince().isEmpty()) {
+            int shippingDays = ShippingCalculator.calculateShippingDays(loggedInUser.getProvince());
+            String deliveryTimeRange = ShippingCalculator.getDeliveryTimeRangeText(shippingDays);
+            model.addAttribute("shippingDays", shippingDays);
+            model.addAttribute("deliveryTimeRange", deliveryTimeRange);
+        }
+        
         return "Home/checkout";
     }
     
@@ -135,6 +146,20 @@ public class OrderController {
         
         model.addAttribute("order", orderInfo);
         
+        // Thêm thông tin thời gian giao hàng dự kiến
+        Order order = orderService.getOrderByCode(orderCode);
+        if (order != null) {
+            Date estimatedDeliveryDate = orderService.calculateEstimatedDeliveryDate(order);
+            if (estimatedDeliveryDate != null) {
+                model.addAttribute("estimatedDeliveryDate", estimatedDeliveryDate);
+            }
+            
+            int shippingDays = orderService.getShippingDays(order);
+            String deliveryTimeRange = orderService.getDeliveryTimeRangeText(order);
+            model.addAttribute("shippingDays", shippingDays);
+            model.addAttribute("deliveryTimeRange", deliveryTimeRange);
+        }
+        
         return "Home/order-complete";
     }
     
@@ -175,6 +200,19 @@ public class OrderController {
         String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
         model.addAttribute("image", imagePath);
         model.addAttribute("order", order);
+        
+        // Calculate and add estimated delivery date
+        Date estimatedDeliveryDate = orderService.calculateEstimatedDeliveryDate(order);
+        model.addAttribute("estimatedDeliveryDate", estimatedDeliveryDate);
+        
+        // Calculate shipping days for display
+        int shippingDays = orderService.getShippingDays(order);
+        model.addAttribute("shippingDays", shippingDays);
+        
+        // Get delivery time range text
+        String deliveryTimeRange = orderService.getDeliveryTimeRangeText(order);
+        model.addAttribute("deliveryTimeRange", deliveryTimeRange);
+        
         return "Home/order-detail";
     }
     
@@ -220,5 +258,29 @@ public class OrderController {
         } else {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Không thể cập nhật trạng thái đơn hàng"));
         }
+    }
+    
+    /**
+     * API endpoint to get shipping time estimate
+     */
+    @GetMapping("/api/shipping/estimate")
+    @ResponseBody
+    public Map<String, Object> getShippingEstimate(@RequestParam("province") String province) {
+        int shippingDays = ShippingCalculator.calculateShippingDays(province);
+        String deliveryTimeRange = ShippingCalculator.getDeliveryTimeRangeText(shippingDays);
+        
+        // Calculate estimated delivery date based on current date
+        Date currentDate = new Date();
+        Date estimatedDeliveryDate = ShippingCalculator.calculateEstimatedDeliveryDate(currentDate, province);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("shippingDays", shippingDays);
+        response.put("deliveryTimeRange", deliveryTimeRange);
+        
+        if (estimatedDeliveryDate != null) {
+            response.put("estimatedDeliveryDate", estimatedDeliveryDate.getTime());
+        }
+        
+        return response;
     }
 }

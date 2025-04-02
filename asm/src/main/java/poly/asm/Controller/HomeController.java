@@ -44,4 +44,5 @@ public class HomeController {
         model.addAttribute("categories", categories); // Truyền categories vào model
         return "Home/index";
     }
+    
 }

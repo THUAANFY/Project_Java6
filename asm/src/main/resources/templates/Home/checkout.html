@@ -280,6 +280,38 @@
             border-radius: 8px;
             border: 1px dashed #dee2e6;
         }
+        
+        /* Shipping time info styles */
+        .shipping-time-info {
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .delivery-estimate {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .delivery-estimate i {
+            color: #ffc107;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .delivery-date {
+            font-weight: 600;
+            color: #007bff;
+        }
+        
+        .delivery-range {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -346,6 +378,22 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Thêm thông tin thời gian giao hàng cho địa chỉ mặc định -->
+                        <div id="profileShippingTimeInfo" class="shipping-time-info ms-4 mt-3" th:if="${province != null && !province.isEmpty()}">
+                            <div class="delivery-estimate">
+                                <i class="fa-solid fa-truck"></i>
+                                <div>
+                                    <strong>Thời gian giao hàng dự kiến:</strong> 
+                                    <span class="delivery-date" th:if="${deliveryTimeRange != null}" th:text="${deliveryTimeRange}">3-4 ngày</span>
+                                </div>
+                            </div>
+                            <div class="delivery-range">
+                                <i class="fa-solid fa-info-circle me-1"></i>
+                                Đơn hàng sẽ được giao đến <span th:text="${province}">Tỉnh/Thành phố</span> 
+                                trong khoảng <span th:text="${deliveryTimeRange}">3-4 ngày</span> kể từ khi đặt hàng
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -392,6 +440,21 @@
                             <div class="mb-3">
                                 <label class="form-label">Địa chỉ chi tiết</label>
                                 <input type="text" class="form-control" id="newAddressDetail" placeholder="Số nhà, tên đường, khu vực...">
+                            </div>
+                            
+                            <!-- Thêm thông tin thời gian giao hàng cho địa chỉ mới -->
+                            <div id="newAddressShippingTimeInfo" class="shipping-time-info d-none">
+                                <div class="delivery-estimate">
+                                    <i class="fa-solid fa-truck"></i>
+                                    <div>
+                                        <strong>Thời gian giao hàng dự kiến:</strong> 
+                                        <span id="newAddressDeliveryTime">Chọn tỉnh/thành phố để xem thời gian giao hàng</span>
+                                    </div>
+                                </div>
+                                <div class="delivery-range" id="newAddressDeliveryRange">
+                                    <i class="fa-solid fa-info-circle me-1"></i>
+                                    Vui lòng chọn tỉnh/thành phố để xem thông tin giao hàng
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -580,11 +643,17 @@
             const useNewAddress = document.getElementById('useNewAddress');
             const profileAddressCard = document.getElementById('profileAddressCard');
             const newAddressForm = document.getElementById('newAddressForm');
+            const profileShippingTimeInfo = document.getElementById('profileShippingTimeInfo');
+            const newAddressShippingTimeInfo = document.getElementById('newAddressShippingTimeInfo');
 
             useProfileAddress.addEventListener('change', function() {
                 if (this.checked) {
                     profileAddressCard.classList.add('selected');
                     newAddressForm.classList.add('d-none');
+                    if (profileShippingTimeInfo) {
+                        profileShippingTimeInfo.classList.remove('d-none');
+                    }
+                    newAddressShippingTimeInfo.classList.add('d-none');
                 }
             });
 
@@ -592,6 +661,14 @@
                 if (this.checked) {
                     profileAddressCard.classList.remove('selected');
                     newAddressForm.classList.remove('d-none');
+                    if (profileShippingTimeInfo) {
+                        profileShippingTimeInfo.classList.add('d-none');
+                    }
+                    // Hiển thị thông tin giao hàng cho địa chỉ mới nếu đã chọn tỉnh/thành phố
+                    const provinceSelect = document.getElementById('newProvince');
+                    if (provinceSelect.selectedIndex > 0) {
+                        newAddressShippingTimeInfo.classList.remove('d-none');
+                    }
                 }
             });
 
@@ -700,6 +777,12 @@
                 // Nếu đã chọn tỉnh/thành phố, tải danh sách quận/huyện
                 if (provinceCode) {
                     loadDistricts(provinceCode);
+                    
+                    // Cập nhật thông tin thời gian giao hàng
+                    updateShippingTimeInfo(this.options[this.selectedIndex].text);
+                } else {
+                    // Ẩn thông tin thời gian giao hàng nếu không chọn tỉnh/thành phố
+                    newAddressShippingTimeInfo.classList.add('d-none');
                 }
             });
             
@@ -715,6 +798,42 @@
                     loadWards(districtCode);
                 }
             });
+            
+            // Hàm cập nhật thông tin thời gian giao hàng
+            function updateShippingTimeInfo(province) {
+                if (!province) return;
+                
+                // Gọi API để lấy thông tin thời gian giao hàng
+                fetch(`/api/shipping/estimate?province=${encodeURIComponent(province)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Hiển thị thông tin thời gian giao hàng
+                        const newAddressDeliveryTime = document.getElementById('newAddressDeliveryTime');
+                        const newAddressDeliveryRange = document.getElementById('newAddressDeliveryRange');
+                        
+                        if (data.estimatedDeliveryDate) {
+                            const deliveryDate = new Date(data.estimatedDeliveryDate);
+                            const formattedDate = deliveryDate.toLocaleDateString('vi-VN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                            });
+                            
+                            newAddressDeliveryTime.textContent = formattedDate;
+                            newAddressDeliveryRange.innerHTML = `
+                                <i class="fa-solid fa-info-circle me-1"></i>
+                                Đơn hàng sẽ được giao đến <strong>${province}</strong> 
+                                trong khoảng <strong>${data.deliveryTimeRange}</strong> kể từ khi đặt hàng
+                            `;
+                            
+                            // Hiển thị thông tin thời gian giao hàng
+                            newAddressShippingTimeInfo.classList.remove('d-none');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi lấy thông tin thời gian giao hàng:', error);
+                    });
+            }
             
             // Xử lý chọn voucher
             const voucherSelect = document.getElementById('voucherSelect');
@@ -846,7 +965,9 @@
                 // Thêm thông tin mã giảm giá nếu có
                 if (voucherSelect.value) {
                     orderData.couponCode = voucherSelect.value;
+                    // Lấy giá trị discount từ biến discount đã được tính toán
                     orderData.discountAmount = discount;
+                    console.log("Sending discount amount:", discount); // Thêm log để kiểm tra
                 }
                 
                 if (useNewAddress.checked) {

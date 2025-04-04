@@ -1,5 +1,7 @@
 package poly.asm.Controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +28,13 @@ public class MomoController {
     @Autowired
     private OrderService orderService;
     
-    /**
-     * Hiển thị trang thanh toán MoMo
-     */
+    private static final long MIN_AMOUNT = 1000; // 1,000 VND
+    private static final long MAX_AMOUNT = 50000000; // 50,000,000 VND
+
     @GetMapping("/momo-payment")
-    public String showMomoPaymentPage(@RequestParam("orderId") String orderCode, 
-                                     @RequestParam(value = "amount", required = false) Double amount,
-                                     Model model, 
-                                     HttpSession session) {
+    public String redirectToMomoPayment(@RequestParam("orderId") String orderCode, 
+                                        @RequestParam(value = "amount", required = false) Double amount,
+                                        HttpSession session) {
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         if (loggedInUser == null) {
             return "redirect:/login";
@@ -41,103 +42,64 @@ public class MomoController {
         
         Order order = orderService.getOrderByCode(orderCode);
         if (order == null) {
-            model.addAttribute("error", "Không tìm thấy đơn hàng");
-            return "Home/payment-error";
+            return redirectWithEncodedError("Không tìm thấy đơn hàng");
         }
         
-        // Kiểm tra xem đơn hàng có thuộc về người dùng hiện tại không
         if (!order.getUser().getId().equals(loggedInUser.getId())) {
-            model.addAttribute("error", "Bạn không có quyền truy cập đơn hàng này");
-            return "Home/payment-error";
+            return redirectWithEncodedError("Bạn không có quyền truy cập đơn hàng này");
         }
         
-        // Thêm thông tin đơn hàng vào model
-        model.addAttribute("orderCode", orderCode);
+        double paymentAmount = (amount != null) ? amount : order.getTotal();
         
-        // Sử dụng giá trị amount từ tham số nếu có, nếu không thì lấy từ đơn hàng
+        if (paymentAmount < MIN_AMOUNT || paymentAmount > MAX_AMOUNT) {
+            return redirectWithEncodedError("Số tiền giao dịch phải từ 1,000 VND đến 50,000,000 VND");
+        }
+        
+        Map<String, Object> paymentResult;
         if (amount != null) {
-            model.addAttribute("amount", amount);
+            paymentResult = momoPaymentService.createPaymentRequest(order, amount);
         } else {
-            model.addAttribute("amount", order.getTotal());
+            paymentResult = momoPaymentService.createPaymentRequest(order);
         }
         
-        return "Home/momo-payment";
-    }
-    
-    /**
-     * API để tạo yêu cầu thanh toán MoMo
-     */
-    @PostMapping("/api/momo/create-payment")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> createMomoPayment(@RequestBody Map<String, String> requestData, HttpSession session) {
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Vui lòng đăng nhập để thanh toán"));
-        }
-        
-        String orderCode = requestData.get("orderCode");
-        Order order = orderService.getOrderByCode(orderCode);
-        
-        if (order == null) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Không tìm thấy đơn hàng"));
-        }
-        
-        // Lấy amount từ request nếu có
-        Double customAmount = null;
-        if (requestData.containsKey("amount") && requestData.get("amount") != null) {
-            try {
-                customAmount = Double.parseDouble(requestData.get("amount"));
-            } catch (NumberFormatException e) {
-                // Nếu không parse được, sử dụng giá trị từ đơn hàng
+        if (Boolean.TRUE.equals(paymentResult.get("success"))) {
+            String payUrl = (String) paymentResult.get("payUrl");
+            if (payUrl != null && !payUrl.isEmpty() && (payUrl.startsWith("http://") || payUrl.startsWith("https://"))) {
+                return "redirect:" + payUrl; // Chuyển hướng đến trang nhập thông tin thẻ
             }
         }
         
-        // Tạo yêu cầu thanh toán MoMo
-        Map<String, Object> paymentResult = momoPaymentService.createPaymentRequest(order);
-
-        // Nếu có amount tùy chỉnh, cập nhật lại amount trong kết quả
-        if (customAmount != null) {
-            // Giả sử paymentResult có chứa amount, cập nhật nó
-            if (paymentResult.containsKey("amount")) {
-                paymentResult.put("amount", customAmount);
-            }
-        }
-        
-        return ResponseEntity.ok(paymentResult);
+        return redirectWithEncodedError("Không thể tạo yêu cầu thanh toán MoMo");
     }
     
-    /**
-     * Xử lý callback từ MoMo
-     */
     @GetMapping("/order/momo-return")
-    public String handleMomoReturn(@RequestParam(required = false) String orderId,
-                                  @RequestParam(required = false) String requestId,
-                                  @RequestParam(required = false) String amount,
-                                  @RequestParam(required = false) String resultCode,
-                                  @RequestParam(required = false) String message,
-                                  Model model) {
-        
-        // Kiểm tra kết quả thanh toán
-        if ("0".equals(resultCode)) {
-            // Thanh toán thành công
-            Order order = orderService.getOrderByCode(orderId);
-            if (order != null) {
-                // Cập nhật trạng thái đơn hàng
-                orderService.updateOrderStatus(orderId, "Đã thanh toán");
-                
-                // Chuyển hướng đến trang hoàn tất đơn hàng
-                return "redirect:/order/complete?id=" + orderId;
-            }
+public String handleMomoReturn(@RequestParam(required = false) String orderId,
+                               @RequestParam(required = false) String requestId,
+                               @RequestParam(required = false) String amount,
+                               @RequestParam(required = false) String resultCode,
+                               @RequestParam(required = false) String message,
+                               Model model) {
+    System.out.println("MoMo return - orderId: " + orderId + ", resultCode: " + resultCode + ", message: " + message);
+
+    if ("0".equals(resultCode) && orderId != null) {
+        Order order = orderService.getOrderByCode(orderId);
+        if (order != null) {
+            orderService.updateOrderStatus(orderId, "Đã thanh toán");
+            model.addAttribute("order", order);
+            return "home/order-complete"; // Chuyển đến trang order-complete.html
+        } else {
+            return redirectWithEncodedError("Không tìm thấy đơn hàng với mã: " + orderId);
         }
-        
-        // Thanh toán thất bại
-        model.addAttribute("error", "Thanh toán không thành công: " + message);
-        return "Home/payment-error";
     }
     
-    /**
-     * API nhận thông báo từ MoMo (IPN)
-     */
+
+    String errorMessage = message != null ? message : "Thanh toán thất bại hoặc bị hủy.";
+    System.out.println("Payment failed - resultCode: " + resultCode + ", message: " + errorMessage);
+    return redirectWithEncodedError("Thanh toán không thành công: " + errorMessage);
+}
+    
+    
+    
     @PostMapping("/api/momo/ipn")
     @ResponseBody
     public ResponseEntity<Map<String, String>> handleMomoIPN(@RequestBody Map<String, Object> ipnData) {
@@ -146,13 +108,9 @@ public class MomoController {
         String amount = String.valueOf(ipnData.get("amount"));
         String resultCode = String.valueOf(ipnData.get("resultCode"));
         
-        // Kiểm tra kết quả thanh toán
         if ("0".equals(resultCode)) {
-            // Xác minh thanh toán
             boolean isValid = momoPaymentService.verifyPayment(orderId, requestId, amount);
-            
             if (isValid) {
-                // Cập nhật trạng thái đơn hàng
                 orderService.updateOrderStatus(orderId, "Đã thanh toán");
                 return ResponseEntity.ok(Map.of("message", "Thanh toán thành công"));
             }
@@ -160,23 +118,32 @@ public class MomoController {
         
         return ResponseEntity.ok(Map.of("message", "Thanh toán không thành công"));
     }
-    
-    /**
-     * Xử lý trường hợp người dùng truy cập vào momo-payment.html trực tiếp
-     * Đây là một fallback để xử lý lỗi 404
-     */
-    @GetMapping("/momo-payment.html")
-    public String handleLegacyMomoPaymentUrl(@RequestParam(value = "orderId", required = false) String orderCode,
-                                           @RequestParam(value = "amount", required = false) String amount,
-                                           Model model,
-                                           HttpSession session) {
-        // Chuyển hướng đến endpoint mới
-        if (orderCode != null) {
-            return "redirect:/momo-payment?orderId=" + orderCode + (amount != null ? "&amount=" + amount : "");
+
+    private String redirectWithEncodedError(String errorMessage) {
+        try {
+            String encodedError = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8.toString());
+            return "redirect:/Home/payment-error?error=" + encodedError;
+        } catch (Exception e) {
+            return "redirect:/Home/payment-error?error=Unknown%20error";
         }
-        
-        // Nếu không có orderId, chuyển hướng về trang chủ
-        return "redirect:/";
     }
+
+    @GetMapping("/order-complete")
+    public String showOrderComplete(@RequestParam("orderId") String orderCode, Model model) {
+        Order order = orderService.getOrderByCode(orderCode);
+        if (order == null) {
+            System.out.println("Order not found for orderCode: " + orderCode);
+            return redirectWithEncodedError("Không tìm thấy đơn hàng");
+        }
+        model.addAttribute("order", order);
+        System.out.println("Showing order-complete page for orderCode: " + orderCode);
+        return "home/order-complete";
+    }
+
+    @GetMapping("/Home/payment-error")
+public String showPaymentError(@RequestParam("error") String errorMessage, Model model) {
+    model.addAttribute("errorMessage", errorMessage);
+    return "home/payment-error"; // View trong templates/home/payment-error.html
 }
 
+}

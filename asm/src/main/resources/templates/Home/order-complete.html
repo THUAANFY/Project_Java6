@@ -118,8 +118,8 @@
                 <h5 class="fw-bold mb-3">Chi tiết đơn hàng</h5>
                 
                 <div class="order-items">
-                    <div th:each="item : ${order.items}" class="order-item">
-                        <img th:src="${item.productImage}" alt="Product Image" class="item-image">
+                    <div th:each="item : ${order.orderDetail}" class="order-item">
+                        <img th:src="${item.productImage != null ? item.productImage : '/images/default.jpg'}" alt="Product Image" class="item-image">
                         <div class="item-details">
                             <h6 class="mb-1" th:text="${item.productName}">Tên sản phẩm</h6>
                             <div class="item-price mb-1" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Giá</div>
@@ -154,12 +154,11 @@
             
             <div class="shipping-info shadow-sm">
                 <h5 class="fw-bold mb-3">Thông tin giao hàng</h5>
-                
                 <div class="row">
                     <div class="col-md-6">
-                        <p class="mb-1"><strong>Người nhận:</strong> <span th:text="${order.shippingAddress.name}">Tên người nhận</span></p>
-                        <p class="mb-1"><strong>Số điện thoại:</strong> <span th:text="${order.shippingAddress.phone}">Số điện thoại</span></p>
-                        <p class="mb-3"><strong>Địa chỉ:</strong> <span th:text="${order.shippingAddress.addressDetail} + ', ' + ${order.shippingAddress.ward} + ', ' + ${order.shippingAddress.district} + ', ' + ${order.shippingAddress.province}">Địa chỉ đầy đủ</span></p>
+                        <p class="mb-1"><strong>Người nhận:</strong> <span th:text="${order.recipientName}">Tên người nhận</span></p>
+                        <p class="mb-1"><strong>Số điện thoại:</strong> <span th:text="${order.recipientPhone}">Số điện thoại</span></p>
+                        <p class="mb-3"><strong>Địa chỉ:</strong> <span th:text="${order.shippingAddress} + ', ' + ${order.shippingWard} + ', ' + ${order.shippingDistrict} + ', ' + ${order.shippingProvince}">Địa chỉ đầy đủ</span></p>
                     </div>
                     <div class="col-md-6">
                         <p class="mb-1"><strong>Phương thức thanh toán:</strong> 
@@ -168,7 +167,7 @@
                             <span th:if="${order.paymentMethod == 'momoPayment'}">Thanh toán MoMo</span>
                         </p>
                         <p class="mb-1"><strong>Trạng thái đơn hàng:</strong> <span th:text="${order.status}">Trạng thái</span></p>
-                        <p class="mb-3"><strong>Ngày đặt hàng:</strong> <span th:text="${#dates.format(new java.util.Date(order.createdAt), 'dd/MM/yyyy HH:mm')}">Ngày đặt hàng</span></p>
+                        <p class="mb-3"><strong>Ngày đặt hàng:</strong> <span th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">Ngày đặt hàng</span></p>
                     </div>
                 </div>
             </div>
@@ -192,4 +191,3 @@
     <script>AOS.init();</script>
 </body>
 </html>
-

@@ -56,12 +56,6 @@ public class OrderController {
             return "redirect:/yourcart";
         }
 
-        // Tính tổng tiền
-        // double totalPrice = 0;
-        // for (CartItem item : cartService.getCartItems()) {
-        //     totalPrice += item.getTotalPrice();
-        // }
-
         // Lấy tổng tiền từ service thay vì tính toán thủ công
         double totalPrice = cartService.getTotalPrice();
         

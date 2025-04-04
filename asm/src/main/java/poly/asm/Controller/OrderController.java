@@ -213,6 +213,12 @@ public class OrderController {
         String deliveryTimeRange = orderService.getDeliveryTimeRangeText(order);
         model.addAttribute("deliveryTimeRange", deliveryTimeRange);
         
+        // Add location information for orders in shipping status
+        if ("Đang giao hàng".equals(order.getStatus())) {
+            Map<String, Object> locationInfo = orderService.getCurrentOrderLocation(order);
+            model.addAttribute("locationInfo", locationInfo);
+        }
+        
         return "Home/order-detail";
     }
     
@@ -295,5 +301,22 @@ public class OrderController {
             return Map.of("status", order.getStatus());
         }
         return Map.of("status", "unknown");
+    }
+    
+    /**
+     * API endpoint to get order tracking information
+     */
+    @GetMapping("/api/order/tracking")
+    @ResponseBody
+    public Map<String, Object> getOrderTracking(@RequestParam("orderCode") String orderCode) {
+        Order order = orderService.getOrderByCode(orderCode);
+        Map<String, Object> response = new HashMap<>();
+
+        if (order != null && "Đang giao hàng".equals(order.getStatus())) {
+            Map<String, Object> locationInfo = orderService.getCurrentOrderLocation(order);
+            response.put("locationInfo", locationInfo);
+        }
+
+        return response;
     }
 }

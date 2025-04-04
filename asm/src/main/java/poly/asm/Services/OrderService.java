@@ -28,6 +28,9 @@ import java.util.UUID;
 public class OrderService {
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private NotificationService notificationService;
     
     @Autowired
     private OrderDAO orderDAO;
@@ -182,6 +185,14 @@ public class OrderService {
         if (voucherCode != null && !voucherCode.isEmpty()) {
             voucherService.useVoucher(voucherCode);
             System.out.println("Increased usage count for voucher: " + voucherCode);
+        }
+        
+        try {
+            notificationService.createOrderNotification(orderCode, user.getFullname());
+        } catch (Exception e) {
+            // Log lỗi nhưng không ảnh hưởng đến quá trình đặt hàng
+            System.err.println("Lỗi khi tạo thông báo: " + e.getMessage());
+            e.printStackTrace();
         }
         
         return orderCode;
@@ -378,5 +389,39 @@ public class OrderService {
     public String getDeliveryTimeRangeForProvince(String province) {
         int shippingDays = calculateShippingDaysForProvince(province);
         return ShippingCalculator.getDeliveryTimeRangeText(shippingDays);
+    }
+    
+    /**
+     * Get the current location of an order during shipping
+     * 
+     * @param order The order
+     * @return A map containing information about the current location and status
+     */
+    public Map<String, Object> getCurrentOrderLocation(Order order) {
+        // Only calculate location for orders in "Đang giao hàng" status
+        if (order == null || !"Đang giao hàng".equals(order.getStatus())) {
+            return null;
+        }
+
+        // Get the order confirmation date
+        // Since we don't have a specific confirmation date field, we'll estimate it
+        // by subtracting 1 day from the current date if the order was created more than 1 day ago
+        Date orderConfirmationDate = order.getCreatedAt();
+        Date currentDate = new Date();
+
+        // If order is older than 1 day, assume it was confirmed 1 day after creation
+        long dayInMillis = 24 * 60 * 60 * 1000L;
+        if (currentDate.getTime() - orderConfirmationDate.getTime() > dayInMillis) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(orderConfirmationDate);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            orderConfirmationDate = calendar.getTime();
+        }
+
+        // Calculate the current location using ShippingCalculator
+        return ShippingCalculator.calculateCurrentOrderLocation(
+            orderConfirmationDate,
+            order.getShippingProvince()
+        );
     }
 }

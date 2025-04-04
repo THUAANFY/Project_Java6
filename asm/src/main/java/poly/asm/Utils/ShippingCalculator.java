@@ -1,4 +1,3 @@
-// src/main/java/poly/asm/Utils/ShippingCalculator.java
 package poly.asm.Utils;
 
 import java.util.HashMap;
@@ -158,5 +157,148 @@ public class ShippingCalculator {
             default:
                 return "7-10 ngày";
         }
+    }
+    
+    /**
+     * Calculate the current location of an order during shipping
+     * 
+     * @param orderConfirmationDate The date the order was confirmed
+     * @param destinationProvince The destination province
+     * @return A map containing information about the current location and status
+     */
+    public static Map<String, Object> calculateCurrentOrderLocation(Date orderConfirmationDate, String destinationProvince) {
+        // If no confirmation date is provided, return null
+        if (orderConfirmationDate == null) {
+            return null;
+        }
+
+        // Get current date and time
+        Date currentDate = new Date();
+
+        // Calculate total shipping days for the destination
+        int totalShippingDays = calculateShippingDays(destinationProvince);
+
+        // Calculate elapsed time in milliseconds
+        long elapsedTimeMs = currentDate.getTime() - orderConfirmationDate.getTime();
+        // THÊM DÒNG NÀY: Tăng tốc thời gian đã trôi qua (ví dụ: 24 lần = 1 ngày thực = 24 ngày mô phỏng)
+        elapsedTimeMs = elapsedTimeMs * 24;
+        long totalShippingTimeMs = totalShippingDays * 24 * 60 * 60 * 1000L;
+
+        // Calculate progress percentage (0-100%)
+        double progressPercentage = Math.min(100.0, (elapsedTimeMs * 100.0) / totalShippingTimeMs);
+
+        // Define shipping stages based on progress
+        String currentLocation;
+        String statusDescription;
+
+        if (progressPercentage < 20) {
+            currentLocation = "Đà Nẵng";
+            statusDescription = "Đơn hàng đang được chuẩn bị tại kho hàng";
+        } else if (progressPercentage < 40) {
+            currentLocation = "Đà Nẵng";
+            statusDescription = "Đơn hàng đã rời kho hàng, đang trên đường vận chuyển";
+        } else if (progressPercentage < 60) {
+            // Halfway point - determine intermediate location based on destination
+            currentLocation = getIntermediateLocation(destinationProvince);
+            statusDescription = "Đơn hàng đang được vận chuyển qua " + currentLocation;
+        } else if (progressPercentage < 90) {
+            currentLocation = destinationProvince;
+            statusDescription = "Đơn hàng đã đến " + destinationProvince + ", đang chuẩn bị giao hàng";
+        } else {
+            currentLocation = destinationProvince;
+            statusDescription = "Đơn hàng đang được giao đến địa chỉ của bạn";
+        }
+
+        // Calculate estimated time remaining in hours
+        long remainingTimeMs = Math.max(0, totalShippingTimeMs - elapsedTimeMs);
+        int remainingHours = (int) (remainingTimeMs / (60 * 60 * 1000));
+
+        // Create result map
+        Map<String, Object> result = new HashMap<>();
+        result.put("currentLocation", currentLocation);
+        result.put("statusDescription", statusDescription);
+        result.put("progressPercentage", progressPercentage);
+        result.put("remainingHours", remainingHours);
+        result.put("totalShippingDays", totalShippingDays);
+
+        return result;
+    }
+
+    /**
+     * Helper method to determine an intermediate location based on the destination province
+     * 
+     * @param destinationProvince The destination province
+     * @return An intermediate location name
+     */
+    private static String getIntermediateLocation(String destinationProvince) {
+        // Group provinces by region for determining intermediate locations
+        // Northern regions
+        if (destinationProvince.contains("Hà Nội") ||
+            destinationProvince.contains("Bắc") ||
+            destinationProvince.contains("Hải") ||
+            destinationProvince.contains("Quảng Ninh") ||
+            destinationProvince.contains("Thái") ||
+            destinationProvince.contains("Phú Thọ") ||
+            destinationProvince.contains("Nam Định") ||
+            destinationProvince.contains("Ninh Bình") ||
+            destinationProvince.contains("Hà Nam")) {
+            return "Thanh Hóa";
+        }
+
+        // Central northern regions
+        if (destinationProvince.contains("Thanh Hóa") ||
+            destinationProvince.contains("Nghệ An") ||
+            destinationProvince.contains("Hà Tĩnh") ||
+            destinationProvince.contains("Quảng Bình") ||
+            destinationProvince.contains("Quảng Trị")) {
+            return "Huế";
+        }
+
+        // Central southern regions
+        if (destinationProvince.contains("Huế") ||
+            destinationProvince.contains("Quảng Nam") ||
+            destinationProvince.contains("Quảng Ngãi") ||
+            destinationProvince.contains("Bình Định") ||
+            destinationProvince.contains("Phú Yên") ||
+            destinationProvince.contains("Khánh Hòa")) {
+            return "Quảng Ngãi";
+        }
+
+        // Southern regions
+        if (destinationProvince.contains("Hồ Chí Minh") ||
+            destinationProvince.contains("Bình Dương") ||
+            destinationProvince.contains("Đồng Nai") ||
+            destinationProvince.contains("Long An") ||
+            destinationProvince.contains("Bà Rịa") ||
+            destinationProvince.contains("Tây Ninh")) {
+            return "Ninh Thuận";
+        }
+
+        // Mekong Delta regions
+        if (destinationProvince.contains("Tiền Giang") ||
+            destinationProvince.contains("Bến Tre") ||
+            destinationProvince.contains("Vĩnh Long") ||
+            destinationProvince.contains("Trà Vinh") ||
+            destinationProvince.contains("Đồng Tháp") ||
+            destinationProvince.contains("An Giang") ||
+            destinationProvince.contains("Kiên Giang") ||
+            destinationProvince.contains("Cà Mau") ||
+            destinationProvince.contains("Hậu Giang") ||
+            destinationProvince.contains("Sóc Trăng") ||
+            destinationProvince.contains("Bạc Liêu")) {
+            return "Bình Thuận";
+        }
+
+        // Highland regions
+        if (destinationProvince.contains("Lâm Đồng") ||
+            destinationProvince.contains("Đắk Lắk") ||
+            destinationProvince.contains("Đắk Nông") ||
+            destinationProvince.contains("Gia Lai") ||
+            destinationProvince.contains("Kon Tum")) {
+            return "Kon Tum";
+        }
+
+        // Default intermediate location
+        return "Khu vực miền Trung";
     }
 }

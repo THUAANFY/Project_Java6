@@ -106,7 +106,7 @@ public class ManagePrController {
         if (!imageFile.isEmpty()) {
             try {
                 // Đường dẫn lưu ảnh
-                String uploadDir = "D:\\HOCTAP\\HocKyV\\BLOCK_II\\Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\";
+                String uploadDir = "D:\\project_Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\";
 
                 // Tạo thư mục nếu chưa tồn tại
                 File directory = new File(uploadDir);
@@ -164,7 +164,7 @@ public class ManagePrController {
         if (!imageFile.isEmpty()) {
             try {
                 // Đường dẫn lưu ảnh
-                String uploadDir = "D:\\HOCTAP\\HocKyV\\BLOCK_II\\Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\";
+                String uploadDir = "D:\\project_Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\";
 
                 // Tạo thư mục nếu chưa tồn tại
                 File directory = new File(uploadDir);
@@ -174,7 +174,7 @@ public class ManagePrController {
 
                 // Xóa ảnh cũ nếu có
                 if (existingProduct.getImage() != null && !existingProduct.getImage().isEmpty()) {
-                    String oldImagePath = "D:\\HOCTAP\\HocKyV\\BLOCK_II\\Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\" + existingProduct.getImage();
+                    String oldImagePath = "D:\\project_Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\" + existingProduct.getImage();
                     File oldImageFile = new File(oldImagePath);
                     if (oldImageFile.exists()) {
                         oldImageFile.delete();
@@ -224,7 +224,7 @@ public class ManagePrController {
                 // Xóa ảnh khỏi hệ thống file (nếu có)
                 Product product = productOpt.get();
                 if (product.getImage() != null) {
-                    String imagePath = "D:\\HOCTAP\\HocKyV\\BLOCK_II\\Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\" + product.getImage();
+                    String imagePath = "D:\\project_Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\" + product.getImage();
                     File imageFile = new File(imagePath);
                     if (imageFile.exists()) {
                         imageFile.delete();

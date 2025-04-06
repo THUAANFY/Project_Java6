@@ -26,6 +26,7 @@ import java.util.UUID;
 
 @Service
 public class OrderService {
+
     @Autowired
     private CartService cartService;
 
@@ -34,19 +35,19 @@ public class OrderService {
     
     @Autowired
     private OrderDAO orderDAO;
-    
+
     @Autowired
     private OrderDetailDAO orderDetailDAO;
-    
+
     @Autowired
     private ProductDAO productDAO;
-    
+
     @Autowired
     private HttpSession session;
-    
+
     @Autowired
-    private VoucherService voucherService; // Thêm VoucherService
-    
+    private VoucherService voucherService;
+
     /**
      * Tạo đơn hàng mới từ giỏ hàng hiện tại
      * 
@@ -58,35 +59,35 @@ public class OrderService {
     public String createOrder(Map<String, Object> orderData, User user) {
         // Tạo mã đơn hàng ngẫu nhiên
         String orderCode = "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        
+        System.out.println("Creating order with orderCode: " + orderCode);
+
         // Lấy thông tin giỏ hàng
         Collection<CartItem> cartItems = cartService.getCartItems();
+        if (cartItems == null || cartItems.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng trống, không thể tạo đơn hàng.");
+        }
+
         Double subtotal = cartService.getTotalPrice();
         Double shippingFee = 30000.0; // Phí vận chuyển cố định
-        
+
         // Tạo đối tượng đơn hàng
         Order order = new Order();
         order.setUser(user);
         order.setOrderCode(orderCode);
         order.setSubtotal(subtotal);
         order.setShippingFee(shippingFee);
-        
-        // Get voucher code and discount amount if provided
+
+        // Xử lý mã giảm giá (voucher)
         String voucherCode = null;
         Double discountAmount = 0.0;
-        
-        // Thêm log để kiểm tra dữ liệu nhận được
         System.out.println("Order data received: " + orderData);
-        
+
         if (orderData.containsKey("couponCode")) {
             voucherCode = (String) orderData.get("couponCode");
-            
-            // Kiểm tra và chuyển đổi discountAmount một cách an toàn
             if (orderData.containsKey("discountAmount")) {
                 Object discountObj = orderData.get("discountAmount");
                 System.out.println("Discount object type: " + (discountObj != null ? discountObj.getClass().getName() : "null"));
                 System.out.println("Discount value: " + discountObj);
-                
                 if (discountObj instanceof Number) {
                     discountAmount = ((Number) discountObj).doubleValue();
                 } else if (discountObj instanceof String) {
@@ -98,23 +99,22 @@ public class OrderService {
                 }
             }
         }
-        
+
         System.out.println("Voucher code: " + voucherCode);
         System.out.println("Discount amount: " + discountAmount);
-
-        // Set voucher information in the order
         order.setVoucherCode(voucherCode);
         order.setDiscountAmount(discountAmount);
 
-        // Calculate final total with discount
+        // Tính tổng tiền cuối cùng
         double total = subtotal + shippingFee - discountAmount;
+        if (total < 0) total = 0; // Đảm bảo tổng tiền không âm
         System.out.println("Calculated total: " + total);
         order.setTotal(total);
-        
+
         order.setStatus("Chờ xác nhận");
         order.setCreatedAt(new Date());
-        
-        // Xử lý thông tin địa chỉ
+
+        // Xử lý thông tin địa chỉ giao hàng
         boolean useProfileAddress = (boolean) orderData.get("useProfileAddress");
         if (useProfileAddress) {
             order.setRecipientName(user.getFullname());
@@ -133,55 +133,45 @@ public class OrderService {
             order.setShippingWard(newAddress.get("ward"));
             order.setShippingAddress(newAddress.get("addressDetail"));
         }
-        
+
         // Xử lý phương thức thanh toán
         String paymentMethod = (String) orderData.get("paymentMethod");
         order.setPaymentMethod(paymentMethod);
-        
+
         // Lưu đơn hàng vào cơ sở dữ liệu
         order = orderDAO.save(order);
-        
-        // Tạo và lưu các mục đơn hàng
+        System.out.println("Order saved with orderCode: " + order.getOrderCode());
+
+        // Tạo và lưu chi tiết đơn hàng
         List<OrderDetail> orderItems = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
             OrderDetail orderItem = new OrderDetail();
             orderItem.setOrder(order);
-            
-            // Lấy thông tin sản phẩm từ cơ sở dữ liệu
+
             Product product = productDAO.findById(cartItem.getId()).orElse(null);
             if (product != null) {
                 orderItem.setProduct(product);
-                
-                // Cập nhật số lượng sản phẩm trong kho
                 int currentQuantity = product.getAvailable();
                 int orderedQuantity = cartItem.getQuantity();
-                
-                // Kiểm tra xem có đủ số lượng trong kho không
                 if (currentQuantity < orderedQuantity) {
-                    throw new RuntimeException("Sản phẩm " + product.getName() + " chỉ còn " + currentQuantity + " sản phẩm trong kho");
+                    throw new RuntimeException("Sản phẩm " + product.getName() + " chỉ còn " + currentQuantity + " trong kho.");
                 }
-                
-                // Trừ số lượng sản phẩm đã mua
                 product.setAvailable(currentQuantity - orderedQuantity);
-                
-                // Lưu cập nhật số lượng sản phẩm
                 productDAO.save(product);
-                System.out.println("Đã cập nhật số lượng sản phẩm " + product.getName() + " từ " + currentQuantity + " thành " + product.getAvailable());
+                System.out.println("Updated product " + product.getName() + " quantity from " + currentQuantity + " to " + product.getAvailable());
             }
-            
+
             orderItem.setProductName(cartItem.getName());
             orderItem.setPrice(cartItem.getPrice());
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setTotalPrice(cartItem.getTotalPrice());
             orderItem.setProductImage(cartItem.getImage());
-            
             orderItems.add(orderItem);
         }
-        
-        // Lưu tất cả các mục đơn hàng
+
         orderDetailDAO.saveAll(orderItems);
-        
-        // Tăng số lần sử dụng voucher nếu có
+
+        // Cập nhật số lần sử dụng voucher
         if (voucherCode != null && !voucherCode.isEmpty()) {
             voucherService.useVoucher(voucherCode);
             System.out.println("Increased usage count for voucher: " + voucherCode);
@@ -194,10 +184,11 @@ public class OrderService {
             System.err.println("Lỗi khi tạo thông báo: " + e.getMessage());
             e.printStackTrace();
         }
-        
+        // Xóa giỏ hàng sau khi tạo đơn hàng thành công
+        cartService.clearCart();
         return orderCode;
     }
-    
+
     /**
      * Lấy thông tin đơn hàng theo mã đơn hàng
      * 
@@ -207,34 +198,30 @@ public class OrderService {
     public Map<String, Object> getOrderInfo(String orderCode) {
         Order order = orderDAO.findByOrderCode(orderCode);
         if (order == null) {
+            System.out.println("Order not found for orderCode: " + orderCode);
             return null;
         }
-        
+
         List<OrderDetail> orderItems = orderDetailDAO.findByOrder(order);
-        
+
         Map<String, Object> orderInfo = new HashMap<>();
         orderInfo.put("id", order.getOrderCode());
         orderInfo.put("subtotal", order.getSubtotal());
         orderInfo.put("shippingFee", order.getShippingFee());
-        
-        // Add discount amount to the order info
         orderInfo.put("discountAmount", order.getDiscountAmount() != null ? order.getDiscountAmount() : 0.0);
-        
         orderInfo.put("total", order.getTotal());
         orderInfo.put("status", order.getStatus());
         orderInfo.put("createdAt", order.getCreatedAt().getTime());
         orderInfo.put("items", orderItems);
-        
-        // Add estimated delivery date
+
         Date estimatedDeliveryDate = calculateEstimatedDeliveryDate(order);
         if (estimatedDeliveryDate != null) {
             orderInfo.put("estimatedDeliveryDate", estimatedDeliveryDate.getTime());
         }
-        
-        // Add shipping days and delivery time range
+
         orderInfo.put("shippingDays", getShippingDays(order));
         orderInfo.put("deliveryTimeRange", getDeliveryTimeRangeText(order));
-        
+
         Map<String, String> shippingAddress = new HashMap<>();
         shippingAddress.put("name", order.getRecipientName());
         shippingAddress.put("phone", order.getRecipientPhone());
@@ -242,13 +229,14 @@ public class OrderService {
         shippingAddress.put("district", order.getShippingDistrict());
         shippingAddress.put("ward", order.getShippingWard());
         shippingAddress.put("addressDetail", order.getShippingAddress());
-        
         orderInfo.put("shippingAddress", shippingAddress);
+
         orderInfo.put("paymentMethod", order.getPaymentMethod());
-        
+
+        System.out.println("Fetched order info for orderCode: " + orderCode);
         return orderInfo;
     }
-    
+
     /**
      * Lấy danh sách đơn hàng của người dùng
      * 
@@ -256,9 +244,11 @@ public class OrderService {
      * @return Danh sách đơn hàng
      */
     public List<Order> getUserOrders(User user) {
-        return orderDAO.findByUserOrderByCreatedAtDesc(user);
+        List<Order> orders = orderDAO.findByUserOrderByCreatedAtDesc(user);
+        System.out.println("Fetched " + orders.size() + " orders for user: " + user.getId());
+        return orders;
     }
-    
+
     /**
      * Lấy chi tiết đơn hàng theo mã đơn hàng
      * 
@@ -266,9 +256,11 @@ public class OrderService {
      * @return Đơn hàng
      */
     public Order getOrderByCode(String orderCode) {
-        return orderDAO.findByOrderCode(orderCode);
+        Order order = orderDAO.findByOrderCode(orderCode);
+        System.out.println("Fetching order by code: " + orderCode + ", found: " + (order != null ? order.getOrderCode() : "null"));
+        return order;
     }
-    
+
     /**
      * Cập nhật trạng thái đơn hàng
      * 
@@ -280,14 +272,15 @@ public class OrderService {
     public boolean updateOrderStatus(String orderCode, String status) {
         Order order = orderDAO.findByOrderCode(orderCode);
         if (order == null) {
+            System.out.println("Failed to update status: Order not found for orderCode: " + orderCode);
             return false;
         }
-        
         order.setStatus(status);
         orderDAO.save(order);
+        System.out.println("Order status updated to: " + status + " for orderCode: " + orderCode);
         return true;
     }
-    
+
     /**
      * Hủy đơn hàng
      * 
@@ -299,15 +292,15 @@ public class OrderService {
     public boolean cancelOrder(String orderCode, User user) {
         Order order = orderDAO.findByOrderCode(orderCode);
         if (order == null || !order.getUser().getId().equals(user.getId())) {
+            System.out.println("Failed to cancel order: Order not found or user mismatch for orderCode: " + orderCode);
             return false;
         }
-        
-        // Chỉ cho phép hủy đơn hàng khi đang ở trạng thái "Chờ xác nhận"
+
         if (!"Chờ xác nhận".equals(order.getStatus())) {
+            System.out.println("Failed to cancel order: Invalid status " + order.getStatus() + " for orderCode: " + orderCode);
             return false;
         }
-        
-        // Hoàn trả số lượng sản phẩm vào kho khi hủy đơn hàng
+
         List<OrderDetail> orderDetails = orderDetailDAO.findByOrder(order);
         for (OrderDetail detail : orderDetails) {
             Product product = detail.getProduct();
@@ -316,75 +309,65 @@ public class OrderService {
                 int returnQuantity = detail.getQuantity();
                 product.setAvailable(currentAvailable + returnQuantity);
                 productDAO.save(product);
-                System.out.println("Đã hoàn trả " + returnQuantity + " sản phẩm " + product.getName() + " vào kho");
+                System.out.println("Restored " + returnQuantity + " units of product " + product.getName() + " to stock");
             }
         }
-        
+
         order.setStatus("Đã hủy");
         orderDAO.save(order);
+        System.out.println("Order cancelled for orderCode: " + orderCode);
         return true;
     }
-    
+
     /**
-     * Calculate the estimated delivery date for an order
+     * Tính ngày giao hàng dự kiến
      * 
-     * @param order The order
-     * @return The estimated delivery date
+     * @param order Đơn hàng
+     * @return Ngày giao hàng dự kiến
      */
     public Date calculateEstimatedDeliveryDate(Order order) {
-        // If the order is cancelled, return null
-        if ("Đã hủy".equals(order.getStatus())) {
+        if ("Đã hủy".equals(order.getStatus()) || "Đã giao hàng".equals(order.getStatus())) {
             return null;
         }
-        
-        // If the order is already delivered, return null or the actual delivery date if you track it
-        if ("Đã giao hàng".equals(order.getStatus())) {
-            return null; // Or return actual delivery date if you track it
-        }
-        
-        // Calculate the estimated delivery date based on the order date and shipping province
-        return ShippingCalculator.calculateEstimatedDeliveryDate(
-            order.getCreatedAt(), 
-            order.getShippingProvince()
-        );
+        return ShippingCalculator.calculateEstimatedDeliveryDate(order.getCreatedAt(), order.getShippingProvince());
     }
-    
+
     /**
-     * Get the shipping days for an order
+     * Lấy số ngày vận chuyển
      * 
-     * @param order The order
-     * @return The number of shipping days
+     * @param order Đơn hàng
+     * @return Số ngày vận chuyển
      */
     public int getShippingDays(Order order) {
         return ShippingCalculator.calculateShippingDays(order.getShippingProvince());
     }
-    
+
     /**
-     * Get the delivery time range text for an order
+     * Lấy mô tả khoảng thời gian giao hàng
      * 
-     * @param order The order
-     * @return A text description of the delivery time range
+     * @param order Đơn hàng
+     * @return Mô tả khoảng thời gian giao hàng
      */
     public String getDeliveryTimeRangeText(Order order) {
         int shippingDays = getShippingDays(order);
         return ShippingCalculator.getDeliveryTimeRangeText(shippingDays);
     }
-    
+
     /**
-     * Calculate shipping days for a specific province
+     * Tính số ngày vận chuyển cho một tỉnh
      * 
-     * @param province The province name
-     * @return The number of shipping days
+     * @param province Tên tỉnh
+     * @return Số ngày vận chuyển
      */
     public int calculateShippingDaysForProvince(String province) {
         return ShippingCalculator.calculateShippingDays(province);
     }
-    
+
     /**
-     * Get delivery time range text for a specific province
+     * Lấy mô tả khoảng thời gian giao hàng cho một tỉnh
      * 
-     * @param province The province name
-     * @return A text description of the delivery time range
+     * @param province Tên tỉnh
+     * @return Mô tả khoảng thời gian giao hàng
      */
     public String getDeliveryTimeRangeForProvince(String province) {
         int shippingDays = calculateShippingDaysForProvince(province);
@@ -424,4 +407,41 @@ public class OrderService {
             order.getShippingProvince()
         );
     }
+
+    // Add this method to handle marking an order as received
+    /**
+     * Đánh dấu đơn hàng là đã nhận được
+     * 
+     * @param orderCode Mã đơn hàng
+     * @param user Người dùng
+     * @return true nếu cập nhật thành công, false nếu không
+     */
+    @Transactional
+    public boolean markOrderAsReceived(String orderCode, User user) {
+        Order order = orderDAO.findByOrderCode(orderCode);
+        if (order == null || !order.getUser().getId().equals(user.getId())) {
+            System.out.println("Failed to mark order as received: Order not found or user mismatch for orderCode: " + orderCode);
+            return false;
+        }
+
+        if (!"Đang giao hàng".equals(order.getStatus())) {
+            System.out.println("Failed to mark order as received: Invalid status " + order.getStatus() + " for orderCode: " + orderCode);
+            return false;
+        }
+
+        order.setStatus("Đã giao hàng");
+        orderDAO.save(order);
+        
+        try {
+            notificationService.createOrderNotification(orderCode, user.getFullname());
+        } catch (Exception e) {
+            // Log lỗi nhưng không ảnh hưởng đến quá trình cập nhật trạng thái
+            System.err.println("Lỗi khi tạo thông báo: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        System.out.println("Order marked as received for orderCode: " + orderCode);
+        return true;
+    }
 }
+

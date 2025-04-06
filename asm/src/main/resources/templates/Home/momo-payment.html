@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{/Layout/Head}">
-    <title>Thanh toán MoMo</title>
+    <title>Thanh toán thẻ ngân hàng</title>
 </head>
 <head>
     <style>
@@ -34,74 +34,6 @@
         .momo-subtitle {
             font-size: 16px;
             color: #666;
-        }
-        
-        .qr-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 20px 0;
-        }
-        
-        .qr-code {
-            width: 250px;
-            height: 250px;
-            margin-bottom: 15px;
-            border: 1px solid #eee;
-            padding: 10px;
-            border-radius: 10px;
-        }
-        
-        .amount-container {
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .amount-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .amount-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #ae2070;
-        }
-        
-        .instruction {
-            background-color: #f5f5f5;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        
-        .instruction-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .instruction-step {
-            margin-bottom: 8px;
-            display: flex;
-            align-items: flex-start;
-        }
-        
-        .step-number {
-            background-color: #ae2070;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            flex-shrink: 0;
         }
         
         .loading-container {
@@ -143,27 +75,6 @@
             background-color: #e0e0e0;
         }
         
-        .btn-check-status {
-            background-color: #ae2070;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            margin-right: 10px;
-        }
-        
-        .btn-check-status:hover {
-            background-color: #8e1a5c;
-        }
-        
-        .btn-check-status:disabled {
-            background-color: #d980a8;
-            cursor: not-allowed;
-        }
-        
         .order-info {
             margin-bottom: 20px;
             padding: 15px;
@@ -190,18 +101,6 @@
         .order-info-value {
             font-weight: bold;
         }
-        
-        .countdown {
-            text-align: center;
-            margin: 15px 0;
-            font-size: 16px;
-            color: #666;
-        }
-        
-        .countdown-value {
-            font-weight: bold;
-            color: #ae2070;
-        }
     </style>
 </head>
 <body>
@@ -213,8 +112,8 @@
                 <div class="momo-container">
                     <div class="momo-header">
                         <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo Logo" class="momo-logo">
-                        <div class="momo-title">Thanh toán MoMo</div>
-                        <div class="momo-subtitle">Quét mã QR để thanh toán</div>
+                        <div class="momo-title">Thanh toán bằng thẻ ngân hàng</div>
+                        <div class="momo-subtitle">Bạn sẽ được chuyển hướng đến trang nhập thông tin thẻ</div>
                     </div>
                     
                     <div class="order-info">
@@ -231,54 +130,10 @@
                     
                     <div id="loadingContainer" class="loading-container">
                         <div class="spinner"></div>
-                        <div>Đang tạo mã QR thanh toán...</div>
-                    </div>
-                    
-                    <div id="qrContainer" class="qr-container" style="display: none;">
-                        <img id="qrCode" src="/placeholder.svg" alt="QR Code" class="qr-code">
-                        <div class="countdown">
-                            Mã QR có hiệu lực trong <span id="countdown" class="countdown-value">15:00</span>
-                        </div>
-                        <div class="amount-container">
-                            <div class="amount-label">Số tiền cần thanh toán</div>
-                            <div class="amount-value" id="paymentAmount" th:text="${#numbers.formatDecimal(amount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">500,000 ₫</div>
-                        </div>
-                    </div>
-                    
-                    <div class="instruction">
-                        <div class="instruction-title">Hướng dẫn thanh toán</div>
-                        <div class="instruction-step">
-                            <div class="step-number">1</div>
-                            <div>Mở ứng dụng MoMo trên điện thoại của bạn</div>
-                        </div>
-                        <div class="instruction-step">
-                            <div class="step-number">2</div>
-                            <div>Chọn "Quét mã" và quét mã QR hiển thị ở trên</div>
-                        </div>
-                        <div class="instruction-step">
-                            <div class="step-number">3</div>
-                            <div>Xác nhận thanh toán trên ứng dụng MoMo</div>
-                        </div>
-                        <div class="instruction-step">
-                            <div class="step-number">4</div>
-                            <div>Sau khi thanh toán thành công, bạn sẽ được chuyển hướng đến trang xác nhận đơn hàng</div>
-                        </div>
-                    </div>
-                    
-                    <div id="errorContainer" class="alert alert-danger" style="display: none;">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <span id="errorMessage">Có lỗi xảy ra khi tạo mã QR thanh toán</span>
-                    </div>
-                    
-                    <div id="successContainer" class="alert alert-success" style="display: none;">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <span>Thanh toán thành công!</span>
+                        <div>Đang chuyển hướng đến trang thanh toán...</div>
                     </div>
                     
                     <div class="text-center mt-3">
-                        <button id="checkStatusBtn" class="btn-check-status">
-                            <i class="fas fa-sync-alt me-2"></i>Kiểm tra trạng thái thanh toán
-                        </button>
                         <a href="javascript:history.back()" class="btn-back">
                             <i class="fas fa-arrow-left me-2"></i>Quay lại
                         </a>
@@ -292,129 +147,13 @@
 
     <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", () => {
-            // Lấy thông tin đơn hàng từ Thymeleaf
             const orderId = /*[[${orderCode}]]*/ 'ORD-12345678';
             const amount = /*[[${amount}]]*/ 500000;
 
-            // Các phần tử DOM
-            const loadingContainer = document.getElementById("loadingContainer");
-            const qrContainer = document.getElementById("qrContainer");
-            const qrCode = document.getElementById("qrCode");
-            const errorContainer = document.getElementById("errorContainer");
-            const errorMessage = document.getElementById("errorMessage");
-            const successContainer = document.getElementById("successContainer");
-            const checkStatusBtn = document.getElementById("checkStatusBtn");
-            const countdownElement = document.getElementById("countdown");
-
-            // Tạo yêu cầu thanh toán MoMo
-            createMomoPayment(orderId, amount);
-
-            // Xử lý sự kiện nút kiểm tra trạng thái
-            checkStatusBtn.addEventListener("click", () => {
-                checkPaymentStatus(orderId);
-            });
-
-            /**
-             * Tạo yêu cầu thanh toán MoMo
-             */
-            function createMomoPayment(orderId, amount) {
-                // Gọi API để tạo yêu cầu thanh toán
-                fetch('/api/momo/create-payment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        orderCode: orderId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Hiển thị QR code
-                        loadingContainer.style.display = "none";
-                        qrContainer.style.display = "flex";
-                        
-                        // Hiển thị QR code từ base64 string
-                        qrCode.src = "data:image/png;base64," + data.qrCode;
-                        
-                        // Bắt đầu đếm ngược
-                        startCountdown(15 * 60); // 15 phút
-                    } else {
-                        // Hiển thị lỗi
-                        loadingContainer.style.display = "none";
-                        errorContainer.style.display = "block";
-                        errorMessage.textContent = data.message || "Không thể tạo mã QR thanh toán";
-                    }
-                })
-                .catch(error => {
-                    console.error("Lỗi:", error);
-                    loadingContainer.style.display = "none";
-                    errorContainer.style.display = "block";
-                    errorMessage.textContent = "Có lỗi xảy ra khi tạo mã QR thanh toán";
-                });
-            }
-
-            /**
-             * Kiểm tra trạng thái thanh toán
-             */
-            function checkPaymentStatus(orderId) {
-                // Hiển thị trạng thái đang kiểm tra
-                checkStatusBtn.disabled = true;
-                checkStatusBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang kiểm tra...';
-
-                // Gọi API để kiểm tra trạng thái thanh toán
-                fetch(`/api/order/check-payment-status?orderCode=${orderId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        checkStatusBtn.disabled = false;
-                        checkStatusBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Kiểm tra trạng thái thanh toán';
-
-                        if (data.status === "Đã thanh toán") {
-                            // Thanh toán thành công
-                            qrContainer.style.display = "none";
-                            successContainer.style.display = "block";
-
-                            // Chuyển hướng sau 3 giây
-                            setTimeout(() => {
-                                window.location.href = `/order/complete?id=${orderId}`;
-                            }, 3000);
-                        } else {
-                            // Thanh toán chưa hoàn tất
-                            alert("Chưa nhận được thanh toán. Vui lòng thử lại sau.");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Lỗi:", error);
-                        checkStatusBtn.disabled = false;
-                        checkStatusBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Kiểm tra trạng thái thanh toán';
-                        alert("Có lỗi xảy ra khi kiểm tra trạng thái thanh toán. Vui lòng thử lại sau.");
-                    });
-            }
-
-            /**
-             * Bắt đầu đếm ngược
-             */
-            function startCountdown(seconds) {
-                let remainingSeconds = seconds;
-
-                const countdownInterval = setInterval(() => {
-                    remainingSeconds--;
-
-                    if (remainingSeconds <= 0) {
-                        clearInterval(countdownInterval);
-                        // Hiển thị thông báo hết hạn
-                        errorContainer.style.display = "block";
-                        errorMessage.textContent = "Mã QR đã hết hạn. Vui lòng tạo mã QR mới.";
-                        qrContainer.style.display = "none";
-                    }
-
-                    // Cập nhật hiển thị đếm ngược
-                    const minutes = Math.floor(remainingSeconds / 60);
-                    const secs = remainingSeconds % 60;
-                    countdownElement.textContent = `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-                }, 1000);
-            }
+            // Tự động chuyển hướng đến trang thanh toán
+            setTimeout(() => {
+                window.location.href = `/momo-payment?orderId=${orderId}&amount=${amount}`;
+            }, 2000); // Chuyển hướng sau 2 giây
         });
     </script>
 </body>

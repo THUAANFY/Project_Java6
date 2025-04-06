@@ -353,7 +353,8 @@
                             (order.status == 'Đã xác nhận' ? 'status-confirmed' : 
                             (order.status == 'Đang giao hàng' ? 'status-shipped' : 
                             (order.status == 'Đã giao hàng' ? 'status-delivered' : 
-                            'status-cancelled'))))}">
+                            (order.status == 'Đã thanh toán' ? 'status-shipped' :
+                            'status-cancelled')))))}">
                             <span th:text="${order.status}">Trạng thái</span>
                         </span>
                         
@@ -562,6 +563,18 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Add "Received Order" button when order has reached destination (progress >= 90%) -->
+                    <div class="text-center mt-4" th:if="${locationInfo.progressPercentage >= 90}">
+                        <form th:action="@{/order/received}" method="post">
+                            <input type="hidden" name="orderCode" th:value="${order.orderCode}">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa-solid fa-check-circle me-2"></i>
+                                Đã nhận được hàng
+                            </button>
+                        </form>
+                        <p class="text-muted mt-2 small">Nhấn vào nút trên khi bạn đã nhận được đơn hàng</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -643,3 +656,4 @@
     </script>
 </body>
 </html>
+

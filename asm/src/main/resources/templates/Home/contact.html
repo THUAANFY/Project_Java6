@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/Layout/Head}">
+    <title>Liên Hệ - Cửa Hàng Điện Tử</title>
+</head>
+<head>
+    <link rel="stylesheet" th:href="@{/CSS/Index.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Container chính */
+        .contact-container {
+            background: linear-gradient(180deg, #e6f0fa 0%, #fff 100%);
+            padding: 60px 0;
+            color: #2c3e50;
+        }
+
+        /* Header */
+        .contact-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: #fff;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(52,152,219,0.2);
+        }
+
+        .contact-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .contact-header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* CTA Button */
+        .cta-button {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 30px;
+            background: #3498db;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        .cta-button:hover {
+            background: #2980b9;
+            box-shadow: 0 8px 20px rgba(52,152,219,0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Contact Form */
+        .contact-form {
+            margin-bottom: 50px;
+        }
+
+        .form-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #dfe6e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #f9fbfc;
+            transition: border-color 0.3s ease;
+        }
+
+        .contact-form input:focus, .contact-form textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .contact-form button {
+            background: #3498db;
+            color: #fff;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        .contact-form button:hover {
+            background: #2980b9;
+            box-shadow: 0 8px 20px rgba(52,152,219,0.5);
+        }
+
+        /* Store Info */
+        .store-info {
+            margin-bottom: 50px;
+        }
+
+        .store-info h2 {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .store-info-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .store-info p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .store-info i {
+            color: #3498db;
+            width: 25px;
+            margin-right: 10px;
+        }
+
+        /* Team Section */
+        .team-section {
+            margin-bottom: 50px;
+        }
+
+        .team-section h2 {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .team-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .team-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 4px solid #3498db;
+        }
+
+        .team-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .team-role {
+            font-size: 1rem;
+            color: #3498db;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .team-contact p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .team-contact i {
+            color: #3498db;
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        .team-contact a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .team-contact a:hover {
+            color: #3498db;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            margin-bottom: 50px;
+        }
+
+        .faq-section h2 {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .faq-item {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .faq-item h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .faq-item p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .contact-header h1 { font-size: 2.2rem; }
+            .contact-header p { font-size: 1rem; }
+            .store-info h2, .team-section h2, .faq-section h2 { font-size: 1.7rem; }
+            .team-image { width: 100px; height: 100px; }
+            .form-container, .store-info-container { padding: 20px; }
+            .cta-button { padding: 10px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{/Layout/Navbar}"></div>
+
+    <!-- Contact Section -->
+    <div class="contact-container">
+        <!-- Header -->
+        <div class="contact-header" data-aos="fade-down">
+            <h1>Liên Hệ Với Chúng Tôi</h1>
+            <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn với mọi nhu cầu về sản phẩm và dịch vụ!</p>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="container contact-form" data-aos="fade-up">
+            <div class="form-container">
+                <form action="/submit-contact" method="post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" name="name" placeholder="Họ và Tên" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="email" name="email" placeholder="Email" required>
+                        </div>
+                    </div>
+                    <input type="tel" name="phone" placeholder="Số Điện Thoại">
+                    <textarea name="message" rows="4" placeholder="Tin nhắn của bạn..." required></textarea>
+                    <button type="submit">Gửi Tin Nhắn</button>
+                </form>
+            </div>
+            <div class="text-center mt-3">
+                <a href="/support" class="cta-button">Yêu Cầu Hỗ Trợ</a>
+                <a href="/products" class="cta-button">Xem Sản Phẩm</a>
+            </div>
+        </div>
+
+        <!-- Store Info -->
+        <div class="container store-info" data-aos="fade-up" data-aos-delay="100">
+            <h2>Thông Tin Cửa Hàng</h2>
+            <div class="store-info-container">
+                <p><i class="fas fa-map-marker-alt"></i> 123 Đường Công Nghệ, Quận 1, TP. Hồ Chí Minh</p>
+                <p><i class="fas fa-clock"></i> Giờ làm việc: 8:00 - 22:00 (Thứ 2 - Chủ Nhật)</p>
+                <p><i class="fas fa-phone"></i> Hotline: 1900 1234</p>
+                <p><i class="fas fa-envelope"></i> Email: info@electronics.com</p>
+            </div>
+        </div>
+
+        <!-- Team Section -->
+        <div class="container team-section" data-aos="fade-up" data-aos-delay="200">
+            <h2>Đội Ngũ Hỗ Trợ</h2>
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="team-card text-center">
+                        <img src="/Images/team-member1.jpg" class="team-image" alt="Nguyễn Văn A">
+                        <h3 class="team-name">Lê Thuận Phi</h3>
+                        <div class="team-role">Hỗ trợ khách hàng</div>
+                        <div class="team-contact">
+                            <p><i class="fas fa-envelope"></i> <a href="mailto:support1@electronics.com">support1@electronics.com</a></p>
+                            <p><i class="fas fa-phone"></i> 0123 456 789</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="team-card text-center">
+                        <img src="/Images/team-member2.jpg" class="team-image" alt="Trần Thị B">
+                        <h3 class="team-name">Nguyễn Thị Dung Nhi</h3>
+                        <div class="team-role">Tư vấn sản phẩm</div>
+                        <div class="team-contact">
+                            <p><i class="fas fa-envelope"></i> <a href="mailto:sales@electronics.com">sales@electronics.com</a></p>
+                            <p><i class="fas fa-phone"></i> 0987 654 321</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="team-card text-center">
+                        <img src="/Images/team-member3.jpg" class="team-image" alt="Lê Văn C">
+                        <h3 class="team-name">Nguyễn Đức Trọng</h3>
+                        <div class="team-role">Kỹ thuật viên</div>
+                        <div class="team-contact">
+                            <p><i class="fas fa-envelope"></i> <a href="mailto:tech@electronics.com">tech@electronics.com</a></p>
+                            <p><i class="fas fa-phone"></i> 0912 345 678</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="team-card text-center">
+                        <img src="/Images/team-member4.jpg" class="team-image" alt="Phạm Thị D">
+                        <h3 class="team-name">Trần Trọng Dĩ</h3>
+                        <div class="team-role">Quản lý đơn hàng</div>
+                        <div class="team-contact">
+                            <p><i class="fas fa-envelope"></i> <a href="mailto:orders@electronics.com">orders@electronics.com</a></p>
+                            <p><i class="fas fa-phone"></i> 0933 567 890</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="container faq-section" data-aos="fade-up" data-aos-delay="300">
+            <h2>Câu Hỏi Thường Gặp</h2>
+            <div class="faq-item">
+                <h3>1. Tôi có thể đổi trả sản phẩm trong bao lâu?</h3>
+                <p>Trong vòng 30 ngày nếu sản phẩm còn nguyên vẹn và có lỗi từ nhà sản xuất.</p>
+            </div>
+            <div class="faq-item">
+                <h3>2. Thời gian giao hàng là bao lâu?</h3>
+                <p>Giao nội thành trong 24 giờ, ngoại thành từ 2-5 ngày tùy khu vực.</p>
+            </div>
+            <div class="faq-item">
+                <h3>3. Làm sao để kiểm tra trạng thái đơn hàng?</h3>
+                <p>Kiểm tra qua email xác nhận hoặc liên hệ qua số 0933 567 890.</p>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{/Layout/Footer}"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-out',
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>

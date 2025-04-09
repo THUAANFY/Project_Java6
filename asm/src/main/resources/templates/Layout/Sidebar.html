@@ -84,6 +84,114 @@
                 <span>Quản Lý Voucher</span>
             </a>
         </li>
+        <li class="nav-item notification-item">
+            <a class="nav-link" href="/admin/notifications">
+                <i class="fas fa-bell"></i>
+                <span>Thông Báo</span>
+                <span class="notification-badge" id="notificationBadge">0</span>
+            </a>
+        </li>
     </ul>
+
+    <!-- Thêm CSS cho nút thông báo -->
+    <style>
+        .notification-item {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background-color: #ff4444;
+            color: white;
+            border-radius: 50%;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            min-width: 1.5rem;
+            text-align: center;
+            display: none; /* Ẩn mặc định, sẽ hiển thị khi có thông báo */
+        }
+        
+        /* Hiệu ứng nhấp nháy khi có thông báo mới */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .notification-badge.has-new {
+            display: inline-block;
+            animation: pulse 1s infinite;
+        }
+    </style>
+    
+    <!-- Thêm JavaScript để cập nhật số lượng thông báo -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBadge = document.getElementById('notificationBadge');
+            
+            // Hàm cập nhật số lượng thông báo chưa đọc
+            function updateUnreadCount() {
+                fetch('/admin/notifications/api/count-unread')
+                    .then(response => response.json())
+                    .then(data => {
+                        const count = data.count;
+                        if (count > 0) {
+                            notificationBadge.textContent = count > 99 ? '99+' : count;
+                            notificationBadge.classList.add('has-new');
+                        } else {
+                            notificationBadge.classList.remove('has-new');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi đếm thông báo:', error);
+                    });
+            }
+            
+            // Cập nhật số lượng thông báo khi trang được tải
+            updateUnreadCount();
+            
+            // Cập nhật số lượng thông báo mỗi 30 giây
+            setInterval(updateUnreadCount, 30000);
+            
+            // Kiểm tra thông báo mới
+            let currentUnreadCount = 0;
+            
+            function checkNewNotifications() {
+                fetch('/admin/notifications/api/count-unread')
+                    .then(response => response.json())
+                    .then(data => {
+                        const newCount = data.count;
+                        
+                        // Nếu có thông báo mới
+                        if (newCount > currentUnreadCount) {
+                            // Phát âm thanh thông báo
+                            playNotificationSound();
+                            
+                            // Cập nhật badge
+                            updateUnreadCount();
+                        }
+                        
+                        // Cập nhật số lượng hiện tại
+                        currentUnreadCount = newCount;
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi kiểm tra thông báo mới:', error);
+                    });
+            }
+            
+            // Hàm phát âm thanh thông báo
+            function playNotificationSound() {
+                const audio = new Audio('/sounds/notification.mp3');
+                audio.play().catch(error => {
+                    console.error('Không thể phát âm thanh thông báo:', error);
+                });
+            }
+            
+            // Kiểm tra thông báo mới mỗi 30 giây
+            setInterval(checkNewNotifications, 30000);
+        });
+    </script>
 </div>
 </html>

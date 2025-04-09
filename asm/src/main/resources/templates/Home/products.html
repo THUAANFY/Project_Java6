@@ -1,236 +1,822 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head th:replace="~{/Layout/Head}">
-        <title>_____</title>
-    </head>
-    <head>
-        <style>
-            body {
-                background-color: #f8f8f8;
-                font-family: Arial, sans-serif;
-            }
+<head th:replace="~{/Layout/Head}">
+    <title>Products</title>
+</head>
+<head>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --secondary-color: #2ecc71;
+            --secondary-hover: #27ae60;
+            --text-color: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --border-color: #e1e8ed;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --navbar-height: 56px;
+            --navbar-spacing: 20px; /* Additional space below navbar */
+            --sidebar-width: 280px;
+            --price-color: #e74c3c; /* Red color for price */
+            --price-hover: #c0392b; /* Darker red for hover effects */
+            --footer-height: 80px; /* Add this new variable for footer height */
+        }
 
-            /* Sidebar */
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+            margin-top: calc(var(--navbar-height) + var(--navbar-spacing)); /* Increased space below navbar */
+        }
+
+        /* Enhanced Sidebar - Full Height */
+        .sidebar {
+            background-color: var(--card-bg);
+            width: var(--sidebar-width);
+            padding: 1.5rem;
+            border-right: 1px solid var(--border-color);
+            position: sticky; /* Keep sticky positioning */
+            top: calc(var(--navbar-height) + var(--navbar-spacing)); /* Keep this to maintain position when scrolling */
+            align-self: stretch; /* Changed from flex-start to stretch for full height */
+            height: 100%; /* Full height */
+            min-height: calc(100vh - var(--navbar-height) - var(--navbar-spacing) - var(--footer-height)); /* Minimum height to reach footer */
+            overflow-y: auto;
+            transition: box-shadow 0.3s ease;
+            z-index: 100;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+            /* Improved scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--bg-color);
+            display: flex; /* Use flexbox for internal layout */
+            flex-direction: column; /* Stack children vertically */
+        }
+
+        /* Custom scrollbar for webkit browsers */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--bg-color);
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            border: 2px solid transparent;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+            border-radius: 2px;
+        }
+
+        .sidebar h4 {
+            font-weight: 600;
+            margin-bottom: 0;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .category-list {
+            margin-top: 1.5rem;
+            padding-left: 0;
+            flex-grow: 1; /* Allow list to grow and fill space */
+        }
+
+        .category-list li {
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            list-style-type: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-list a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Enhanced hover effect */
+        .category-list li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
+            transition: transform 0.4s ease;
+            transform: translateX(0);
+            border-radius: 8px;
+            z-index: 0;
+        }
+
+        .category-list li:hover::before {
+            transform: translateX(100%);
+        }
+
+        .category-list li:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
+        }
+
+        .category-list li:hover a {
+            color: var(--primary-color);
+        }
+
+        /* Active category indicator */
+        .category-list li.active {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .category-list li.active a {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .category-list li.active::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--primary-color);
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 0; /* Remove margin since sidebar is not fixed anymore */
+            padding: 2rem;
+            flex: 1;
+            transition: margin-left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .main-content h3 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .main-content h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        /* Enhanced Card styles */
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: var(--transition-bounce);
+            overflow: hidden;
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            background-color: var(--card-bg);
+            transform-origin: center bottom;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px var(--shadow-hover);
+            border-color: var(--primary-color);
+        }
+
+        /* Enhanced image container */
+        .card-img-container {
+            position: relative;
+            overflow: hidden;
+            padding-top: 75%; /* 4:3 aspect ratio */
+            background-color: #f8f9fa;
+        }
+
+        .card-img-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Changed to contain to show full image */
+            transition: transform 0.5s ease, opacity 0.3s ease;
+            transform-origin: center;
+        }
+
+        .card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+
+        /* Image overlay effect */
+        .card-img-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .card:hover .card-img-container::after {
+            opacity: 1;
+        }
+
+        /* Smaller Quick view button with single-line text */
+        .quick-view-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.3rem 0.7rem; /* Reduced padding */
+            font-weight: 500;
+            font-size: 0.8rem; /* Smaller font size */
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Smaller shadow */
+            white-space: nowrap; /* Ensure text stays on one line */
+            line-height: 1.2; /* Improved line height */
+        }
+
+        .card:hover .quick-view-btn {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .quick-view-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .quick-view-btn i {
+            font-size: 0.7rem; /* Smaller icon */
+            margin-right: 0.2rem; /* Reduced margin */
+        }
+
+        .card-body {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            transition: background-color 0.3s ease;
+        }
+
+        .card:hover .card-body {
+            background-color: rgba(52, 152, 219, 0.03);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+            line-height: 1.4;
+            height: auto;
+            min-height: 2.8rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .card:hover .card-title {
+            color: var(--primary-color);
+        }
+
+        .card-text {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .card-text.text-danger {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--price-color) !important; /* Changed to red color */
+            margin-top: auto;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Price highlight effect */
+        .card-text.text-danger::before {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--price-color); /* Changed to red color */
+            transition: width 0.3s ease;
+        }
+
+        .card:hover .card-text.text-danger::before {
+            width: 100%;
+        }
+
+        /* Price badge style */
+        .price-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--price-color);
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+            transform: rotate(5deg);
+            z-index: 2;
+            transition: var(--transition-bounce);
+        }
+
+        .card:hover .price-badge {
+            transform: rotate(0) scale(1.1);
+        }
+
+        /* Enhanced cart button */
+        .btn-cart {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 4px 8px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-cart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+            z-index: -1;
+        }
+
+        .btn-cart:hover {
+            background-color: var(--secondary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-cart:hover::before {
+            left: 100%;
+        }
+
+        .btn-cart:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-cart i {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-cart:hover i {
+            transform: translateX(-3px);
+        }
+
+        /* Enhanced Toggle button for sidebar - Repositioned */
+        .sidebar-toggle {
+            display: none; /* Hidden by default on all screens */
+            position: fixed;
+            top: calc(var(--navbar-height) + var(--navbar-spacing) + 15px); /* Position below navbar with spacing */
+            left: 15px;
+            z-index: 101;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .sidebar-toggle.active {
+            transform: scale(1.1) rotate(-180deg);
+        }
+
+        .sidebar-toggle i {
+            transition: transform 0.3s ease;
+        }
+
+        /* Enhanced Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 99; /* Below sidebar but above content */
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+        }
+
+        /* No products message */
+        .no-products {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 3px 15px var(--shadow-color);
+            margin: 2rem 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .no-products:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px var(--shadow-hover);
+        }
+
+        .no-pr {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+        }
+
+        /* Product count badge */
+        .product-count {
+            display: inline-block;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Footer styles to ensure proper connection with sidebar */
+        [th-replace="~{/Layout/Footer}"] {
+            width: 100%;
+            margin-top: 0; /* Remove any margin to ensure tight connection */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 991.98px) {
+            .card-img-container {
+                padding-top: 70%; /* Slightly shorter aspect ratio on medium screens */
+            }
+        }
+
+        @media (max-width: 767.98px) {
             .sidebar {
-                /* background-color: #ffe4b5; */
-                min-height: calc(100vh - 56px);
-                padding: 20px;
-                border-right: 2px solid #000;
-                position: fixed;
-                top: 56px;
-                left: 0;
-                width: 250px;
-                overflow-y: auto;
-                transition: all 0.3s ease;
-                margin-top: 30px;
+                position: fixed; /* Keep fixed on mobile */
+                transform: translateX(-110%);
+                box-shadow: 2px 0 20px rgba(0, 0, 0, 0.25);
+                width: var(--sidebar-width);
+                height: calc(100vh - var(--navbar-height) - var(--navbar-spacing) - var(--footer-height));
+                top: calc(var(--navbar-height) + var(--navbar-spacing)); /* Reset top position */
+                min-height: auto; /* Reset min-height on mobile */
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
             }
 
-            .category-list li {
-                padding: 10px 0;
-                color: #333;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .category-list li:hover {
-                color: #ff6f61;
-                padding-left: 10px;
-                background-color: rgba(0, 0, 0, 0.05);
-                border-radius: 5px;
-            }
-
-            /* Main content */
             .main-content {
-                margin-left: 250px;
-                padding: 20px;
-                margin-top: 56px;
-                transition: all 0.3s ease;
+                margin-left: 0;
+                padding: 1.5rem;
+                width: 100%; /* Ensure full width on mobile */
             }
 
-            /* Card styles */
-            .card {
-                border: none; /* Bỏ viền mặc định của Bootstrap */
-                border-radius: 15px; /* Bo góc mềm mại */
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 2px 10px rgba(0, 0, 0, 0.05); /* Bóng nhẹ với nhiều lớp */
-                transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.3s ease; /* Hiệu ứng mượt mà */
-                overflow: hidden; /* Đảm bảo nội dung không tràn ra ngoài */
-                position: relative; /* Để thêm hiệu ứng overlay */
+            /* Show toggle button only on mobile */
+            .sidebar-toggle {
+                display: flex;
+                transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s ease;
+            }
+            
+            /* Move toggle button when sidebar is active */
+            .sidebar-toggle.active {
+                left: calc(var(--sidebar-width) - 20px);
             }
 
-            .card:hover {
-                transform: translateY(-8px) rotateX(2deg); /* Nhấc lên và nghiêng nhẹ để tạo chiều sâu */
-                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 4px 15px rgba(0, 0, 0, 0.1); /* Tăng bóng khi hover */
-                background: linear-gradient(145deg, #f8f9fa, #ffffff); /* Gradient nhẹ khi hover */
+            .sidebar-overlay.active {
+                display: block;
             }
-
-            .card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(45deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2));
-                opacity: 0;
-                transition: opacity 0.3s ease;
-                z-index: 0;
-            }
-
-            .card:hover::before {
-                opacity: 1; /* Hiệu ứng ánh sáng nhẹ khi hover */
-            }
-
-            .card-img-top {
-                height: 300px; /* Chiều cao cố định cho ảnh */
-                object-fit: cover;
-                border-top-left-radius: 15px; /* Bo góc trên ảnh */
-                border-top-right-radius: 15px;
-                transition: transform 0.5s ease, filter 0.3s ease; /* Hiệu ứng zoom và làm sáng ảnh */
-            }
-
-            .card:hover .card-img-top {
-                transform: scale(1.08); /* Phóng to ảnh mượt hơn */
-                filter: brightness(1.1); /* Làm sáng ảnh khi hover */
-            }
-
-            .card-body {
-                padding: 15px; /* Giảm padding để gọn hơn */
-                background-color: #fff; /* Nền trắng cho card body */
-                position: relative; /* Để nội dung không bị ảnh hưởng bởi ::before */
-                z-index: 1;
-                transition: background-color 0.3s ease;
-            }
-
-            .card:hover .card-body {
-                background-color: #fafafa; /* Làm sáng nhẹ nền khi hover */
-            }
-
+            
             .card-title {
-                font-size: 1.2rem; /* Kích thước chữ tiêu đề */
-                font-weight: 600; /* Độ đậm chữ */
-                color: #333; /* Màu chữ đậm hơn */
-                margin-bottom: 10px; /* Khoảng cách dưới tiêu đề */
-                transition: color 0.3s ease;
+                -webkit-line-clamp: 1;
             }
-
-            .card:hover .card-title {
-                color: #1a73e8; /* Đổi màu tiêu đề khi hover */
+            
+            .card-img-container {
+                padding-top: 75%; /* Return to standard aspect ratio */
             }
-
-            .card-text {
-                font-size: 0.9rem; /* Kích thước chữ mô tả */
-                color: #666; /* Màu chữ nhạt hơn */
-                margin-bottom: 10px; /* Khoảng cách dưới mô tả */
-                transition: color 0.3s ease;
+            
+            /* Ensure hamburger button doesn't overlap with heading */
+            .main-content h3 {
+                margin-left: 50px; /* Add space for the hamburger button */
             }
-
-            .card:hover .card-text {
-                color: #555; /* Làm đậm nhẹ mô tả khi hover */
+        }
+        
+        @media (max-width: 575.98px) {
+            .main-content {
+                padding: 1rem;
             }
-
-            .card-text.text-danger {
-                font-size: 1.1rem; /* Kích thước chữ giá */
-                font-weight: 700; /* Độ đậm chữ giá */
-                margin-bottom: 15px; /* Khoảng cách dưới giá */
-                transition: color 0.3s ease;
+            
+            .card-img-container {
+                padding-top: 75%; /* Maintain aspect ratio on small screens */
             }
-
-            .card:hover .card-text.text-danger {
-                color: #dc3545; /* Tăng độ nổi bật của giá khi hover */
+            
+            /* Adjust sidebar width for very small screens */
+            :root {
+                --sidebar-width: 260px;
             }
-
-            .btn-success {
-                background: linear-gradient(45deg, #28a745, #34c759); /* Gradient màu xanh lá */
-                border: none; /* Bỏ viền nút */
-                border-radius: 8px; /* Bo góc nút */
-                padding: 8px 15px; /* Padding nút */
-                font-size: 0.9rem; /* Kích thước chữ nút */
-                position: relative; /* Để thêm hiệu ứng ánh sáng */
-                overflow: hidden;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-
-            .btn-success:hover {
-                background: linear-gradient(45deg, #218838, #2ea44f); /* Gradient đậm hơn khi hover */
-                transform: scale(1.05) translateY(-2px); /* Phóng to và nhấc lên nhẹ */
-                box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); /* Thêm bóng màu xanh */
-            }
-
-            .btn-success::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-                transition: left 0.4s ease;
-            }
-
-            .btn-success:hover::before {
-                left: 100%; /* Hiệu ứng ánh sáng chạy ngang khi hover */
-            }
-
-            .btn-success i {
-                margin-right: 5px; /* Khoảng cách giữa icon và chữ */
-            }
-            .no-pr{
-                height: 300px;
-            }
-        </style>
-    </head>
+        }
+    </style>
+</head>
 <body>
-    <div th:replace="~{/Layout/Navbar}"></div>
+<div th:replace="~{/Layout/Navbar}"></div>
 
-    <div class="container-fluid mt-5 pt-5">
-        <!-- Sidebar -->
-        <div class="sidebar">
+<div class="page-container">
+    <!-- Sidebar Toggle Button (outside sidebar) - only visible on mobile -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
             <h4>Danh Mục</h4>
-            <hr>
-            <ul class="list-unstyled category-list">
-                <th:block th:each="item : ${categories}">
-                    <li>
-                        <a class="d-flex justify-content-between h5 text-decoration-none" 
-                           th:href="@{'/products/category/' + ${item.id}}" 
-                           th:text="${item.name}"></a>
-                    </li>
-                </th:block>
-            </ul>
         </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Hiển thị tên danh mục được chọn -->
-            <h3 th:text="${selectedCategory != null ? selectedCategory.name : 'Tất cả sản phẩm'}" class="mb-4"></h3>
-            <div class="row">
-                <!-- Kiểm tra nếu không có sản phẩm -->
-                <th:block th:if="${#lists.isEmpty(products)}">
-                    <div class="col-12 no-pr">
-                        <p class="no-products">Chưa có sản phẩm</p>
-                    </div>
-                </th:block>
-                <!-- Hiển thị sản phẩm nếu có -->
-                <th:block th:unless="${#lists.isEmpty(products)}">
-                    <div class="col-12 col-md-6 col-lg-4 mb-4" th:each="item : ${products}">
-                        <div class="card">
-                            <a th:href="@{/product/{id}(id=${item.id})}">
-                                <img th:src="${item.image}" class="card-img-top p-5" alt="Product">
-                            </a>
-                            <div class="card-body">
-                                <h5 class="card-title" th:text="${item.name}"></h5>
-                                <p class="card-text" th:text="${item.description}"></p>
-                                <p class="card-text text-danger">
-                                    <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></strong>
-                                </p>
-                                <a href="#" class="btn btn-success btn-sm"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</a>
-                            </div>
-                        </div>
-                    </div>
-                </th:block>
-            </div>
-        </div>
+        <ul class="list-unstyled category-list">
+            <th:block th:each="item : ${categories}">
+                <li th:class="${selectedCategory != null && selectedCategory.id == item.id ? 'active' : ''}">
+                    <a th:href="@{'/products/category/' + ${item.id}}" 
+                       th:text="${item.name}"></a>
+                </li>
+            </th:block>
+        </ul>
     </div>
 
-    <div class="footer" th:replace="~{/Layout/Footer}"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Hiển thị tên danh mục được chọn -->
+        <h3 th:text="${selectedCategory != null ? selectedCategory.name : 'Tất cả sản phẩm'}">
+            <span class="product-count" th:if="${!#lists.isEmpty(products)}" th:text="${#lists.size(products)}"></span>
+        </h3>
+        
+        <div class="row g-4">
+            <!-- Kiểm tra nếu không có sản phẩm -->
+            <th:block th:if="${#lists.isEmpty(products)}">
+                <div class="col-12 no-pr">
+                    <div class="no-products">
+                        <i class="fas fa-box-open mb-3" style="font-size: 3rem; color: #bdc3c7;"></i>
+                        <p>Chưa có sản phẩm trong danh mục này</p>
+                    </div>
+                </div>
+            </th:block>
+            
+            <!-- Hiển thị sản phẩm nếu có - Changed to col-lg-4 for 3 products per row -->
+            <th:block th:unless="${#lists.isEmpty(products)}">
+                <div class="col-sm-6 col-lg-4 mb-4" th:each="item : ${products}">
+                    <div class="card h-100">
+                        <div class="card-img-container">
+                            <a th:href="@{/product/{id}(id=${item.id})}">
+                                <img th:src="${item.image}" class="card-img-top" alt="Product">
+                            </a>
+                            <!-- Price badge on image -->
+                            <div class="price-badge" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' VND'}"></div>
+                            <button class="quick-view-btn">
+                                <i class="fas fa-eye mr-1"></i> Xem nhanh
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${item.name}"></h5>
+                            <p class="card-text" th:text="${item.description}"></p>
+                            <p class="card-text text-danger">
+                                <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' VND'}"></strong>
+                            </p>
+                            <button class="btn btn-cart">
+                                <i class="fas fa-cart-plus"></i>
+                                Thêm vào giỏ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        // Function to check if we're on mobile
+        function isMobile() {
+            return window.innerWidth <= 767.98;
+        }
+        
+        // Function to toggle sidebar
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+            sidebarToggle.classList.toggle('active');
+            
+            // Change icon based on sidebar state
+            if (sidebar.classList.contains('active')) {
+                sidebarToggle.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            } else {
+                sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        }
+        
+        // Toggle sidebar when button is clicked
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        
+        // Close sidebar when overlay is clicked
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+        
+        // Close sidebar when a category is clicked (on mobile)
+        const categoryLinks = document.querySelectorAll('.category-list a');
+        categoryLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (isMobile() && sidebar.classList.contains('active')) {
+                    toggleSidebar();
+                }
+            });
+        });
+        
+        // Add hover effect to category items
+        const categoryItems = document.querySelectorAll('.category-list li');
+        categoryItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transition = 'all 0.3s ease';
+            });
+        });
+        
+        // Quick view button functionality
+        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+        quickViewButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Here you would typically show a modal with product details
+                // For now, we'll just navigate to the product page
+                const productLink = this.closest('.card-img-container').querySelector('a').href;
+                window.location.href = productLink;
+            });
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (!isMobile() && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                sidebarToggle.classList.remove('active');
+                sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+            
+            // Ensure sidebar has full height on resize
+            setFullHeight();
+        });
+        
+        // Function to set full height for sidebar
+        function setFullHeight() {
+            if (!isMobile()) {
+                // Get the height of the page container
+                const pageContainer = document.querySelector('.page-container');
+                const pageHeight = pageContainer.offsetHeight;
+                
+                // Set the sidebar height to match the page container
+                sidebar.style.height = pageHeight + 'px';
+                
+                // Ensure the sidebar extends to the footer
+                const footer = document.querySelector('[th-replace="~{/Layout/Footer}"]');
+                if (footer) {
+                    const footerTop = footer.getBoundingClientRect().top;
+                    const sidebarBottom = sidebar.getBoundingClientRect().bottom;
+                    
+                    // If sidebar is shorter than the distance to footer
+                    if (sidebarBottom < footerTop) {
+                        sidebar.style.minHeight = (footerTop - sidebar.getBoundingClientRect().top) + 'px';
+                    }
+                }
+            }
+        }
+        
+        // Run on load and resize
+        window.addEventListener('load', setFullHeight);
+        
+        // Also run when content might change the page height
+        const observer = new MutationObserver(setFullHeight);
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+</script>
+<div th:replace="~{/Layout/Footer}"></div>
 </body>
 </html>
+

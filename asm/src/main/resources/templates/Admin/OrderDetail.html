@@ -277,6 +277,13 @@
                         <i class="fas fa-print"></i>
                         <span>In đơn hàng</span>
                     </button>
+
+                    <!-- Thêm nút xác nhận đơn hàng -->
+                    <button th:if="${order.status == 'Chờ xác nhận'}" class="btn btn-success action-btn" id="confirmOrderBtn">
+                        <i class="fas fa-check"></i>
+                        <span>Xác nhận đơn hàng</span>
+                    </button>
+
                     <button class="btn btn-warning action-btn" data-bs-toggle="modal" data-bs-target="#updateStatusModal">
                         <i class="fas fa-edit"></i>
                         <span>Cập nhật trạng thái</span>
@@ -554,6 +561,49 @@
             }
         });
     </script>
+    <!-- Thêm script xử lý nút xác nhận đơn hàng -->
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const confirmOrderBtn = document.getElementById('confirmOrderBtn');
+        
+        if (confirmOrderBtn) {
+            confirmOrderBtn.addEventListener('click', function() {
+                if (confirm('Bạn có chắc chắn muốn xác nhận đơn hàng này?')) {
+                    // Lấy mã đơn hàng từ Thymeleaf
+                    const orderCode = /*[[${order.orderCode}]]*/ '';
+                    
+                    // Gọi API cập nhật trạng thái
+                    fetch('/api/order/update-status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            orderCode: orderCode,
+                            status: 'Đã xác nhận'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Hiển thị thông báo thành công
+                            alert('Đơn hàng đã được xác nhận thành công!');
+                            
+                            // Tải lại trang
+                            window.location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi:', error);
+                        alert('Có lỗi xảy ra khi xác nhận đơn hàng');
+                    });
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
 

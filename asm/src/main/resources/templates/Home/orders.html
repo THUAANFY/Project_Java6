@@ -140,8 +140,9 @@
                                 (order.status == 'Chờ xác nhận' ? 'status-pending' : 
                                 (order.status == 'Đã xác nhận' ? 'status-confirmed' : 
                                 (order.status == 'Đang giao hàng' ? 'status-shipped' : 
-                                (order.status == 'Đã giao hàng' ? 'status-delivered' : 
-                                'status-cancelled'))))}">
+                                (order.status == 'Đã giao hàng' ? 'status-delivered' :
+                                (order.status == 'Đã thanh toán' ? 'status-shipped' :
+                                'status-cancelled')))))}">
                                 <span th:text="${order.status}">Trạng thái</span>
                             </span>
                         </div>

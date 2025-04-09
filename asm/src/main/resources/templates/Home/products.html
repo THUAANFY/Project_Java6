@@ -52,20 +52,21 @@
             width: var(--sidebar-width);
             padding: 1.5rem;
             border-right: 1px solid var(--border-color);
-            position: sticky; /* Keep sticky positioning */
-            top: calc(var(--navbar-height) + var(--navbar-spacing)); /* Keep this to maintain position when scrolling */
-            align-self: stretch; /* Changed from flex-start to stretch for full height */
-            height: 100%; /* Full height */
-            min-height: calc(100vh - var(--navbar-height) - var(--navbar-spacing) - var(--footer-height)); /* Minimum height to reach footer */
+            position: sticky;
+            top: calc(var(--navbar-height) + var(--navbar-spacing));
+            align-self: flex-start;
+            height: auto;
+            max-height: calc(100vh - var(--navbar-height) - var(--navbar-spacing));
             overflow-y: auto;
-            transition: box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             z-index: 100;
             box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
-            /* Improved scrollbar */
             scrollbar-width: thin;
             scrollbar-color: var(--primary-color) var(--bg-color);
-            display: flex; /* Use flexbox for internal layout */
-            flex-direction: column; /* Stack children vertically */
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Custom scrollbar for webkit browsers */

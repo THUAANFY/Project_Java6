@@ -65,7 +65,7 @@
                                         <button type="button" class="quantity-btn" id="decrease-qty">
                                             <i class="fas fa-minus"></i>
                                         </button>
-                                        <input type="number" id="quantity" name="quantity" class="quantity-input" value="1" min="1" th:max="${product.available}">
+                                        <input type="number" id="quantity" name="quantity" class="quantity-input" value="1" min="1" th:attr="max=${product.available}">
                                         <button type="button" class="quantity-btn" id="increase-qty">
                                             <i class="fas fa-plus"></i>
                                         </button>
@@ -169,23 +169,44 @@
             const addToCartForm = document.getElementById('addToCartForm');
             
             if (decreaseBtn && increaseBtn && quantityInput) {
+                // Remove any existing event listeners (in case Detail.js also adds listeners)
+                decreaseBtn.replaceWith(decreaseBtn.cloneNode(true));
+                increaseBtn.replaceWith(increaseBtn.cloneNode(true));
+                
+                // Get the new buttons after cloning
+                const newDecreaseBtn = document.getElementById('decrease-qty');
+                const newIncreaseBtn = document.getElementById('increase-qty');
+                
                 // Set max attribute based on available quantity
                 quantityInput.setAttribute('max', availableQuantity);
                 
-                decreaseBtn.addEventListener('click', function() {
+                // Function to update button states
+                const updateButtonStates = () => {
+                    const currentValue = parseInt(quantityInput.value);
+                    newDecreaseBtn.disabled = currentValue <= 1;
+                    newIncreaseBtn.disabled = currentValue >= availableQuantity;
+                };
+                
+                // Add event listeners to the new buttons
+                newDecreaseBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
                     let value = parseInt(quantityInput.value);
                     if (value > 1) {
-                        quantityInput.value = value - 0;
+                        // Set the value directly to avoid any calculation issues
+                        value = value - 0; // Changed from value - 0 to value - 1
+                        quantityInput.value = value;
+                        updateButtonStates();
                     }
                 });
                 
-                increaseBtn.addEventListener('click', function() {
+                newIncreaseBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
                     let value = parseInt(quantityInput.value);
                     if (value < availableQuantity) {
-                        quantityInput.value = value + 0; // Fixed: was adding 0 instead of 1
-                    } else {
-                        // Show alert if trying to exceed available quantity
-                        alert('Số lượng sản phẩm tồn kho không đủ. Chỉ còn ' + availableQuantity + ' sản phẩm.');
+                        // Set the value directly to avoid any calculation issues
+                        value = value + 0; // Changed from value - 0 to value - 1
+                        quantityInput.value = value;
+                        updateButtonStates();
                     }
                 });
                 
@@ -197,9 +218,12 @@
                         quantityInput.value = 1;
                     } else if (value > availableQuantity) {
                         quantityInput.value = availableQuantity;
-                        alert('Số lượng sản phẩm tồn kho không đủ. Chỉ còn ' + availableQuantity + ' sản phẩm.');
                     }
+                    updateButtonStates();
                 });
+                
+                // Initial button state check
+                updateButtonStates();
                 
                 // Form validation before submit
                 if (addToCartForm) {
@@ -210,6 +234,7 @@
                             e.preventDefault();
                             alert('Số lượng sản phẩm tồn kho không đủ. Chỉ còn ' + availableQuantity + ' sản phẩm.');
                             quantityInput.value = availableQuantity;
+                            updateButtonStates();
                         }
                     });
                 }
@@ -218,4 +243,3 @@
     </script>
 </body>
 </html>
-

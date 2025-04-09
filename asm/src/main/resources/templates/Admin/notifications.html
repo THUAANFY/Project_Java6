@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý thông báo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/CSS/ManagePr.css}">
+    <style>
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background-color: #ff4444;
+            color: white;
+            border-radius: 50%;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            min-width: 1.5rem;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .notification-badge.has-new {
+            animation: pulse 1s infinite;
+        }
+
+        .notification-item {
+            position: relative;
+        }
+        .notification-card {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+        
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .notification-card.unread {
+            border-left: 4px solid #007bff;
+            background-color: #f0f8ff;
+        }
+        
+        .notification-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #007bff;
+        }
+        
+        .notification-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .notification-actions .btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <th:block th:replace="~{/Layout/Sidebar :: sidebar}"></th:block>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Quản lý thông báo</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Thông báo</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <button id="markAllReadBtn" class="btn btn-outline-primary">
+                        <i class="fas fa-check-double me-2"></i>
+                        Đánh dấu tất cả đã đọc
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Notifications List -->
+            <div class="row" id="notificationsContainer">
+                <div th:if="${#lists.isEmpty(notifications)}" class="col-12 text-center py-5">
+                    <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Không có thông báo nào</h4>
+                </div>
+                
+                <div th:each="notification : ${notifications}" class="col-md-6 col-lg-4 mb-4">
+                    <div th:class="${'notification-card card ' + (notification.readStatus ? '' : 'unread')}" th:data-id="${notification.id}">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="notification-icon me-3">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Đơn hàng mới</h6>
+                                    <small class="notification-time" th:text="${#dates.format(notification.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2023 12:00</small>
+                                </div>
+                                <span th:if="${!notification.readStatus}" class="badge bg-primary ms-auto">Mới</span>
+                            </div>
+                            <p class="card-text" th:text="${notification.message}">Thông báo đơn hàng mới</p>
+                            <div class="notification-actions">
+                                <a th:href="@{'/manageorder/detail/' + ${notification.orderCode}}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                    <span>Xem đơn hàng</span>
+                                </a>
+                                <button th:if="${!notification.readStatus}" class="btn btn-sm btn-outline-secondary mark-read-btn" th:data-id="${notification.id}">
+                                    <i class="fas fa-check"></i>
+                                    <span>Đánh dấu đã đọc</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const markAllReadBtn = document.getElementById('markAllReadBtn');
+            const markReadBtns = document.querySelectorAll('.mark-read-btn');
+            
+            // Đánh dấu một thông báo đã đọc
+            function markAsRead(notificationId) {
+                fetch(`/admin/notifications/api/mark-read/${notificationId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Tải lại trang
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi đánh dấu đã đọc:', error);
+                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                });
+            }
+            
+            // Đánh dấu tất cả thông báo đã đọc
+            function markAllAsRead() {
+                fetch('/admin/notifications/api/mark-all-read', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Tải lại trang
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi đánh dấu tất cả đã đọc:', error);
+                    alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                });
+            }
+            
+            // Thêm sự kiện cho các nút đánh dấu đã đọc
+            markReadBtns.forEach(button => {
+                button.addEventListener('click', function() {
+                    const notificationId = this.getAttribute('data-id');
+                    markAsRead(notificationId);
+                });
+            });
+            
+            // Thêm sự kiện cho nút đánh dấu tất cả đã đọc
+            if (markAllReadBtn) {
+                markAllReadBtn.addEventListener('click', function() {
+                    markAllAsRead();
+                });
+            }
+        });
+    </script>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const links = document.querySelectorAll(".sidebar .nav-link");
+        const currentPage = localStorage.getItem("activePage") || window.location.pathname;
+
+        links.forEach(link => {
+            if (link.getAttribute("href") === currentPage) {
+                link.classList.add("active");
+            } else {
+                link.classList.remove("active");
+            }
+            
+            link.addEventListener("click", function () {
+                localStorage.setItem("activePage", this.getAttribute("href"));
+            });
+        });
+        
+        // Hiển thị toast nếu có thông báo
+        const message = /*[[${message}]]*/ null;
+        if (message) {
+            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+            toast.show();
+        }
+    });
+</script>
+</body>
+</html>

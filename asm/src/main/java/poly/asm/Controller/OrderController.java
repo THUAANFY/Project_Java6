@@ -56,12 +56,6 @@ public class OrderController {
             return "redirect:/yourcart";
         }
 
-        // Tính tổng tiền
-        // double totalPrice = 0;
-        // for (CartItem item : cartService.getCartItems()) {
-        //     totalPrice += item.getTotalPrice();
-        // }
-
         // Lấy tổng tiền từ service thay vì tính toán thủ công
         double totalPrice = cartService.getTotalPrice();
         
@@ -139,15 +133,17 @@ public class OrderController {
         }
         
         // Lấy thông tin đơn hàng
-        Map<String, Object> orderInfo = orderService.getOrderInfo(orderCode);
-        if (orderInfo == null) {
-            return "redirect:/";
-        }
-        
-        model.addAttribute("order", orderInfo);
+        // Map<String, Object> orderInfo = orderService.getOrderInfo(orderCode);
+        // if (orderInfo == null) {
+        //     return "redirect:/";
+        // }
+        Order order = orderService.getOrderByCode(orderCode);
+        model.addAttribute("order", order);
+        // model.addAttribute("order", orderInfo);
+
         
         // Thêm thông tin thời gian giao hàng dự kiến
-        Order order = orderService.getOrderByCode(orderCode);
+        // Order order = orderService.getOrderByCode(orderCode);
         if (order != null) {
             Date estimatedDeliveryDate = orderService.calculateEstimatedDeliveryDate(order);
             if (estimatedDeliveryDate != null) {
@@ -213,6 +209,12 @@ public class OrderController {
         String deliveryTimeRange = orderService.getDeliveryTimeRangeText(order);
         model.addAttribute("deliveryTimeRange", deliveryTimeRange);
         
+        // Add location information for orders in shipping status
+        if ("Đang giao hàng".equals(order.getStatus())) {
+            Map<String, Object> locationInfo = orderService.getCurrentOrderLocation(order);
+            model.addAttribute("locationInfo", locationInfo);
+        }
+        
         return "Home/order-detail";
     }
     
@@ -232,6 +234,30 @@ public class OrderController {
             redirectAttributes.addFlashAttribute("message", "Đơn hàng đã được hủy thành công");
         } else {
             redirectAttributes.addFlashAttribute("error", "Không thể hủy đơn hàng này");
+        }
+        
+        return "redirect:/order/detail?id=" + orderCode;
+    }
+
+    // Add this method to handle the "Received Order" button click
+    /**
+     * Xử lý khi người dùng xác nhận đã nhận được hàng
+     */
+    @PostMapping("/order/received")
+    public String markOrderAsReceived(@RequestParam("orderCode") String orderCode, 
+                                     HttpSession session, 
+                                     RedirectAttributes redirectAttributes) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/login";
+        }
+        
+        boolean success = orderService.markOrderAsReceived(orderCode, loggedInUser);
+        
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "Cảm ơn bạn đã xác nhận! Đơn hàng đã được đánh dấu là đã giao thành công.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Không thể cập nhật trạng thái đơn hàng. Vui lòng thử lại sau.");
         }
         
         return "redirect:/order/detail?id=" + orderCode;
@@ -296,4 +322,22 @@ public class OrderController {
         }
         return Map.of("status", "unknown");
     }
+    
+    /**
+     * API endpoint to get order tracking information
+     */
+    @GetMapping("/api/order/tracking")
+    @ResponseBody
+    public Map<String, Object> getOrderTracking(@RequestParam("orderCode") String orderCode) {
+        Order order = orderService.getOrderByCode(orderCode);
+        Map<String, Object> response = new HashMap<>();
+
+        if (order != null && "Đang giao hàng".equals(order.getStatus())) {
+            Map<String, Object> locationInfo = orderService.getCurrentOrderLocation(order);
+            response.put("locationInfo", locationInfo);
+        }
+
+        return response;
+    }
 }
+

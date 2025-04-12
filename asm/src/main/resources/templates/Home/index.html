@@ -49,15 +49,13 @@
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <div class="container-fluid mt-3 p-5 pt-0" data-aos="fade-up" data-aos-duration="1000">
+    <div class="container-fluid mt-3 p-5 pt-0" >
         <!-- Lặp qua từng danh mục -->
         <th:block th:each="category : ${categories}">
-            <h2 th:text="${category.name}" class="mt-4 ms-4 fw-semibold"></h2>
-            <div class="row">
+            <h2 th:text="${category.name}" class="mt-4 ms-4 fw-semibold" data-aos="fade-up" data-aos-duration="1000"></h2>
+            <div class="row" data-aos="fade-up" data-aos-duration="1000">
                 <!-- Lặp qua sản phẩm thuộc danh mục hiện tại -->
-                <div class="col-12 col-md-4 col-lg-3 mb-4" 
-                     th:each="item : ${products}" 
-                     th:if="${item.category.id == category.id}">
+                <div class="col-12 col-md-4 col-lg-3 mb-4" th:each="item : ${products}" th:if="${item.category.id == category.id}">
                     <div class="card h-100">
                         <a th:href="@{/product/{id}(id=${item.id})}">
                             <img th:src="${item.image}" class="card-img-top p-5" alt="Product">

@@ -51,14 +51,14 @@ public class LoginController {
 
         // Kiểm tra user tồn tại
         if (user == null) {
-            model.addAttribute("error", "Tài khoản không tồn tại!");
+            model.addAttribute("error", "Tài khoản hoặc mật khẩu không đúng!");
             System.out.println("User not found for: " + id);
             return "login/login";
         }
 
         // Kiểm tra mật khẩu
         if (!user.getPassword().equals(userLoginDTO.getPassword())) {
-            model.addAttribute("error", "Mật khẩu không đúng!");
+            model.addAttribute("error", "Tài khoản hoặc mật khẩu không đúng!");
             System.out.println("Password incorrect for user: " + id);
             return "login/login";
         }

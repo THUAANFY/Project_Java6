@@ -102,6 +102,8 @@ public class ProductsController {
         return "Home/products";
     }
 
+    
+
     @GetMapping("/product/{id}")
     public String productDetail(@PathVariable("id") Integer id, Model model, HttpSession session) {
         Product product = productDAO.findById(id).orElse(null);

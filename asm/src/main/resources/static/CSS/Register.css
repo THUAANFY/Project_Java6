@@ -301,3 +301,139 @@ hr.border-secondary-subtle {
     box-shadow: 0 0 5px rgba(220, 53, 69, 0.3);
 } */
 
+/* Further Enhanced Back to Home Button Styles with X icon */
+.back-to-home {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.icon-wrapper {
+    position: relative;
+    margin-right: 10px;
+}
+
+.icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f0f0f0, #e6e6e6);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), 
+                -4px -4px 8px rgba(255, 255, 255, 0.9);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.icon-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #ff5252, #ff0000);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.back-btn:hover .icon-container::before {
+    opacity: 1;
+}
+
+.back-btn i {
+    font-size: 16px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: #666;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-text {
+    position: relative;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Hover effects */
+.back-btn:hover .icon-container {
+    transform: rotate(180deg) scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+}
+
+.back-btn:hover i {
+    color: white;
+    transform: scale(1.2);
+}
+
+.back-btn:hover .btn-text {
+    color: #ff0000;
+    transform: translateX(5px);
+    text-shadow: 0 2px 4px rgba(255, 0, 0, 0.1);
+}
+
+/* Glow effect for the icon */
+@keyframes glowEffect {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.5), 
+                    0 0 10px rgba(255, 0, 0, 0.3), 
+                    0 0 15px rgba(255, 0, 0, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5), 
+                    0 0 20px rgba(255, 0, 0, 0.3), 
+                    0 0 30px rgba(255, 0, 0, 0.1);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.5), 
+                    0 0 10px rgba(255, 0, 0, 0.3), 
+                    0 0 15px rgba(255, 0, 0, 0.1);
+    }
+}
+
+.back-btn:hover .icon-container {
+    animation: glowEffect 2s infinite;
+}
+
+/* Responsive adjustments for the back button */
+@media (max-width: 768px) {
+    .back-to-home {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .icon-container {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .back-btn i {
+        font-size: 14px;
+    }
+    
+    .btn-text {
+        font-size: 0.8rem;
+    }
+}
+

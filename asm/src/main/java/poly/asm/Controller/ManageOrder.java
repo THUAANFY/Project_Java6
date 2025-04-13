@@ -1,5 +1,8 @@
 package poly.asm.Controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +22,6 @@ import poly.asm.Services.OrderService;
 
 @Controller
 public class ManageOrder {
-    
     @Autowired
     private OrderService orderService;
     
@@ -30,10 +32,69 @@ public class ManageOrder {
     private OrderDetailDAO orderDetailDAO;
     
     @GetMapping("/manageorder")
-    public String manageorder(Model model) {
-        // Lấy tất cả đơn hàng
-        List<Order> orders = orderDAO.findAll();
+    public String manageorder(
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "startDate", required = false) String startDateStr,
+            @RequestParam(name = "endDate", required = false) String endDateStr,
+            Model model) {
+        
+        List<Order> orders;
+        
+        // Xử lý lọc theo trạng thái và ngày
+        if (status != null && !status.isEmpty()) {
+            // Nếu có lọc theo trạng thái
+            if ((startDateStr != null && !startDateStr.isEmpty()) && (endDateStr != null && !endDateStr.isEmpty())) {
+                // Nếu có cả lọc theo ngày
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date startDate = dateFormat.parse(startDateStr);
+                    Date endDate = dateFormat.parse(endDateStr);
+                    
+                    // Điều chỉnh endDate để bao gồm cả ngày kết thúc
+                    java.util.Calendar calendar = java.util.Calendar.getInstance();
+                    calendar.setTime(endDate);
+                    calendar.add(java.util.Calendar.DAY_OF_MONTH, 1);
+                    calendar.add(java.util.Calendar.MILLISECOND, -1);
+                    endDate = calendar.getTime();
+                    
+                    // Lọc theo cả trạng thái và khoảng thời gian
+                    orders = orderDAO.findByStatusAndCreatedAtBetween(status, startDate, endDate);
+                } catch (ParseException e) {
+                    // Nếu có lỗi khi parse ngày, chỉ lọc theo trạng thái
+                    orders = orderDAO.findByStatus(status);
+                }
+            } else {
+                // Chỉ lọc theo trạng thái
+                orders = orderDAO.findByStatus(status);
+            }
+        } else if ((startDateStr != null && !startDateStr.isEmpty()) && (endDateStr != null && !endDateStr.isEmpty())) {
+            // Chỉ lọc theo khoảng thời gian
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date startDate = dateFormat.parse(startDateStr);
+                Date endDate = dateFormat.parse(endDateStr);
+                
+                // Điều chỉnh endDate để bao gồm cả ngày kết thúc
+                java.util.Calendar calendar = java.util.Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.add(java.util.Calendar.DAY_OF_MONTH, 1);
+                calendar.add(java.util.Calendar.MILLISECOND, -1);
+                endDate = calendar.getTime();
+                
+                orders = orderDAO.findByCreatedAtBetween(startDate, endDate);
+            } catch (ParseException e) {
+                // Nếu có lỗi khi parse ngày, lấy tất cả đơn hàng
+                orders = orderDAO.findAll();
+            }
+        } else {
+            // Không có bộ lọc, lấy tất cả đơn hàng
+            orders = orderDAO.findAll();
+        }
+        
         model.addAttribute("orders", orders);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("startDate", startDateStr);
+        model.addAttribute("endDate", endDateStr);
         
         // Đếm số lượng đơn hàng theo trạng thái
         long pendingCount = orders.stream().filter(o -> "Chờ xác nhận".equals(o.getStatus())).count();

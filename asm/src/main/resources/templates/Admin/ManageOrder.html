@@ -41,29 +41,17 @@
             color: #721c24;
         }
         
-        /* .dashboard-card {
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-            border-left: 5px solid;
-            overflow: hidden;
-        }
-        
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        } */
         .dashboard-card {
-            border-radius: 8px; /* Giảm từ 10px xuống 8px */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Giảm bóng đổ */
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             transition: all 0.3s;
-            border-left: 4px solid; /* Giảm từ 5px xuống 4px */
+            border-left: 4px solid;
             overflow: hidden;
         }
 
         .dashboard-card:hover {
-            transform: translateY(-4px); /* Giảm từ -5px xuống -4px */
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1); /* Giảm bóng đổ khi hover */
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
         
         .card-pending {
@@ -195,16 +183,16 @@
             </div>
             
             <!-- Order Statistics -->
-            <div class="row mb-2"> <!-- Giảm mb-3 thành mb-2 -->
-                <div class="col-md-4 col-lg-2 mb-1"> <!-- Giảm mb-2 thành mb-1 -->
-                    <div class="dashboard-card card-pending p-1"> <!-- Giảm p-2 thành p-1 -->
+            <div class="row mb-2">
+                <div class="col-md-4 col-lg-2 mb-1">
+                    <div class="dashboard-card card-pending p-1">
                         <div class="d-flex align-items-center">
-                            <div class="card-icon icon-pending me-1"> <!-- Giảm me-2 thành me-1 -->
+                            <div class="card-icon icon-pending me-1">
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div>
-                                <div class="card-value" th:text="${pendingCount}" style="font-size: 1rem;">0</div> <!-- Giảm từ 1.2rem xuống 1rem -->
-                                <div class="card-label" style="font-size: 0.75rem;">Chờ xác nhận</div> <!-- Giảm từ 0.85rem xuống 0.75rem -->
+                                <div class="card-value" th:text="${pendingCount}" style="font-size: 1rem;">0</div>
+                                <div class="card-label" style="font-size: 0.75rem;">Chờ xác nhận</div>
                             </div>
                         </div>
                     </div>
@@ -276,177 +264,98 @@
                 </div>
             </div>
             
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="list-tab" data-bs-toggle="tab" data-bs-target="#list" type="button" role="tab">
-                        <i class="fas fa-list me-2"></i>Danh sách đơn hàng
-                    </button>
-                </li>
-                <!-- <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="filter-tab" data-bs-toggle="tab" data-bs-target="#filter" type="button" role="tab">
-                        <i class="fas fa-filter me-2"></i>Bộ lọc nâng cao
-                    </button>
-                </li> -->
-            </ul>
-            
-            <!-- Tab nội dung -->
-            <div class="tab-content">
-                <!-- Tab Danh Sách -->
-                <div class="tab-pane fade show active" id="list" role="tabpanel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="input-group">
-                                <span class="input-group-text bg-transparent border-end-0">
-                                    <i class="fas fa-search"></i>
-                                </span>
-                                <input type="text" class="form-control border-start-0" placeholder="Tìm kiếm đơn hàng...">
-                            </div>
-                        </div>
-                        <div>
-                            <button class="btn btn-outline-secondary me-2">
-                                <i class="fas fa-file-export me-2"></i>Xuất Excel
-                            </button>
-                            <button class="btn btn-outline-secondary">
-                                <i class="fas fa-print me-2"></i>In báo cáo
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr class="text-center">
-                                    <th>Mã đơn hàng</th>
-                                    <th>Khách hàng</th>
-                                    <th>Ngày đặt</th>
-                                    <th>Tổng tiền</th>
-                                    <th>Thanh toán</th>
-                                    <th>Trạng thái</th>
-                                    <th class="text-center">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="order : ${orders}" class="align-middle text-center">
-                                    <td class="fw-bold" th:text="${order.orderCode}"></td>
-                                    <td>
-                                        <div th:text="${order.recipientName}"></div>
-                                        <small class="text-muted" th:text="${order.recipientPhone}"></small>
-                                    </td>
-                                    <td>
-                                        <div th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy')}"></div>
-                                        <small class="text-muted" th:text="${#dates.format(order.createdAt, 'HH:mm')}"></small>
-                                    </td>
-                                    <td class="fw-bold text-success" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
-                                    <td>
-                                        <span class="badge bg-light text-dark" th:text="${order.paymentMethod == 'codPayment' ? 'COD' : (order.paymentMethod == 'bankPayment' ? 'Chuyển khoản' : 'MoMo')}"></span>
-                                    </td>
-                                    <td>
-                                        <span th:class="'status-badge ' + ${order.status == 'Chờ xác nhận' ? 'status-pending' : 
-                                                    (order.status == 'Đã xác nhận' ? 'status-confirmed' : 
-                                                    (order.status == 'Đang giao hàng' ? 'status-shipped' : 
-                                                    (order.status == 'Đã giao hàng' ? 'status-delivered' : 'status-cancelled')))}" 
-                                            th:text="${order.status}">
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <a th:href="@{/manageorder/detail/{orderCode}(orderCode=${order.orderCode})}" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" th:data-bs-target="'#updateStatusModal-' + ${order.orderCode}">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="'#deleteOrderModal-' + ${order.orderCode}">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr th:if="${orders.isEmpty()}">
-                                    <td colspan="7" class="text-center py-4">
-                                        <div class="text-muted">Không tìm thấy đơn hàng nào</div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Phân trang -->
-                    <div class="d-flex justify-content-center mt-4">
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination">
-                                <li class="page-item disabled">
-                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </a>
-                                </li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+            <!-- Bộ lọc đơn giản -->
+            <div class="filter-card mb-4">
+                <div class="filter-header">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Bộ lọc đơn hàng</h5>
                 </div>
-                
-                <!-- Tab Bộ lọc -->
-                <div class="tab-pane fade" id="filter" role="tabpanel">
-                    <form th:action="@{/manageorder}" method="get" class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label"><i class="fas fa-tasks me-2"></i>Trạng thái đơn hàng</label>
-                            <select class="form-select" name="status">
-                                <option value="">Tất cả trạng thái</option>
-                                <option value="Chờ xác nhận">Chờ xác nhận</option>
-                                <option value="Đã xác nhận">Đã xác nhận</option>
-                                <option value="Đang giao hàng">Đang giao hàng</option>
-                                <option value="Đã giao hàng">Đã giao hàng</option>
-                                <option value="Đã hủy">Đã hủy</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label"><i class="fas fa-credit-card me-2"></i>Phương thức thanh toán</label>
-                            <select class="form-select" name="paymentMethod">
-                                <option value="">Tất cả phương thức</option>
-                                <option value="cod">Thanh toán khi nhận hàng (COD)</option>
-                                <option value="bank">Chuyển khoản ngân hàng</option>
-                                <option value="momo">Ví MoMo</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label"><i class="fas fa-sort me-2"></i>Sắp xếp theo</label>
-                            <select class="form-select" name="sortBy">
-                                <option value="createdAt">Ngày đặt</option>
-                                <option value="total">Tổng tiền</option>
-                                <option value="status">Trạng thái</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Khoảng thời gian</label>
-                            <div class="input-group">
-                                <input type="date" class="form-control" name="startDate" placeholder="Từ ngày">
-                                <span class="input-group-text">đến</span>
-                                <input type="date" class="form-control" name="endDate" placeholder="Đến ngày">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label"><i class="fas fa-search me-2"></i>Tìm kiếm</label>
-                            <input type="text" class="form-control" name="search" placeholder="Tìm kiếm theo mã đơn hàng, tên khách hàng hoặc số điện thoại...">
-                        </div>
-                        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                <form th:action="@{/manageorder}" method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label"><i class="fas fa-tasks me-2"></i>Trạng thái đơn hàng</label>
+                        <select class="form-select" name="status" th:value="${selectedStatus}">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="Chờ xác nhận" th:selected="${selectedStatus == 'Chờ xác nhận'}">Chờ xác nhận</option>
+                            <option value="Đã xác nhận" th:selected="${selectedStatus == 'Đã xác nhận'}">Đã xác nhận</option>
+                            <option value="Đang giao hàng" th:selected="${selectedStatus == 'Đang giao hàng'}">Đang giao hàng</option>
+                            <option value="Đã giao hàng" th:selected="${selectedStatus == 'Đã giao hàng'}">Đã giao hàng</option>
+                            <option value="Đã hủy" th:selected="${selectedStatus == 'Đã hủy'}">Đã hủy</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Khoảng thời gian</label>
+                        <div class="input-group">
+                            <input type="date" class="form-control" name="startDate" th:value="${startDate}" placeholder="Từ ngày">
+                            <span class="input-group-text">đến</span>
+                            <input type="date" class="form-control" name="endDate" th:value="${endDate}" placeholder="Đến ngày">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter me-2"></i>Áp dụng bộ lọc
+                                <i class="fas fa-filter me-2"></i>Lọc
                             </button>
                             <a href="/manageorder" class="btn btn-secondary">
                                 <i class="fas fa-undo me-2"></i>Đặt lại
                             </a>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Danh sách đơn hàng -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Mã đơn hàng</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Tổng tiền</th>
+                            <th>Thanh toán</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}" class="align-middle text-center">
+                            <td class="fw-bold" th:text="${order.orderCode}"></td>
+                            <td>
+                                <div th:text="${order.recipientName}"></div>
+                                <small class="text-muted" th:text="${order.recipientPhone}"></small>
+                            </td>
+                            <td>
+                                <div th:text="${#dates.format(order.createdAt, 'dd/MM/yyyy')}"></div>
+                                <small class="text-muted" th:text="${#dates.format(order.createdAt, 'HH:mm')}"></small>
+                            </td>
+                            <td class="fw-bold text-success" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                            <td>
+                                <span class="badge bg-light text-dark" th:text="${order.paymentMethod == 'codPayment' ? 'COD' : (order.paymentMethod == 'bankPayment' ? 'Chuyển khoản' : 'MoMo')}"></span>
+                            </td>
+                            <td>
+                                <span th:class="'status-badge ' + ${order.status == 'Chờ xác nhận' ? 'status-pending' : 
+                                            (order.status == 'Đã xác nhận' ? 'status-confirmed' : 
+                                            (order.status == 'Đang giao hàng' ? 'status-shipped' : 
+                                            (order.status == 'Đã giao hàng' ? 'status-delivered' : 'status-cancelled')))}" 
+                                    th:text="${order.status}">
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{/manageorder/detail/{orderCode}(orderCode=${order.orderCode})}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" th:data-bs-target="'#updateStatusModal-' + ${order.orderCode}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="'#deleteOrderModal-' + ${order.orderCode}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${orders.isEmpty()}">
+                            <td colspan="7" class="text-center py-4">
+                                <div class="text-muted">Không tìm thấy đơn hàng nào</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -577,4 +486,4 @@
     </script>
 </body>
 </html>
-
+ 

@@ -40,33 +40,47 @@
         </div>
     </div>
     <!-- END SLIDE -->
-    <div th:if="${session.success}" class="alert alert-success" th:text="${session.success}"></div>
-    <!-- Xóa thông báo khỏi session sau khi hiển thị -->
-    <th:block th:if="${session.success}">
-        <th:block th:remove="tag" th:utext="${session.removeAttribute('success')}"></th:block>
-    </th:block>
+     
+    <!-- Thông báo từ CartController -->
+    <div th:if="${addSuccess}" class="alert alert-success">
+        <span th:text="${successMessage ?: 'Đã thêm sản phẩm vào giỏ hàng thành công!'}"></span>
+    </div>
+    <div th:if="${inventoryError}" class="alert alert-danger">
+        <span th:text="${errorMessage}"></span>
+    </div>
 
-    <div class="container-fluid mt-3 p-5 pt-0" data-aos="fade-up" data-aos-duration="1000">
+    <div class="container-fluid mt-3 p-5 pt-0" >
         <!-- Lặp qua từng danh mục -->
         <th:block th:each="category : ${categories}">
-            <h2 th:text="${category.name}" class="mt-4 ms-4 fw-semibold"></h2>
-            <div class="row">
+            <h2 th:text="${category.name}" class="mt-4 ms-4 fw-semibold" data-aos="fade-up" data-aos-duration="1000"></h2>
+            <div class="row" data-aos="fade-up" data-aos-duration="1000">
                 <!-- Lặp qua sản phẩm thuộc danh mục hiện tại -->
-                <div class="col-12 col-md-4 col-lg-3 mb-4" 
-                     th:each="item : ${products}" 
-                     th:if="${item.category.id == category.id}">
+                <div class="col-12 col-md-4 col-lg-3 mb-4" th:each="item : ${products}" th:if="${item.category.id == category.id}">
                     <div class="card h-100">
                         <a th:href="@{/product/{id}(id=${item.id})}">
                             <img th:src="${item.image}" class="card-img-top p-5" alt="Product">
                         </a>
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title" th:text="${item.name}">Sản phẩm</h5>
-                            <p class="card-text" th:text="${item.description}">Mô tả ngắn về sản phẩm.</p>
                             <p class="card-text text-danger">
                                 <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' đ'}">Giá: 500.000 VNĐ</strong>
                             </p>
                             <div class="mt-auto">
-                                <button type="submit" class="btn btn-success btn-sm" ><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+                                <!-- Thêm vào giỏ hàng -->
+                                <div th:if="${session.loggedInUser != null}">
+                                    <form th:action="@{/cart/add}" method="post" th:id="'addToCartForm_' + ${item.id}">
+                                        <input type="hidden" name="id" th:value="${item.id}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn-add-cart" th:disabled="${item.available <= 0}">
+                                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                        </button>
+                                    </form>
+                                </div>
+                                <div th:unless="${session.loggedInUser != null}">
+                                    <a href="/login" class="btn btn-success btn-sm">
+                                        <i class="fas fa-cart-plus"></i> Đăng nhập để thêm
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

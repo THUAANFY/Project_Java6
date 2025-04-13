@@ -98,7 +98,7 @@
                     </nav>
                 </div>
                 <div>
-                    <button id="markAllReadBtn" class="btn btn-outline-primary">
+                    <button id="markAllReadBtn" class="btn btn-warning">
                         <i class="fas fa-check-double me-2"></i>
                         Đánh dấu tất cả đã đọc
                     </button>
@@ -131,9 +131,9 @@
                                     <i class="fas fa-eye"></i>
                                     <span>Xem đơn hàng</span>
                                 </a>
-                                <button th:if="${!notification.readStatus}" class="btn btn-sm btn-outline-secondary mark-read-btn" th:data-id="${notification.id}">
+                                <button th:if="${!notification.readStatus}" class="btn btn-sm btn-warning mark-read-btn" th:data-id="${notification.id}">
                                     <i class="fas fa-check"></i>
-                                    <span>Đánh dấu đã đọc</span>
+                                    <span>Đã đọc</span>
                                 </button>
                             </div>
                         </div>

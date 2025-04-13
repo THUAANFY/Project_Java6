@@ -6,6 +6,247 @@
 <head>
     <link rel="stylesheet" th:href="@{/CSS/ManagePr.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Enhanced styles for image management */
+        .additional-images-container {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .additional-images-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #495057;
+            display: flex;
+            align-items: center;
+        }
+        
+        .additional-images-title i {
+            color: #6c757d;
+            margin-right: 8px;
+        }
+        
+        .image-upload-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .image-upload-container .form-control {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px dashed #ced4da;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .image-upload-container .form-control:hover {
+            border-color: #6c757d;
+        }
+        
+        .image-upload-container .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.25);
+        }
+        
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .image-preview-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .image-preview-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-preview-item .image-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            padding: 8px;
+            display: flex;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .image-preview-item:hover .image-actions {
+            opacity: 1;
+        }
+        
+        .image-preview-item .form-check {
+            margin: 0;
+        }
+        
+        .image-preview-item .form-check-input {
+            cursor: pointer;
+        }
+        
+        .image-preview-item .form-check-label {
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        
+        .image-preview-new {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .image-preview-new-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-preview-new-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .image-preview-new-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-preview-new-item .remove-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(220, 53, 69, 0.8);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .image-preview-new-item:hover .remove-badge {
+            opacity: 1;
+        }
+        
+        .upload-instructions {
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .upload-instructions i {
+            margin-right: 5px;
+        }
+        
+        /* Enhanced main image upload */
+        .poster-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 300px;
+            background-color: #f8f9fa;
+        }
+        
+        .poster-container:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .poster {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            color: #6c757d;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .overlay:hover {
+            background-color: #e9ecef;
+        }
+        
+        .overlay i {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .overlay span {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .poster-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        /* No images message */
+        .no-images-message {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
     <div class="d-flex">
@@ -39,70 +280,131 @@
                         <input type="hidden" th:field="*{id}">
                         
                         <div class="col-12 col-md-4">
-                            <div class="poster-container">
-                                <img id="posterImage" th:src="@{${product.image != null ? product.image : '/images/default.jpg'}}" class="poster" th:classappend="${product.image != null ? '' : 'd-none'}">
-                                <div class="overlay" th:classappend="${product.image != null ? 'd-none' : ''}">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <span>THÊM ẢNH SẢN PHẨM</span>
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-image me-2"></i>Hình ảnh sản phẩm
+                                    </h5>
                                 </div>
-                                <input type="file" class="poster-input" name="imageFile" accept="image/*" onchange="loadImage(event)">
+                                <div class="card-body">
+                                    <!-- Main Image Upload -->
+                                    <div class="poster-container mb-4">
+                                        <img id="posterImage" th:src="@{${product.image != null ? product.image : '/images/default.jpg'}}" class="poster" th:classappend="${product.image != null ? '' : 'd-none'}">
+                                        <div class="overlay" th:classappend="${product.image != null ? 'd-none' : ''}">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                            <span>THÊM ẢNH CHÍNH</span>
+                                        </div>
+                                        <input type="file" class="poster-input" name="imageFile" accept="image/*" onchange="loadImage(event)">
+                                    </div>
+                                    
+                                    <!-- Additional Images Section -->
+                                    <div class="additional-images-container">
+                                        <div class="additional-images-title">
+                                            <i class="fas fa-images"></i>Ảnh bổ sung
+                                        </div>
+                                        
+                                        <div class="image-upload-container">
+                                            <input type="file" class="form-control" id="additionalImages" name="additionalImages" multiple accept="image/*" onchange="previewAdditionalImages(event)">
+                                            <div class="upload-instructions mt-2">
+                                                <i class="fas fa-info-circle"></i>Chọn nhiều ảnh cùng lúc
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Preview for new additional images -->
+                                        <div class="image-preview-new" id="additionalImagesPreview"></div>
+                                        
+                                        <!-- Existing additional images (when editing) -->
+                                        <div th:if="${isEditMode}" class="mt-4">
+                                            <div class="additional-images-title">
+                                                <i class="fas fa-photo-film"></i>Ảnh bổ sung hiện tại
+                                            </div>
+                                            
+                                            <div th:if="${productImages != null && !productImages.isEmpty()}" class="image-preview-container">
+                                                <div th:each="img : ${productImages}" class="image-preview-item">
+                                                    <img th:src="${img.imageUrl}" alt="Additional Image">
+                                                    <div class="image-actions">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="deleteImageIds" th:value="${img.id}" th:id="'delete-img-' + ${img.id}">
+                                                            <label class="form-check-label" th:for="'delete-img-' + ${img.id}">
+                                                                <i class="fas fa-trash-alt me-1"></i>Xóa
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div th:if="${productImages == null || productImages.isEmpty()}" class="no-images-message">
+                                                <i class="fas fa-info-circle me-2"></i>Chưa có ảnh bổ sung nào
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
                         <div class="col-12 col-md-8">
-                            <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-tag me-2"></i>TÊN SẢN PHẨM</label>
-                                    <input type="text" class="form-control" name="name" th:field="*{name}" placeholder="Nhập tên sản phẩm">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>Thông tin sản phẩm
+                                    </h5>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-dollar-sign me-2"></i>GIÁ</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" name="price" th:field="*{price}" placeholder="Nhập giá sản phẩm">
-                                        <span class="input-group-text">VND</span>
+                                <div class="card-body">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label"><i class="fas fa-tag me-2"></i>TÊN SẢN PHẨM</label>
+                                            <input type="text" class="form-control" name="name" th:field="*{name}" placeholder="Nhập tên sản phẩm">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label"><i class="fas fa-dollar-sign me-2"></i>GIÁ</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" name="price" th:field="*{price}" placeholder="Nhập giá sản phẩm">
+                                                <span class="input-group-text">VND</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label"><i class="fas fa-cubes me-2"></i>SỐ LƯỢNG</label>
+                                            <input type="number" class="form-control" name="available" th:field="*{available}" placeholder="Nhập số lượng">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>NGÀY TẠO</label>
+                                            <input type="date" class="form-control" name="createDate" th:field="*{createDate}">
+                                        </div>
+                                    </div>
+                        
+                                    <div class="mb-3">
+                                        <label class="form-label"><i class="fas fa-folder me-2"></i>DANH MỤC</label>
+                                        <select class="form-select" name="category.id" th:field="*{category.id}">
+                                            <option value="" selected disabled>Chọn danh mục</option>
+                                            <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label"><i class="fas fa-align-left me-2"></i>MÔ TẢ SẢN PHẨM</label>
+                                        <textarea class="form-control comment-textarea" name="description" th:field="*{description}" placeholder="Nhập mô tả chi tiết về sản phẩm..." rows="5"></textarea>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-end gap-2 mt-4">
+                                        <button type="submit" formaction="/manageproduct/create" class="btn btn-success" th:classappend="${product.id == null ? '' : 'd-none'}">
+                                            <i class="fas fa-plus-circle me-2"></i>TẠO MỚI
+                                        </button>
+                                        <button type="submit" formaction="/manageproduct/update" class="btn btn-primary" th:classappend="${product.id != null ? '' : 'd-none'}">
+                                            <i class="fas fa-sync-alt me-2"></i>CẬP NHẬT
+                                        </button>
+                                        <a th:href="@{|/manageproduct/delete/${product.id}|}" class="btn btn-danger" th:classappend="${product.id != null ? '' : 'd-none'}"
+                                           onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                            <i class="fas fa-trash-alt me-2"></i>XÓA
+                                        </a>
+                                        <a href="/manageproduct" class="btn btn-secondary">
+                                            <i class="fas fa-undo me-2"></i>RESET
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                
-                            <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-cubes me-2"></i>SỐ LƯỢNG</label>
-                                    <input type="number" class="form-control" name="available" th:field="*{available}" placeholder="Nhập số lượng">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>NGÀY TẠO</label>
-                                    <input type="date" class="form-control" name="createDate" th:field="*{createDate}">
-                                </div>
-                            </div>
-                
-                            <div class="mb-3">
-                                <label class="form-label"><i class="fas fa-folder me-2"></i>DANH MỤC</label>
-                                <select class="form-select" name="category.id" th:field="*{category.id}">
-                                    <option value="" selected disabled>Chọn danh mục</option>
-                                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
-                                </select>
-                            </div>
-                        </div>
-                
-                        <div class="col-12">
-                            <label class="form-label"><i class="fas fa-align-left me-2"></i>MÔ TẢ SẢN PHẨM</label>
-                            <textarea class="form-control comment-textarea" name="description" th:field="*{description}" placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
-                        </div>
-                
-                        <div class="col-12 d-flex justify-content-end gap-2 mt-4">
-                            <button type="submit" formaction="/manageproduct/create" class="btn btn-success" th:classappend="${product.id == null ? '' : 'd-none'}">
-                                <i class="fas fa-plus-circle me-2"></i>TẠO MỚI
-                            </button>
-                            <button type="submit" formaction="/manageproduct/update" class="btn btn-primary" th:classappend="${product.id != null ? '' : 'd-none'}">
-                                <i class="fas fa-sync-alt me-2"></i>CẬP NHẬT
-                            </button>
-                            <a th:href="@{|/manageproduct/delete/${product.id}|}" class="btn btn-danger" th:classappend="${product.id != null ? '' : 'd-none'}"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
-                                <i class="fas fa-trash-alt me-2"></i>XÓA
-                            </a>
-                            <a href="/manageproduct" class="btn btn-secondary">
-                                <i class="fas fa-undo me-2"></i>RESET
-                            </a>
                         </div>
                     </form>
                 </div>
@@ -316,6 +618,35 @@
             posterImage.src = URL.createObjectURL(event.target.files[0]);
             posterImage.classList.remove('d-none');
             overlay.classList.add('d-none');
+        }
+        
+        // Function to preview additional images
+        function previewAdditionalImages(event) {
+            const previewContainer = document.getElementById('additionalImagesPreview');
+            previewContainer.innerHTML = ''; // Clear previous previews
+            
+            if (event.target.files && event.target.files.length > 0) {
+                Array.from(event.target.files).forEach((file, index) => {
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'image-preview-new-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.alt = 'Preview Image ' + (index + 1);
+                    
+                    const removeBtn = document.createElement('div');
+                    removeBtn.className = 'remove-badge';
+                    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    removeBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        previewItem.remove();
+                    };
+                    
+                    previewItem.appendChild(img);
+                    previewItem.appendChild(removeBtn);
+                    previewContainer.appendChild(previewItem);
+                });
+            }
         }
         
         document.addEventListener("DOMContentLoaded", function() {

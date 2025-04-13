@@ -5,16 +5,33 @@
 </head>
 <body>
     <footer>
+        <div class="footer-waves">
+            <div class="wave wave1"></div>
+            <div class="wave wave2"></div>
+        </div>
+        
         <div class="footer-container">
             <div class="footer-main">
                 <!-- Phần thương hiệu và thông tin liên hệ -->
                 <div class="footer-brand">
-                    <h2 class="logo">Tech Shop</h2>
+                    <div class="logo-container">
+                        <h2 class="logo">Tech Shop</h2>
+                        <div class="logo-shine"></div>
+                    </div>
                     <p class="tagline">Creativity Meets Innovation</p>
                     <div class="contact-info">
-                        <p><strong>Email:</strong> <a href="philtpd10207@gmail.com">info@brandname.com</a></p>
-                        <p><strong>Hotline:</strong> +84 123 456 789</p>
-                        <p><strong>Địa chỉ:</strong> 09 Nguyễn Chánh, Liên Chiểu, Đà Nẵng</p>
+                        <p class="contact-item">
+                            <span class="contact-icon"><i class="fas fa-envelope"></i></span>
+                            <strong>Email:</strong> <a href="mailto:info@brandname.com">info@brandname.com</a>
+                        </p>
+                        <p class="contact-item">
+                            <span class="contact-icon"><i class="fas fa-phone-alt"></i></span>
+                            <strong>Hotline:</strong> <a href="tel:+84123456789">+84 123 456 789</a>
+                        </p>
+                        <p class="contact-item">
+                            <span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span>
+                            <strong>Địa chỉ:</strong> 09 Nguyễn Chánh, Liên Chiểu, Đà Nẵng
+                        </p>
                     </div>
                 </div>
 
@@ -22,10 +39,10 @@
                 <div class="footer-links">
                     <h3>Liên kết nhanh</h3>
                     <ul>
-                        <li><a href="/index">Trang chủ</a></li>
-                        <li><a href="/products">Sản phẩm </a></li>
-                        <li><a href="/Contact">Liên hệ </a></li>
-                        <li><a href="/Introduce">Giới thiệu</a></li>
+                        <li><a href="/index"><span class="link-icon">→</span>Trang chủ</a></li>
+                        <li><a href="/products"><span class="link-icon">→</span>Sản phẩm</a></li>
+                        <li><a href="/Contact"><span class="link-icon">→</span>Liên hệ</a></li>
+                        <li><a href="/Introduce"><span class="link-icon">→</span>Giới thiệu</a></li>
                     </ul>
                 </div>
 
@@ -33,37 +50,79 @@
                 <div class="footer-links">
                     <h3>Chính sách</h3>
                     <ul>
-                        <li><a href="#">Điều khoản dịch vụ</a></li>
-                        <li><a href="#">Chính sách bảo mật</a></li>
-                        <li><a href="#">Chính sách hoàn tiền</a></li>
-                        <li><a href="#">Hướng dẫn sử dụng</a></li>
+                        <li><a href="#"><span class="link-icon">→</span>Điều khoản dịch vụ</a></li>
+                        <li><a href="#"><span class="link-icon">→</span>Chính sách bảo mật</a></li>
+                        <li><a href="#"><span class="link-icon">→</span>Chính sách hoàn tiền</a></li>
+                        <li><a href="#"><span class="link-icon">→</span>Hướng dẫn sử dụng</a></li>
                     </ul>
                 </div>
             </div>
 
             <!-- Phần form đăng ký nhận bản tin -->
             <div class="footer-newsletter">
+                <div class="newsletter-glow"></div>
                 <h3>Đăng ký nhận thông báo</h3>
                 <p>Nhận thông tin mới nhất từ chúng tôi!</p>
                 <form class="newsletter-form">
-                    <input type="email" placeholder="Nhập email của bạn..." required>
-                    <button type="submit">Đăng ký</button>
+                    <div class="input-container">
+                        <input type="email" placeholder="Nhập email của bạn..." required>
+                        <span class="input-focus-effect"></span>
+                    </div>
+                    <button type="submit">
+                        <span class="button-text">Đăng ký</span>
+                        <span class="button-icon"><i class="fas fa-paper-plane"></i></span>
+                    </button>
                 </form>
             </div>
 
-            <!-- Phần mạng xã hội -->
+            <!-- Phần mạng xã hội với Font Awesome icons -->
             <div class="footer-social">
-                <a href="#" class="social-icon">F</a>
-                <a href="#" class="social-icon">N</a>
-                <a href="#" class="social-icon">D</a>
-                <a href="#" class="social-icon">T</a>
+                <a href="#" class="social-icon" aria-label="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                    <span class="social-tooltip">Facebook</span>
+                </a>
+                <a href="#" class="social-icon" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                    <span class="social-tooltip">Instagram</span>
+                </a>
+                <a href="#" class="social-icon" aria-label="YouTube">
+                    <i class="fab fa-youtube"></i>
+                    <span class="social-tooltip">YouTube</span>
+                </a>
+                <a href="#" class="social-icon" aria-label="TikTok">
+                    <i class="fab fa-tiktok"></i>
+                    <span class="social-tooltip">TikTok</span>
+                </a>
             </div>
         </div>
 
         <!-- Phần footer bottom -->
         <div class="footer-bottom">
-            <p>© 2025 TechShop O_O</p>
+            <div class="footer-line"></div>
+            <p>© 2025 TechShop <span class="heart-pulse">O_O</span></p>
         </div>
     </footer>
+
+    <script>
+        // Simple script to add some interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add a class to body when page is loaded
+            document.body.classList.add('loaded');
+            
+            // Animate social icons on scroll
+            const socialIcons = document.querySelectorAll('.social-icon');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            socialIcons.forEach(icon => {
+                observer.observe(icon);
+            });
+        });
+    </script>
 </body>
 </html>

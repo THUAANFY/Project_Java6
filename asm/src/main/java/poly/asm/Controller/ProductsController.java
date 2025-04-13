@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 import poly.asm.DAO.CategoryDAO;
 import poly.asm.DAO.ProductDAO;
+import poly.asm.DAO.ProductImageDAO;
 import poly.asm.Models.Category;
 import poly.asm.Models.Product;
+import poly.asm.Models.ProductImage;
 import poly.asm.Models.User;
 import poly.asm.Services.ProductService;
 
@@ -27,6 +29,9 @@ public class ProductsController {
 
     @Autowired
     private ProductDAO productDAO;
+    
+    @Autowired
+    private ProductImageDAO productImageDAO;
 
     @Autowired
     private ProductService productService;
@@ -109,8 +114,15 @@ public class ProductsController {
             return "redirect:/products";
         }
 
+        // Get additional images for the product
+        List<ProductImage> productImages = productImageDAO.findByProduct(product);
+        model.addAttribute("productImages", productImages);
+
         Category category = product.getCategory();
         List<Product> relatedProducts = productDAO.findByCategory(category);
+        // Remove current product from related products
+        relatedProducts.removeIf(p -> p.getId().equals(product.getId()));
+        
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
 

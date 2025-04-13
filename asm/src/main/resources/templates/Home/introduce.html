@@ -55,11 +55,11 @@
             box-shadow: 0 5px 15px rgba(52,152,219,0.3);
         }
 
-        .cta-button:hover {
-            background: #2980b9;
-            box-shadow: 0 8px 20px rgba(52,152,219,0.5);
-            transform: translateY(-2px);
-        }
+    .cta-button:hover {
+        background: #2980b9;
+        box-shadow: 0 8px 20px rgba(52,152,219,0.5);
+        transform: translateY(-2px);
+    }
 
         /* Values Section */
         .values-section {
@@ -88,10 +88,10 @@
             text-align: center;
         }
 
-        .value-item:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
+    .value-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
 
         .value-item i {
             font-size: 2.5rem;
@@ -116,12 +116,21 @@
             margin-bottom: 50px;
         }
 
-        .store-info h2 {
-            font-size: 2rem;
-            color: #3498db;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+    .mission-container {
+        background: #fff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .mission-section h2 {
+        font-size: 2rem;
+        color: #3498db;
+        margin-bottom: 20px;
+        text-align: center;
+    }
 
         .store-info-container {
             background: #fff;
@@ -208,99 +217,21 @@
             text-align: center;
         }
 
-        .achievement-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
+    .vision-container {
+        background: #fff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
 
-        .achievement-card i {
-            font-size: 2.5rem;
-            color: #3498db;
-            margin-bottom: 15px;
-        }
-
-        .achievement-card h3 {
-            font-size: 1.5rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .achievement-card p {
-            color: #7f8c8d;
-            font-size: 1rem;
-        }
-
-        /* Community Section */
-        .community-section {
-            margin-bottom: 50px;
-        }
-
-        .community-container {
-            background: #fff;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .community-section h2 {
-            font-size: 2rem;
-            color: #3498db;
-            margin-bottom: 20px;
-        }
-
-        .community-section p {
-            color: #7f8c8d;
-            font-size: 1rem;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto 20px;
-        }
-
-        /* Testimonials Section */
-        .testimonials-section {
-            margin-bottom: 50px;
-        }
-
-        .testimonials-section h2 {
-            font-size: 2rem;
-            color: #3498db;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .testimonials-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .testimonial-card {
-            background: #fff;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .testimonial-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-
-        .testimonial-card p {
-            color: #7f8c8d;
-            font-size: 1rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
-
-        .testimonial-author {
-            font-size: 1.2rem;
-            color: #2c3e50;
-            font-weight: 600;
-            text-align: right;
-        }
+    .vision-container p {
+        color: #7f8c8d;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
@@ -318,40 +249,40 @@
 
     <div class="contact-container">
         <!-- Header -->
-        <div class="contact-header" data-aos="fade-down">
+        <div class="about-header" data-aos="fade-down">
             <h1>Giới Thiệu Về Chúng Tôi</h1>
             <p>Chào mừng bạn đến với Cửa Hàng Điện Tử - nơi công nghệ hiện đại hội tụ, mang đến giải pháp tối ưu cho mọi nhu cầu của bạn!</p>
-            <div class="text-center mt-3">
+            <div>
                 <a href="/index" class="cta-button" data-aos="fade-up">Khám Phá Sản Phẩm</a>
                 <a href="/Contact" class="cta-button" data-aos="fade-up" data-aos-delay="100">Liên Hệ Ngay</a>
             </div>
         </div>
 
         <!-- Values Section -->
-        <div class="container values-section" data-aos="fade-up">
+        <div class="container values-section animate-fade-up" data-aos="fade-up">
             <h2>Cam Kết Của Website</h2>
             <div class="values-container">
-                <div class="value-item" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
                     <i class="fas fa-laptop"></i>
                     <h3>Sản Phẩm Đa Dạng</h3>
                     <p>Chúng tôi tự hào mang đến hàng trăm mẫu laptop từ ultrabook siêu mỏng nhẹ của Dell, HP, đến các dòng máy trạm mạnh mẽ của Lenovo, ASUS, cùng với máy ảnh chuyên nghiệp từ Canon, Nikon, Sony.</p>
                 </div>
-                <div class="value-item" data-aos="fade-up" data-aos-delay="200">
+                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
                     <i class="fas fa-shield-alt"></i>
                     <h3>Chính Hãng & Bảo	I Hành</h3>
                     <p>Mọi sản phẩm trên website đều là hàng chính hãng 100%, nhập khẩu trực tiếp từ nhà sản xuất hoặc phân phối uy tín. Chính sách bảo hành rõ ràng từ 12 đến 36 tháng.</p>
                 </div>
-                <div class="value-item" data-aos="fade-up" data-aos-delay="300">
+                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
                     <i class="fas fa-truck"></i>
                     <h3>Giao Hàng Tiện Lợi</h3>
                     <p>Giao hàng nhanh chóng: nội thành TP.HCM và Hà Nội trong 24 giờ, ngoại thành và tỉnh lẻ từ 2-5 ngày. Hỗ trợ đổi trả trong 30 ngày nếu lỗi từ nhà sản xuất.</p>
                 </div>
-                <div class="value-item" data-aos="fade-up" data-aos-delay="400">
+                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
                     <i class="fas fa-headset"></i>
                     <h3>Hỗ Trợ Toàn Diện</h3>
                     <p>Đội ngũ tư vấn hoạt động 24/7 qua chat trực tuyến, hotline 1900 1234, và email info@electronics.com, luôn sẵn sàng đồng hành cùng bạn.</p>
                 </div>
-                <div class="value-item" data-aos="fade-up" data-aos-delay="500">
+                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
                     <i class="fas fa-tags"></i>
                     <h3>Giá Cả Cạnh Tranh</h3>
                     <p>Giá tốt nhất thị trường với các chương trình flash sale, giảm giá lên đến 30%, cùng ưu đãi combo khi mua kèm phụ kiện.</p>
@@ -359,8 +290,8 @@
             </div>
         </div>
 
-        <!-- Mission Section (Styled like Store Info) -->
-        <div class="container store-info" data-aos="fade-up" data-aos-delay="200">
+        <!-- Mission Section -->
+        <div class="container mission-section" data-aos="fade-up" data-aos-delay="100">
             <h2>Về Website Của Chúng Tôi</h2>
             <div class="store-info-container">
                 <p><i class="fas fa-info-circle"></i> Chào mừng bạn đến với Cửa Hàng Điện Tử - nền tảng mua sắm trực tuyến chuyên biệt cho công nghệ cao cấp như laptop, máy ảnh, và phụ kiện.</p>
@@ -370,8 +301,8 @@
             </div>
         </div>
 
-        <!-- Vision Section (Styled like FAQ) -->
-        <div class="container faq-section" data-aos="fade-up" data-aos-delay="300">
+        <!-- Vision Section -->
+        <div class="container vision-section" data-aos="fade-up" data-aos-delay="200">
             <h2>Tầm Nhìn Của Chúng Tôi</h2>
             <div class="faq-item">
                 <h3>1. Mục tiêu trong 5 năm tới</h3>
@@ -444,11 +375,56 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
-        AOS.init({
-            duration: 1000,
-            easing: 'ease-out',
-            once: true,
-            offset: 100
+        // Khởi tạo AOS với cấu hình mạnh hơn
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out-cubic',
+                once: false,
+                offset: 50,
+                delay: 0,
+                disable: 'mobile'
+            });
+            
+            // Đảm bảo AOS được khởi tạo lại khi trang đã tải xong
+            setTimeout(function() {
+                AOS.refresh();
+            }, 500);
+            
+            // Thêm hiệu ứng cuộn cho các phần tử
+            function animateOnScroll() {
+                const elements = document.querySelectorAll('.animate-fade-up, .animate-fade-down, .animate-fade-up-delay-100, .animate-fade-up-delay-200, .animate-fade-up-delay-300');
+                
+                elements.forEach(element => {
+                    const rect = element.getBoundingClientRect();
+                    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                    
+                    if (rect.top <= windowHeight * 0.75) {
+                        element.style.visibility = 'visible';
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+            
+            // Khởi tạo trạng thái ban đầu
+            const elements = document.querySelectorAll('.animate-fade-up, .animate-fade-down, .animate-fade-up-delay-100, .animate-fade-up-delay-200, .animate-fade-up-delay-300');
+            elements.forEach(element => {
+                if (!element.classList.contains('animate-fade-down')) {
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(50px)';
+                } else {
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(-50px)';
+                }
+                element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            });
+            
+            // Kích hoạt hiệu ứng khi cuộn
+            window.addEventListener('scroll', animateOnScroll);
+            
+            // Kích hoạt hiệu ứng ban đầu
+            animateOnScroll();
         });
     </script>
 </body>

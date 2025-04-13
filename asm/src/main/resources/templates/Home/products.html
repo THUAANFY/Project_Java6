@@ -628,196 +628,226 @@
                 --sidebar-width: 260px;
             }
         }
+
+        .btn-add-cart {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add-cart:hover {
+            background-color: var(--secondary-hover);
+            transform: translateY(-3px);
+        }
+
+        .btn-add-cart:disabled {
+            background-color: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
-<div th:replace="~{/Layout/Navbar}"></div>
-
-<div class="page-container">
-    <!-- Sidebar Toggle Button (outside sidebar) - only visible on mobile -->
-    <button class="sidebar-toggle" id="sidebarToggle">
-        <i class="fas fa-bars"></i>
-    </button>
+    <div th:replace="~{/Layout/Navbar}"></div>
     
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h4>Danh Mục</h4>
-        </div>
-        <ul class="list-unstyled category-list">
-            <th:block th:each="item : ${categories}">
-                <li th:class="${selectedCategory != null && selectedCategory.id == item.id ? 'active' : ''}">
-                    <a th:href="@{'/products/category/' + ${item.id}}" 
-                       th:text="${item.name}"></a>
-                </li>
-            </th:block>
-        </ul>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Hiển thị tên danh mục được chọn -->
-        <h3 th:text="${selectedCategory != null ? selectedCategory.name : 'Tất cả sản phẩm'}">
-            <span class="product-count" th:if="${!#lists.isEmpty(products)}" th:text="${#lists.size(products)}"></span>
-        </h3>
+    <div class="page-container">
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
         
-        <div class="row g-4">
-            <!-- Kiểm tra nếu không có sản phẩm -->
-            <th:block th:if="${#lists.isEmpty(products)}">
-                <div class="col-12 no-pr">
-                    <div class="no-products">
-                        <i class="fas fa-box-open mb-3" style="font-size: 3rem; color: #bdc3c7;"></i>
-                        <p>Chưa có sản phẩm trong danh mục này</p>
-                    </div>
-                </div>
-            </th:block>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h4>Danh Mục</h4>
+            </div>
+            <ul class="list-unstyled category-list">
+                <th:block th:each="item : ${categories}">
+                    <li th:class="${selectedCategory != null && selectedCategory.id == item.id ? 'active' : ''}">
+                        <a th:href="@{'/products/category/' + ${item.id}}" 
+                           th:text="${item.name}"></a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    
+        <div class="main-content">
+            <h3 th:text="${selectedCategory != null ? selectedCategory.name : 'Tất cả sản phẩm'}">
+                <span class="product-count" th:if="${!#lists.isEmpty(products)}" th:text="${#lists.size(products)}"></span>
+            </h3>
             
-            <!-- Hiển thị sản phẩm nếu có - Changed to col-lg-4 for 3 products per row -->
-            <th:block th:unless="${#lists.isEmpty(products)}">
-                <div class="col-sm-6 col-lg-4 mb-4" th:each="item : ${products}">
-                    <div class="card h-100">
-                        <div class="card-img-container">
-                            <a th:href="@{/product/{id}(id=${item.id})}">
-                                <img th:src="${item.image}" class="card-img-top" alt="Product">
-                            </a>
-                            <!-- Price badge on image -->
-                            <div class="price-badge" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' VND'}"></div>
-                            <button class="quick-view-btn">
-                                <i class="fas fa-eye mr-1"></i> Xem nhanh
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title" th:text="${item.name}"></h5>
-                            <p class="card-text" th:text="${item.description}"></p>
-                            <p class="card-text text-danger">
-                                <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' VND'}"></strong>
-                            </p>
-                            <button class="btn btn-cart">
-                                <i class="fas fa-cart-plus"></i>
-                                Thêm vào giỏ
-                            </button>
+            <!-- Thông báo từ CartController -->
+            <div th:if="${addSuccess}" class="alert alert-success">
+                <span th:text="${successMessage ?: 'Đã thêm sản phẩm vào giỏ hàng thành công!'}"></span>
+            </div>
+            <div th:if="${inventoryError}" class="alert alert-danger">
+                <span th:text="${errorMessage}"></span>
+            </div>
+    
+            <div class="row g-4">
+                <th:block th:if="${#lists.isEmpty(products)}">
+                    <div class="col-12 no-pr">
+                        <div class="no-products">
+                            <i class="fas fa-box-open mb-3" style="font-size: 3rem; color: #bdc3c7;"></i>
+                            <p>Chưa có sản phẩm trong danh mục này</p>
                         </div>
                     </div>
-                </div>
-            </th:block>
+                </th:block>
+                
+                <th:block th:unless="${#lists.isEmpty(products)}">
+                    <div class="col-sm-6 col-lg-4 mb-4" th:each="item : ${products}">
+                        <div class="card h-100">
+                            <div class="card-img-container">
+                                <a th:href="@{/product/{id}(id=${item.id})}">
+                                    <img th:src="${item.image}" class="card-img-top" alt="Product">
+                                </a>
+                                <div class="price-badge" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' VND'}"></div>
+                                <button class="quick-view-btn">
+                                    <i class="fas fa-eye mr-1"></i> Xem nhanh
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${item.name}"></h5>
+                                <p class="card-text text-danger">
+                                    <strong th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + ' VND'}"></strong>
+                                </p>
+                                <!-- Add to Cart without quantity control -->
+                                <div th:if="${session.loggedInUser != null}">
+                                    <form th:action="@{/cart/add}" method="post" class="mb-4" th:id="'addToCartForm_' + ${item.id}">
+                                        <input type="hidden" name="id" th:value="${item.id}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn-add-cart" th:disabled="${item.available <= 0}">
+                                            <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
+                                        </button>
+                                    </form>
+                                </div>
+                                <div th:unless="${session.loggedInUser != null}">
+                                    <a href="/login" class="btn btn-cart">
+                                        <i class="fas fa-cart-plus"></i> Đăng nhập để thêm
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
         </div>
     </div>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        
-        // Function to check if we're on mobile
-        function isMobile() {
-            return window.innerWidth <= 767.98;
-        }
-        
-        // Function to toggle sidebar
-        function toggleSidebar() {
-            sidebar.classList.toggle('active');
-            sidebarOverlay.classList.toggle('active');
-            sidebarToggle.classList.toggle('active');
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
             
-            // Change icon based on sidebar state
-            if (sidebar.classList.contains('active')) {
-                sidebarToggle.innerHTML = '<i class="fas fa-chevron-left"></i>';
-            } else {
-                sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            function isMobile() {
+                return window.innerWidth <= 767.98;
             }
-        }
-        
-        // Toggle sidebar when button is clicked
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        
-        // Close sidebar when overlay is clicked
-        sidebarOverlay.addEventListener('click', toggleSidebar);
-        
-        // Close sidebar when a category is clicked (on mobile)
-        const categoryLinks = document.querySelectorAll('.category-list a');
-        categoryLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                if (isMobile() && sidebar.classList.contains('active')) {
-                    toggleSidebar();
+            
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+                sidebarToggle.classList.toggle('active');
+                
+                if (sidebar.classList.contains('active')) {
+                    sidebarToggle.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                } else {
+                    sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
                 }
-            });
-        });
-        
-        // Add hover effect to category items
-        const categoryItems = document.querySelectorAll('.category-list li');
-        categoryItems.forEach(item => {
-            item.addEventListener('mouseenter', function() {
-                this.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            });
-            
-            item.addEventListener('mouseleave', function() {
-                this.style.transition = 'all 0.3s ease';
-            });
-        });
-        
-        // Quick view button functionality
-        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-        quickViewButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Here you would typically show a modal with product details
-                // For now, we'll just navigate to the product page
-                const productLink = this.closest('.card-img-container').querySelector('a').href;
-                window.location.href = productLink;
-            });
-        });
-        
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            if (!isMobile() && sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-                sidebarOverlay.classList.remove('active');
-                sidebarToggle.classList.remove('active');
-                sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
             }
             
-            // Ensure sidebar has full height on resize
-            setFullHeight();
-        });
-        
-        // Function to set full height for sidebar
-        function setFullHeight() {
-            if (!isMobile()) {
-                // Get the height of the page container
-                const pageContainer = document.querySelector('.page-container');
-                const pageHeight = pageContainer.offsetHeight;
-                
-                // Set the sidebar height to match the page container
-                sidebar.style.height = pageHeight + 'px';
-                
-                // Ensure the sidebar extends to the footer
-                const footer = document.querySelector('[th-replace="~{/Layout/Footer}"]');
-                if (footer) {
-                    const footerTop = footer.getBoundingClientRect().top;
-                    const sidebarBottom = sidebar.getBoundingClientRect().bottom;
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+            
+            const categoryLinks = document.querySelectorAll('.category-list a');
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (isMobile() && sidebar.classList.contains('active')) {
+                        toggleSidebar();
+                    }
+                });
+            });
+            
+            const categoryItems = document.querySelectorAll('.category-list li');
+            categoryItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.transition = 'all 0.3s ease';
+                });
+            });
+            
+            const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+            quickViewButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productLink = this.closest('.card-img-container').querySelector('a').href;
+                    window.location.href = productLink;
+                });
+            });
+    
+            window.addEventListener('resize', function() {
+                if (!isMobile() && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                    sidebarToggle.classList.remove('active');
+                    sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+                setFullHeight();
+            });
+            
+            function setFullHeight() {
+                if (!isMobile()) {
+                    const pageContainer = document.querySelector('.page-container');
+                    const pageHeight = pageContainer.offsetHeight;
+                    sidebar.style.height = pageHeight + 'px';
                     
-                    // If sidebar is shorter than the distance to footer
-                    if (sidebarBottom < footerTop) {
-                        sidebar.style.minHeight = (footerTop - sidebar.getBoundingClientRect().top) + 'px';
+                    const footer = document.querySelector('[th-replace="~{/Layout/Footer}"]');
+                    if (footer) {
+                        const footerTop = footer.getBoundingClientRect().top;
+                        const sidebarBottom = sidebar.getBoundingClientRect().bottom;
+                        if (sidebarBottom < footerTop) {
+                            sidebar.style.minHeight = (footerTop - sidebar.getBoundingClientRect().top) + 'px';
+                        }
                     }
                 }
             }
-        }
-        
-        // Run on load and resize
-        window.addEventListener('load', setFullHeight);
-        
-        // Also run when content might change the page height
-        const observer = new MutationObserver(setFullHeight);
-        observer.observe(document.body, { childList: true, subtree: true });
-    });
-</script>
-<div th:replace="~{/Layout/Footer}"></div>
-</body>
+            
+            window.addEventListener('load', setFullHeight);
+            const observer = new MutationObserver(setFullHeight);
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
+    <div th:replace="~{/Layout/Footer}"></div>
+    </body>
 </html>
 

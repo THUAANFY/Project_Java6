@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UserLoginDTO {
-    @NotBlank(message = "ID không được để trống")
+    @NotBlank(message = "Tên tài khoản không được để trống")
     // @Size(min = 3, max = 50, message = "ID must be between 3 and 50 characters")
     private String id;
 
-    @NotBlank(message = "Password không được để trống")
+    @NotBlank(message = "Mật khẩu không được để trống")
     // @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
     private String password;
 

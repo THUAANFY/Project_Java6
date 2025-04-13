@@ -141,7 +141,7 @@ footer {
 }
 
 .footer-links ul li a:hover::before {
-    width: 100%;
+    width: 50%;
 }
 
 .footer-links ul li a:hover {

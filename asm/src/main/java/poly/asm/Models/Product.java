@@ -42,4 +42,8 @@ public class Product {
     Category category;
     @OneToMany(mappedBy = "product")
     List<OrderDetail> orderDetails;
+
+    // Add relationship to product images
+    @OneToMany(mappedBy = "product")
+    List<ProductImage> productImages;
 }

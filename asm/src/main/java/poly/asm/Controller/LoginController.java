@@ -2,6 +2,7 @@ package poly.asm.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,19 +10,26 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import poly.asm.Models.User;
+import poly.asm.Models.CartItem;
 import poly.asm.DAO.UserDAO;
 import poly.asm.DTO.UserLoginDTO;
+import poly.asm.Services.CartService;
 
 import java.io.File;
+import java.util.Map;
 
 @Controller
 public class LoginController {
 
     @Autowired
     private UserDAO userDAO; // Inject UserDAO để truy vấn database
+    
+    @Autowired
+    private CartService cartService; // Inject CartService để quản lý giỏ hàng
 
     @GetMapping("/login")
     public String showLoginForm(Model model) {
@@ -33,6 +41,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
+    @Transactional
     public String processLogin(
             @Valid @ModelAttribute("userLoginDTO") UserLoginDTO userLoginDTO,
             BindingResult result,
@@ -68,9 +77,12 @@ public class LoginController {
             model.addAttribute("error", "Tài khoản chưa được kích hoạt!");
             return "login/login";
         }
-
+        
         // Đăng nhập thành công
         session.setAttribute("loggedInUser", user);
+        
+        // Tải giỏ hàng đã lưu của người dùng từ cơ sở dữ liệu
+        cartService.loadCartFromDatabase(user);
         
         // Kiểm tra thư mục avatar tồn tại
         checkAvatarDirectory();
@@ -98,8 +110,23 @@ public class LoginController {
     }
 
     @GetMapping("/logout")
+    @Transactional
     public String logout(HttpSession session, Model model) {
-        session.invalidate();
+        // Lưu giỏ hàng vào cơ sở dữ liệu trước khi đăng xuất
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            cartService.saveCartToDatabase(loggedInUser);
+        }
+        
+        // Lưu giỏ hàng hiện tại vào một biến tạm thời
+        Map<Integer, CartItem> currentCart = (Map<Integer, CartItem>) session.getAttribute("cart");
+        
+        // Xóa thuộc tính người dùng đã đăng nhập, nhưng giữ lại giỏ hàng
+        session.removeAttribute("loggedInUser");
+        
+        // Không xóa toàn bộ session để giữ lại giỏ hàng
+        // session.invalidate();
+        
         model.addAttribute("success", "Bạn đã đăng xuất thành công!");
         return "redirect:/index";
     }
@@ -115,4 +142,3 @@ public class LoginController {
         }
     }
 }
-

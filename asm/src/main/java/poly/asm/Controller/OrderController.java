@@ -116,7 +116,7 @@ public class OrderController {
         String orderCode = orderService.createOrder(orderData, loggedInUser);
         
         // Xóa giỏ hàng sau khi đặt hàng thành công
-        cartService.clearCart();
+        cartService.clear();
         
         // Trả về mã đơn hàng để chuyển hướng
         return Map.of("orderId", orderCode);

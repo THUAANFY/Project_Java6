@@ -79,7 +79,8 @@ public class ProfileController {
         if (avatar != null && !avatar.isEmpty()) {
             try {
                 // Sửa đường dẫn thư mục lưu ảnh để đảm bảo đúng định dạng
-                String uploadDir = "D:\\project_Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\"; // Thư mục lưu ảnh
+                String uploadDir =  // Thư mục lưu ảnh
+                "D:\\HOCTAP\\HocKyV\\BLOCK_II\\Java6\\Project_Java6\\asm\\src\\main\\resources\\static\\Images\\";
                 
                 // Tạo tên file duy nhất với UUID để tránh trùng lặp
                 String originalFilename = avatar.getOriginalFilename();

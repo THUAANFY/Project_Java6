@@ -144,13 +144,16 @@ public class CartService {
     public void loadCartFromDatabase(User user) {
         if (user == null) return;
 
-        // Get current session cart
-        Map<Integer, CartItem> sessionCart = getCart();
+        // Xóa giỏ hàng hiện tại trong session
+        clear();
+
+        // Tạo giỏ hàng mới
+        Map<Integer, CartItem> sessionCart = new HashMap<>();
 
         // Load saved cart items from database
         List<PersistentCartItem> savedItems = persistentCartItemDAO.findByUserId(user.getId());
 
-        // Merge with session cart (if there are items in both, keep the ones from database)
+        // Merge with session cart
         for (PersistentCartItem savedItem : savedItems) {
             CartItem cartItem = savedItem.toCartItem();
 

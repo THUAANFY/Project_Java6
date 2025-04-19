@@ -14,13 +14,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import poly.asm.Models.User;
-import poly.asm.Models.CartItem;
 import poly.asm.DAO.UserDAO;
 import poly.asm.DTO.UserLoginDTO;
 import poly.asm.Services.CartService;
 
 import java.io.File;
-import java.util.Map;
 
 @Controller
 public class LoginController {
@@ -81,6 +79,9 @@ public class LoginController {
         // Đăng nhập thành công
         session.setAttribute("loggedInUser", user);
         
+        // Xóa giỏ hàng hiện tại trong session trước khi nạp giỏ hàng của người dùng
+        cartService.clear();
+        
         // Tải giỏ hàng đã lưu của người dùng từ cơ sở dữ liệu
         cartService.loadCartFromDatabase(user);
         
@@ -118,14 +119,11 @@ public class LoginController {
             cartService.saveCartToDatabase(loggedInUser);
         }
         
-        // Lưu giỏ hàng hiện tại vào một biến tạm thời
-        Map<Integer, CartItem> currentCart = (Map<Integer, CartItem>) session.getAttribute("cart");
+        // Xóa giỏ hàng trong session
+        cartService.clear();
         
-        // Xóa thuộc tính người dùng đã đăng nhập, nhưng giữ lại giỏ hàng
+        // Xóa thuộc tính người dùng đã đăng nhập
         session.removeAttribute("loggedInUser");
-        
-        // Không xóa toàn bộ session để giữ lại giỏ hàng
-        // session.invalidate();
         
         model.addAttribute("success", "Bạn đã đăng xuất thành công!");
         return "redirect:/index";

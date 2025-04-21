@@ -6,6 +6,44 @@
 <head>
     <link rel="stylesheet" th:href="@{/CSS/Index.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        .product-scroll {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start; /* Thay đổi từ space-between sang flex-start để căn đều */
+            padding: 10px 0;
+            gap: 15px;
+        }
+
+        .product-scroll .card {
+            flex: 1 0 calc(25% - 15px); /* Thay đổi từ flex: 0 0 sang flex: 1 0 để linh hoạt hơn */
+            min-width: 200px;
+            max-width: calc(25% - 15px); /* Giới hạn chiều rộng tối đa */
+            margin-bottom: 15px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .product-scroll .card {
+                flex: 1 0 calc(33.33% - 15px);
+                max-width: calc(33.33% - 15px);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .product-scroll .card {
+                flex: 1 0 calc(50% - 15px);
+                max-width: calc(50% - 15px);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .product-scroll .card {
+                flex: 1 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{/Layout/Navbar}"></div>
@@ -49,13 +87,13 @@
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <div class="container-fluid mt-3 p-5 pt-0" >
+    <div class="container-fluid mt-3 p-5 pt-0">
         <!-- Lặp qua từng danh mục -->
         <th:block th:each="category : ${categories}">
             <h2 th:text="${category.name}" class="mt-4 ms-4 fw-semibold" data-aos="fade-up" data-aos-duration="1000"></h2>
-            <div class="row" data-aos="fade-up" data-aos-duration="1000">
-                <!-- Lặp qua sản phẩm thuộc danh mục hiện tại -->
-                <div class="col-12 col-md-4 col-lg-3 mb-4" th:each="item : ${products}" th:if="${item.category.id == category.id}">
+            <div class="product-scroll" data-aos="fade-up" data-aos-duration="1000">
+                <!-- Lặp qua sản phẩm mới nhất của danh mục -->
+                <th:block th:each="item : ${categoryProductsMap.get(category)}">
                     <div class="card h-100">
                         <a th:href="@{/product/{id}(id=${item.id})}">
                             <img th:src="${item.image}" class="card-img-top p-5" alt="Product">
@@ -84,7 +122,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </th:block>
             </div>
         </th:block>
     </div>

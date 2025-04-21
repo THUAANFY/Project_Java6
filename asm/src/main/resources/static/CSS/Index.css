@@ -19,12 +19,7 @@
 .carousel-indicators button {
     filter: invert(1); /* Biến màu đen thành trắng */
 }
-/* .card-img-top {
-    height: 200px;
-    object-fit: cover;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-} */
+
 .card {
     border: none; /* Bỏ viền mặc định của Bootstrap */
     border-radius: 15px; /* Bo góc mềm mại */
@@ -58,7 +53,7 @@
 }
 
 .card-img-top {
-    height: 300px; /* Chiều cao cố định cho ảnh */
+    height: 100%; /* Chiều cao cố định cho ảnh */
     object-fit: cover;
     border-top-left-radius: 15px; /* Bo góc trên ảnh */
     border-top-right-radius: 15px;

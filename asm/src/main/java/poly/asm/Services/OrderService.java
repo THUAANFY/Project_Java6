@@ -185,7 +185,7 @@ public class OrderService {
             e.printStackTrace();
         }
         // Xóa giỏ hàng sau khi tạo đơn hàng thành công
-        cartService.clearCart();
+        cartService.clear();
         return orderCode;
     }
 

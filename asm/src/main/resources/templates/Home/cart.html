@@ -174,11 +174,11 @@
             
                     <div class="border-top pt-3 mt-3">
                         <div class="d-flex justify-content-between mb-3">
-                            <span class="text-muted">Subtotal</span>
+                            <span class="text-muted">Tạm Tính</span>
                             <span id="totalAmount" class="fw-semibold" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Tổng tiền</span>
                         </div>
                         <h6 class="d-flex justify-content-between fw-bold mt-2 mb-4 text-dark">
-                            <span>Total</span>
+                            <span>Tổng Cộng</span>
                             <span id="finalTotal" class="text-success" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Tổng cộng</span>
                         </h6>
                     </div>

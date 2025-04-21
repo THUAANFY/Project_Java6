@@ -2,279 +2,356 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{/Layout/Head}">
     <title>Giới Thiệu - Cửa Hàng Điện Tử</title>
+</head>
+<head>
     <link rel="stylesheet" th:href="@{/CSS/Index.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Container chính */
+        .contact-container {
+            background: linear-gradient(180deg, #e6f0fa 0%, #fff 100%);
+            padding: 60px 0;
+            color: #2c3e50;
+        }
+
+        /* Header */
+        .contact-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: #fff;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(52,152,219,0.2);
+        }
+
+        .contact-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .contact-header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* CTA Button */
+        .cta-button {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 30px;
+            background: #3498db;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        .cta-button:hover {
+            background: #2980b9;
+            box-shadow: 0 8px 20px rgba(52,152,219,0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Values Section */
+        .values-section {
+            margin-bottom: 50px;
+        }
+
+        .values-section h2 {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .values-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .value-item {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .value-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .value-item i {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .value-item h3 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .value-item p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Mission Section (Styled like Store Info) */
+        .store-info {
+            margin-bottom: 50px;
+        }
+
+        .store-info h2 {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .store-info-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .store-info p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .store-info i {
+            color: #3498db;
+            width: 25px;
+            margin-right: 10px;
+        }
+
+        /* Vision Section (Styled like FAQ) */
+        .faq-section {
+            margin-bottom: 50px;
+        }
+
+        .faq-section h2 {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .faq-item {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .faq-item h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .faq-item p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Achievements Section */
+        .achievements-section {
+            margin-bottom: 50px;
+        }
+
+        .achievements-section h2 {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .achievements-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .achievement-card i {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .achievement-card h3 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .achievement-card p {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        /* Community Section */
+        .community-section {
+            margin-bottom: 50px;
+        }
+
+        .community-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .community-section h2 {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        .community-section p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+
+        /* Testimonials Section */
+        .testimonials-section {
+            margin-bottom: 50px;
+        }
+
+        .testimonials-section h2 {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .testimonials-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .testimonial-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .testimonial-card p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-author {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .contact-header h1 { font-size: 2.2rem; }
+            .contact-header p { font-size: 1rem; }
+            .values-section h2, .store-info h2, .faq-section h2, .achievements-section h2, .community-section h2, .testimonials-section h2 { font-size: 1.7rem; }
+            .store-info-container, .community-container { padding: 20px; }
+            .cta-button { padding: 10px 20px; }
+            .values-container, .achievements-container, .testimonials-container { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
-<style>
-    /* Container chính */
-    .about-container {
-        background: linear-gradient(180deg, #e6f0fa 0%, #fff 100%);
-        padding: 60px 0;
-        color: #2c3e50;
-    }
-
-    /* Header */
-    .about-header {
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        padding: 40px 20px;
-        text-align: center;
-        color: #fff;
-        border-bottom-left-radius: 30px;
-        border-bottom-right-radius: 30px;
-        margin-bottom: 40px;
-        box-shadow: 0 10px 20px rgba(52,152,219,0.2);
-    }
-
-    .about-header h1 {
-        font-size: 2.8rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-        text-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .about-header p {
-        font-size: 1.2rem;
-        max-width: 600px;
-        margin: 0 auto;
-        line-height: 1.5;
-    }
-
-    /* CTA Button */
-    .cta-button {
-        display: inline-block;
-        margin: 10px;
-        padding: 12px 30px;
-        background: #3498db;
-        color: #fff;
-        text-decoration: none;
-        font-weight: 600;
-        border-radius: 25px;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(52,152,219,0.3);
-    }
-
-    .cta-button:hover {
-        background: #2980b9;
-        box-shadow: 0 8px 20px rgba(52,152,219,0.5);
-        transform: translateY(-5px);
-    }
-
-    /* Values Section */
-    .values-section {
-        margin-bottom: 50px;
-    }
-
-    .values-section h2 {
-        font-size: 2rem;
-        color: #3498db;
-        margin-bottom: 25px;
-        text-align: center;
-    }
-
-    .values-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 20px;
-    }
-
-    .value-item {
-        background: #fff;
-        border-radius: 20px;
-        padding: 25px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        width: 100%;
-        max-width: 300px;
-        text-align: center;
-    }
-
-    .value-item:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-    }
-
-    .value-item i {
-        font-size: 2.5rem;
-        color: #3498db;
-        margin-bottom: 15px;
-    }
-
-    .value-item h3 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
-
-    .value-item p {
-        color: #7f8c8d;
-        font-size: 1rem;
-        line-height: 1.5;
-    }
-
-    /* Mission Section */
-    .mission-section {
-        margin-bottom: 50px;
-    }
-
-    .mission-container {
-        background: #fff;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        max-width: 900px;
-        margin: 0 auto;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .mission-container:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-    }
-
-    .mission-section h2 {
-        font-size: 2rem;
-        color: #3498db;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    .mission-container p {
-        color: #7f8c8d;
-        font-size: 1rem;
-        line-height: 1.6;
-        margin-bottom: 15px;
-    }
-
-    /* Vision Section */
-    .vision-section {
-        margin-bottom: 50px;
-    }
-
-    .vision-section h2 {
-        font-size: 2rem;
-        color: #3498db;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    .vision-container {
-        background: #fff;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        max-width: 800px;
-        margin: 0 auto;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .vision-container:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-    }
-
-    .vision-container p {
-        color: #7f8c8d;
-        font-size: 1rem;
-        line-height: 1.6;
-        margin-bottom: 15px;
-    }
-
-    /* Custom Animation Classes */
-    .animate-fade-down {
-        animation: fadeInDown 1s ease forwards;
-    }
-
-    .animate-fade-up {
-        animation: fadeInUp 1s ease forwards;
-    }
-
-    .animate-fade-up-delay-100 {
-        animation: fadeInUp 1s ease 0.1s forwards;
-    }
-
-    .animate-fade-up-delay-200 {
-        animation: fadeInUp 1s ease 0.2s forwards;
-    }
-
-    .animate-fade-up-delay-300 {
-        animation: fadeInUp 1s ease 0.3s forwards;
-    }
-
-    /* Animation Keyframes */
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translate3d(0, -50px, 0);
-        }
-        to {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-        }
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translate3d(0, 50px, 0);
-        }
-        to {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-        }
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .about-header h1 { font-size: 2.2rem; }
-        .about-header p { font-size: 1rem; }
-        .values-section h2, .mission-section h2, .vision-section h2 { font-size: 1.7rem; }
-        .value-item { max-width: 100%; }
-        .mission-container, .vision-container { padding: 20px; }
-        .cta-button { padding: 10px 20px; }
-    }
-</style>
 <body>
     <div th:replace="~{/Layout/Navbar}"></div>
 
-    <!-- About Section -->
-    <div class="about-container">
+    <div class="contact-container">
         <!-- Header -->
-        <div class="about-header animate-fade-down" data-aos="fade-down">
+        <div class="contact-header" data-aos="fade-down">
             <h1>Giới Thiệu Về Chúng Tôi</h1>
             <p>Chào mừng bạn đến với Cửa Hàng Điện Tử - nơi công nghệ hiện đại hội tụ, mang đến giải pháp tối ưu cho mọi nhu cầu của bạn!</p>
-            <div>
-                <a href="/index" class="cta-button">Khám Phá Sản Phẩm</a>
-                <a href="/Contact" class="cta-button">Liên Hệ Ngay</a>
+            <div class="text-center mt-3">
+                <a href="/index" class="cta-button" data-aos="fade-up">Khám Phá Sản Phẩm</a>
+                <a href="/Contact" class="cta-button" data-aos="fade-up" data-aos-delay="100">Liên Hệ Ngay</a>
             </div>
         </div>
+
         <!-- Values Section -->
-        <div class="container values-section animate-fade-up" data-aos="fade-up">
+        <div class="container values-section" data-aos="fade-up">
             <h2>Cam Kết Của Website</h2>
             <div class="values-container">
-                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-item" data-aos="fade-up" data-aos-delay="100">
                     <i class="fas fa-laptop"></i>
                     <h3>Sản Phẩm Đa Dạng</h3>
                     <p>Chúng tôi tự hào mang đến hàng trăm mẫu laptop từ ultrabook siêu mỏng nhẹ của Dell, HP, đến các dòng máy trạm mạnh mẽ của Lenovo, ASUS, cùng với máy ảnh chuyên nghiệp từ Canon, Nikon, Sony.</p>
                 </div>
-                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-item" data-aos="fade-up" data-aos-delay="200">
                     <i class="fas fa-shield-alt"></i>
-                    <h3>Chính Hãng & Bảo Hành</h3>
+                    <h3>Chính Hãng & Bảo	I Hành</h3>
                     <p>Mọi sản phẩm trên website đều là hàng chính hãng 100%, nhập khẩu trực tiếp từ nhà sản xuất hoặc phân phối uy tín. Chính sách bảo hành rõ ràng từ 12 đến 36 tháng.</p>
                 </div>
-                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-item" data-aos="fade-up" data-aos-delay="300">
                     <i class="fas fa-truck"></i>
                     <h3>Giao Hàng Tiện Lợi</h3>
                     <p>Giao hàng nhanh chóng: nội thành TP.HCM và Hà Nội trong 24 giờ, ngoại thành và tỉnh lẻ từ 2-5 ngày. Hỗ trợ đổi trả trong 30 ngày nếu lỗi từ nhà sản xuất.</p>
                 </div>
-                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-item" data-aos="fade-up" data-aos-delay="400">
                     <i class="fas fa-headset"></i>
                     <h3>Hỗ Trợ Toàn Diện</h3>
                     <p>Đội ngũ tư vấn hoạt động 24/7 qua chat trực tuyến, hotline 1900 1234, và email info@electronics.com, luôn sẵn sàng đồng hành cùng bạn.</p>
                 </div>
-                <div class="value-item animate-fade-up-delay-100" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-item" data-aos="fade-up" data-aos-delay="500">
                     <i class="fas fa-tags"></i>
                     <h3>Giá Cả Cạnh Tranh</h3>
                     <p>Giá tốt nhất thị trường với các chương trình flash sale, giảm giá lên đến 30%, cùng ưu đãi combo khi mua kèm phụ kiện.</p>
@@ -282,24 +359,83 @@
             </div>
         </div>
 
-        <!-- Mission Section -->
-        <div class="container mission-section animate-fade-up-delay-200" data-aos="fade-up" data-aos-delay="100">
+        <!-- Mission Section (Styled like Store Info) -->
+        <div class="container store-info" data-aos="fade-up" data-aos-delay="200">
             <h2>Về Website Của Chúng Tôi</h2>
-            <div class="mission-container">
-                <p>Chào mừng bạn đến với Cửa Hàng Điện Tử - nền tảng mua sắm trực tuyến chuyên biệt dành cho các sản phẩm công nghệ cao cấp như laptop, máy ảnh, và phụ kiện liên quan.</p>
-                <p>Website được thiết kế với giao diện tối ưu, tích hợp công cụ tìm kiếm thông minh và bộ lọc chi tiết theo giá, thương hiệu, thông số kỹ thuật, giúp bạn dễ dàng so sánh và lựa chọn.</p>
-                <p>Chúng tôi cung cấp bài viết đánh giá sản phẩm, hướng dẫn sử dụng, và dịch vụ hậu mãi như hỗ trợ cài đặt phần mềm miễn phí, tư vấn nâng cấp phần cứng.</p>
-                <p>Sứ mệnh của chúng tôi là biến công nghệ thành một phần không thể thiếu trong cuộc sống, mang đến giải pháp toàn diện giúp bạn làm việc, học tập và sáng tạo hiệu quả hơn.</p>
+            <div class="store-info-container">
+                <p><i class="fas fa-info-circle"></i> Chào mừng bạn đến với Cửa Hàng Điện Tử - nền tảng mua sắm trực tuyến chuyên biệt cho công nghệ cao cấp như laptop, máy ảnh, và phụ kiện.</p>
+                <p><i class="fas fa-desktop"></i> Giao diện tối ưu, tích hợp tìm kiếm thông minh và bộ lọc chi tiết theo giá, thương hiệu, thông số kỹ thuật.</p>
+                <p><i class="fas fa-tools"></i> Cung cấp đánh giá sản phẩm, hướng dẫn sử dụng, hỗ trợ cài đặt phần mềm miễn phí, và tư vấn nâng cấp phần cứng.</p>
+                <p><i class="fas fa-bullseye"></i> Sứ mệnh: Biến công nghệ thành một phần không thể thiếu, mang đến giải pháp toàn diện cho công việc, học tập, và sáng tạo.</p>
             </div>
         </div>
 
-        <!-- Vision Section -->
-        <div class="container vision-section animate-fade-up-delay-300" data-aos="fade-up" data-aos-delay="200">
+        <!-- Vision Section (Styled like FAQ) -->
+        <div class="container faq-section" data-aos="fade-up" data-aos-delay="300">
             <h2>Tầm Nhìn Của Chúng Tôi</h2>
-            <div class="vision-container">
-                <p>Chúng tôi hướng đến việc xây dựng Cửa Hàng Điện Tử thành website mua sắm công nghệ số 1 tại Việt Nam và khu vực Đông Nam Á trong 5 năm tới.</p>
-                <p>Dự kiến tích hợp công nghệ AI để gợi ý sản phẩm cá nhân hóa, tính năng thực tế ảo (AR) để xem trước sản phẩm, và phát triển ứng dụng di động tiện lợi.</p>
-                <p>Về lâu dài, chúng tôi sẽ tạo ra một cộng đồng yêu công nghệ với các workshop trực tuyến về nhiếp ảnh, lập trình, và tối ưu thiết bị.</p>
+            <div class="faq-item">
+                <h3>1. Mục tiêu trong 5 năm tới</h3>
+                <p>Xây dựng Cửa Hàng Điện Tử thành website mua sắm công nghệ số 1 tại Việt Nam và Đông Nam Á.</p>
+            </div>
+            <div class="faq-item">
+                <h3>2. Công nghệ tương lai</h3>
+                <p>Tích hợp AI gợi ý sản phẩm cá nhân hóa, thực tế ảo (AR) để xem trước sản phẩm, và ứng dụng di động tiện lợi.</p>
+            </div>
+            <div class="faq-item">
+                <h3>3. Cộng đồng công nghệ</h3>
+                <p>Tạo cộng đồng yêu công nghệ với workshop trực tuyến về nhiếp ảnh, lập trình, và tối ưu thiết bị.</p>
+            </div>
+        </div>
+
+        <!-- Achievements Section -->
+        <div class="container achievements-section" data-aos="fade-up" data-aos-delay="400">
+            <h2>Thành Tựu Nổi Bật</h2>
+            <div class="achievements-container">
+                <div class="achievement-card" data-aos="fade-up" data-aos-delay="100">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Top 10 Nhà Bán Lẻ</h3>
+                    <p>Lọt top 10 nhà bán lẻ công nghệ uy tín nhất Việt Nam năm 2023 do người tiêu dùng bình chọn.</p>
+                </div>
+                <div class="achievement-card" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fas fa-users"></i>
+                    <h3>500.000+ Khách Hàng</h3>
+                    <p>Phục vụ hơn 500.000 khách hàng trên toàn quốc với tỷ lệ hài lòng đạt 98%.</p>
+                </div>
+                <div class="achievement-card" data-aos="fade-up" data-aos-delay="300">
+                    <i class="fas fa-globe"></i>
+                    <h3>Mở Rộng Quốc Tế</h3>
+                    <p>Bắt đầu hợp tác với các nhà phân phối tại Singapore và Thái Lan, hướng tới thị trường Đông Nam Á.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Community Section -->
+        <div class="container community-section" data-aos="fade-up" data-aos-delay="500">
+            <div class="community-container">
+                <h2>Cộng Đồng Công Nghệ</h2>
+                <p>Chúng tôi không chỉ bán sản phẩm, mà còn xây dựng một cộng đồng đam mê công nghệ. Tham gia các sự kiện trực tuyến, workshop về nhiếp ảnh, lập trình, và tối ưu hóa thiết bị để kết nối và học hỏi từ những người cùng sở thích.</p>
+                <div class="text-center">
+                    <a href="/community" class="cta-button">Tham Gia Ngay</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonials Section -->
+        <div class="container testimonials-section" data-aos="fade-up" data-aos-delay="600">
+            <h2>Khách Hàng Nói Gì</h2>
+            <div class="testimonials-container">
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <p>"Tôi mua một chiếc laptop ASUS từ Cửa Hàng Điện Tử và rất ấn tượng với dịch vụ giao hàng nhanh chóng. Đội ngũ hỗ trợ nhiệt tình, giải đáp mọi thắc mắc của tôi!"</p>
+                    <div class="testimonial-author">Nguyễn Minh Anh</div>
+                </div>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <p>"Máy ảnh Canon mua tại đây chất lượng tuyệt vời, đúng hàng chính hãng. Chính sách bảo hành rõ ràng giúp tôi yên tâm sử dụng lâu dài."</p>
+                    <div class="testimonial-author">Trần Văn Hùng</div>
+                </div>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                    <p>"Website dễ sử dụng, giá cả cạnh tranh, còn có nhiều chương trình khuyến mãi hấp dẫn. Tôi đã trở thành khách hàng trung thành từ lần mua đầu tiên!"</p>
+                    <div class="testimonial-author">Lê Thị Mai</div>
+                </div>
             </div>
         </div>
     </div>
@@ -308,56 +444,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
-        // Khởi tạo AOS với cấu hình mạnh hơn
-        document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                duration: 800,
-                easing: 'ease-out-cubic',
-                once: false,
-                offset: 50,
-                delay: 0,
-                disable: 'mobile'
-            });
-            
-            // Đảm bảo AOS được khởi tạo lại khi trang đã tải xong
-            setTimeout(function() {
-                AOS.refresh();
-            }, 500);
-            
-            // Thêm hiệu ứng cuộn cho các phần tử
-            function animateOnScroll() {
-                const elements = document.querySelectorAll('.animate-fade-up, .animate-fade-down, .animate-fade-up-delay-100, .animate-fade-up-delay-200, .animate-fade-up-delay-300');
-                
-                elements.forEach(element => {
-                    const rect = element.getBoundingClientRect();
-                    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-                    
-                    if (rect.top <= windowHeight * 0.75) {
-                        element.style.visibility = 'visible';
-                        element.style.opacity = '1';
-                        element.style.transform = 'translateY(0)';
-                    }
-                });
-            }
-            
-            // Khởi tạo trạng thái ban đầu
-            const elements = document.querySelectorAll('.animate-fade-up, .animate-fade-down, .animate-fade-up-delay-100, .animate-fade-up-delay-200, .animate-fade-up-delay-300');
-            elements.forEach(element => {
-                if (!element.classList.contains('animate-fade-down')) {
-                    element.style.opacity = '0';
-                    element.style.transform = 'translateY(50px)';
-                } else {
-                    element.style.opacity = '0';
-                    element.style.transform = 'translateY(-50px)';
-                }
-                element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-            });
-            
-            // Kích hoạt hiệu ứng khi cuộn
-            window.addEventListener('scroll', animateOnScroll);
-            
-            // Kích hoạt hiệu ứng ban đầu
-            animateOnScroll();
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-out',
+            once: true,
+            offset: 100
         });
     </script>
 </body>

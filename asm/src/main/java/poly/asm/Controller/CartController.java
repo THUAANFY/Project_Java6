@@ -25,34 +25,28 @@ public class CartController {
         String imagePath = (loggedInUser != null) ? loggedInUser.getImage() : "/user.png";
         model.addAttribute("image", imagePath);
         
-        // Kiểm tra đăng nhập trước khi hiển thị giỏ hàng
-        if (loggedInUser == null) {
-            model.addAttribute("loginMessage", "Vui lòng đăng nhập để xem giỏ hàng của bạn");
-            return "Home/cart";
-        }
-        
-        // Thêm thông tin giỏ hàng vào model
+        // Thêm thông tin giỏ hàng vào model (cả khi đăng nhập và không đăng nhập)
         model.addAttribute("cartItems", cartService.getCartItems());
         model.addAttribute("totalPrice", cartService.getTotalPrice());
+        
+        // Hiển thị thông báo đăng nhập nếu chưa đăng nhập
+        if (loggedInUser == null) {
+            model.addAttribute("loginMessage", "Vui lòng đăng nhập để xem giỏ hàng của bạn");
+        }
         
         return "Home/cart";
     }
     
     @PostMapping("/cart/add")
     public String addToCart(@RequestParam("id") Integer id, 
-                           @RequestParam("quantity") Integer quantity,
+                           @RequestParam(value = "quantity", required = false, defaultValue = "1") Integer quantity,
                            HttpSession session,
                            RedirectAttributes redirectAttributes) {
-        // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            redirectAttributes.addFlashAttribute("loginRequired", true);
-            redirectAttributes.addFlashAttribute("loginMessage", "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
-            return "redirect:/login"; // Chuyển hướng đến trang đăng nhập
-        }
-        
         try {
-            cartService.addToCart(id, quantity);
+            // Thêm sản phẩm vào giỏ hàng (không cần kiểm tra đăng nhập)
+            for (int i = 0; i < quantity; i++) {
+                cartService.add(id);
+            }
             redirectAttributes.addFlashAttribute("addSuccess", true);
         } catch (IllegalArgumentException e) {
             // Handle inventory validation error
@@ -67,14 +61,8 @@ public class CartController {
     public String updateCart(@RequestParam("id") Integer id, 
                            @RequestParam("quantity") Integer quantity,
                            HttpSession session) {
-        // Kiểm tra đăng nhập trước khi cập nhật giỏ hàng
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            return "login_required";
-        }
-        
         try {
-            boolean success = cartService.updateCartItem(id, quantity);
+            boolean success = cartService.update(id, quantity);
             if (!success) {
                 return "Số lượng sản phẩm tồn kho không đủ";
             }
@@ -89,28 +77,13 @@ public class CartController {
     public String removeFromCart(@RequestParam("id") Integer id,
                                 HttpSession session,
                                 RedirectAttributes redirectAttributes) {
-        // Kiểm tra đăng nhập trước khi xóa khỏi giỏ hàng
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            redirectAttributes.addFlashAttribute("loginRequired", true);
-            return "redirect:/login";
-        }
-        
-        cartService.removeFromCart(id);
+        cartService.remove(id);
         return "redirect:/yourcart";
     }
     
     @PostMapping("/cart/clear")
     public String clearCart(HttpSession session, RedirectAttributes redirectAttributes) {
-        // Kiểm tra đăng nhập trước khi xóa giỏ hàng
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            redirectAttributes.addFlashAttribute("loginRequired", true);
-            return "redirect:/login";
-        }
-        
-        cartService.clearCart();
+        cartService.clear();
         return "redirect:/yourcart";
     }
 }
-

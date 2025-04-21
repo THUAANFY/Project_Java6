@@ -376,7 +376,7 @@
                                     <div class="info-card">
                                         <div class="mb-3">
                                             <div class="info-label">Phương thức thanh toán</div>
-                                            <div class="info-value" th:text="${order.paymentMethod == 'cod' ? 'Thanh toán khi nhận hàng (COD)' : (order.paymentMethod == 'bank' ? 'Chuyển khoản ngân hàng' : 'Ví MoMo')}"></div>
+                                            <div class="info-value" th:text="${order.paymentMethod == 'codPayment' ? 'Thanh toán khi nhận hàng (COD)' : (order.paymentMethod == 'bankPayment' ? 'Chuyển khoản ngân hàng' : 'Ví MoMo')}"></div>
                                         </div>
                                         <div>
                                             <div class="info-label">Trạng thái thanh toán</div>
